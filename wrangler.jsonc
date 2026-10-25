@@ -9,8 +9,9 @@
     "not_found_handling": "404-page",
     "run_worker_first": ["/api/*", "/hook/*"]
   },
-  // Created on the first deploy if it doesn't exist yet; tables are created by the Worker on first use.
-  "d1_databases": [{ "binding": "DB", "database_name": "c3-site" }],
+  // Created by the first deploy (2026-10-25); pinned so later deploys always use the same database.
+  // Tables are created by the Worker on first use.
+  "d1_databases": [{ "binding": "DB", "database_name": "c3-site", "database_id": "2768248e-9d9a-48cb-8b16-a32bcdc47749" }],
   "vars": {
     // Public half of the bot's signing key (the private half is ABG_SITE_SIGNING_KEY in mnq-bot/.env).
     "BOT_PUBLIC_KEY": "ot5pT59p0K9GmQYZ9wgIPacTkZet0TvqXv5+36+iI0k=",

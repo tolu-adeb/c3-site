@@ -28,7 +28,7 @@ Get the private link on the bot's computer: `.venv\Scripts\mnq site link` (insid
 ## Deploys
 
 Pushing to `main` deploys through Cloudflare Workers Builds (`npx wrangler deploy`). The D1 database `c3-site` is
-created on the first deploy; the Worker creates its tables on first use.
+pinned by ID in `wrangler.jsonc`; the Worker creates its tables on first use.
 
 ## Local check
 
