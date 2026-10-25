@@ -1,0 +1,32 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "c3-lab",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-25",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*", "/hook/*"]
+  },
+  // Created on the first deploy if it doesn't exist yet; tables are created by the Worker on first use.
+  "d1_databases": [{ "binding": "DB", "database_name": "c3-site" }],
+  "vars": {
+    // Public half of the bot's signing key (the private half is ABG_SITE_SIGNING_KEY in mnq-bot/.env).
+    "BOT_PUBLIC_KEY": "ot5pT59p0K9GmQYZ9wgIPacTkZet0TvqXv5+36+iI0k=",
+    // SHA-256 of the private dashboard's view key (the key itself is ABG_SITE_VIEW_KEY in mnq-bot/.env).
+    "VIEW_KEY_SHA256": "db485e4722f83cb061ed4b035e4cfae92307c9e0803076c42222d910036a3296",
+    // Public results page stays empty until this is "true" (after the private forward test).
+    "TRACK_RECORD_PUBLIC": "false",
+    // TradingView front door: prototype, off until the receiver design is agreed with khuovi.
+    "WEBHOOK_ENABLED": "false",
+    "WEBHOOK_PATH_SHA256": "",
+    "WEBHOOK_TOKEN_SHA256": "",
+    // https://www.tradingview.com/support/solutions/43000529348 (checked 2026-10-25)
+    "TRADINGVIEW_IPS": "52.89.214.238,34.212.75.30,54.218.53.128,52.32.178.7"
+  },
+  // Daily clean-up of old heartbeats and signup attempts (09:17 UTC).
+  "triggers": { "crons": ["17 9 * * *"] },
+  // Console logs on; per-request logs off so URLs (the webhook's secret path) never land in logs.
+  "observability": { "enabled": true, "logs": { "enabled": true, "invocation_logs": false } }
+}

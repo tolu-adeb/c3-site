@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Private | c3.lab</title>
+<meta name="description" content="Private dashboard.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+<meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+<header class="wrap bar">
+  <a class="mark" href="/">c3.lab</a>
+  <nav aria-label="Private"><span class="dim">Private dashboard</span></nav>
+</header>
+<main class="wrap" id="app">
+  <section class="lock" id="lock" hidden>
+    <h1>This page needs your private link</h1>
+    <p class="note">Open the private link from your own computer. In PowerShell, inside the <code>mnq-bot</code> folder, run <code>.venv\Scripts\mnq site link</code> to print it.</p>
+  </section>
+  <section id="dash" hidden>
+    <div class="app-head">
+      <div>
+        <div class="pulse" id="pulse" role="status"></div>
+        <p class="sub" id="pulse-sub"></p>
+      </div>
+      <div class="row-actions"><button class="quiet" id="refresh" type="button">Refresh</button><button class="quiet" id="forget" type="button">Forget this device</button></div>
+    </div>
+    <div class="days" id="days" aria-label="Session coverage, last 10 trading days"></div>
+    <p class="note" id="days-note"></p>
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div class="panel" id="panel" role="tabpanel"></div>
+  </section>
+</main>
+<script src="/assets/app.js"></script>
+</body>
+</html>

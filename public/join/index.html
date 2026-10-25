@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Join the waitlist | c3.lab</title>
+<meta name="description" content="Hear when c3.lab alerts open.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+<header class="wrap bar">
+  <a class="mark" href="/">c3.lab</a>
+  <nav aria-label="Site"><a href="/track-record/">Track record</a><a href="/join/" aria-current="page">Join the waitlist</a></nav>
+</header>
+<main class="wrap page">
+  <h1>Join the waitlist</h1>
+  <p class="big">Alerts are in private testing. Leave your email and you'll hear once, when they open.</p>
+  <form class="stack" id="join" novalidate>
+    <label>Email
+      <input type="email" name="email" autocomplete="email" required maxlength="254">
+    </label>
+    <label>Anything you'd like us to know <small>Optional</small>
+      <textarea name="note" maxlength="280"></textarea>
+    </label>
+    <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+    <div><button type="submit">Join the waitlist</button></div>
+    <p class="msg" id="join-msg" role="status"></p>
+  </form>
+  <p class="note">Your email is only used to tell you when alerts open. Nothing else is sent, and it's never shared.</p>
+</main>
+<footer class="wrap foot">
+  <span>Educational, not financial advice.</span>
+  <span>© 2026 c3.lab</span>
+</footer>
+<script src="/assets/join.js"></script>
+</body>
+</html>

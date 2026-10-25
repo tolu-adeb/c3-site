@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>c3.lab</title>
+<meta name="description" content="c3.lab: a research lab for NQ futures intraday alerts. Rules written as code and tested before they ever post.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+<header class="wrap bar">
+  <a class="mark" href="/">c3.lab</a>
+  <nav aria-label="Site"><a href="/track-record/">Track record</a><a href="/join/">Join the waitlist</a></nav>
+</header>
+<main class="wrap hero">
+  <h1 class="display">c3.lab</h1>
+  <p class="lede">A research lab for NQ futures intraday alerts. Every rule is written as code, and every rule is tested before it is allowed to post.</p>
+
+  <figure class="tape" aria-label="Illustration of one trading session with the 9:30 to 12:00 ET window highlighted">
+    <svg id="tape" viewBox="0 0 1000 220" role="img" aria-hidden="true"></svg>
+    <figcaption><span>One session, minute by minute. Alerts can only arm in the shaded window.</span><span>9:30–12:00 ET</span></figcaption>
+  </figure>
+
+  <section class="cols">
+    <div>
+      <h2>What it does</h2>
+      <ul>
+        <li>Reads 1-minute NQ and ES structure</li>
+        <li>Scores each setup from 0 to 100</li>
+        <li>Posts alerts and tracks them as virtual trades</li>
+      </ul>
+    </div>
+    <div>
+      <h2>What it never does</h2>
+      <p>Place orders. It is alert-only. Decisions come from fixed, deterministic rules, so the same market always gets the same answer.</p>
+    </div>
+    <div>
+      <h2>Where it stands</h2>
+      <p>In private testing. Results go on the <a href="/track-record/">track record</a> after at least four weeks of forward testing. <a href="/join/">Join the waitlist</a> to hear when alerts open.</p>
+    </div>
+  </section>
+</main>
+<footer class="wrap foot">
+  <span>Educational, not financial advice.</span>
+  <span>© 2026 c3.lab</span>
+</footer>
+<script src="/assets/home.js"></script>
+</body>
+</html>
