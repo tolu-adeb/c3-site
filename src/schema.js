@@ -10,4 +10,6 @@ export const SCHEMA = [
   // TradingView front door: every authenticated delivery, duplicates included, as the exact text received
   `CREATE TABLE IF NOT EXISTS webhooks (id INTEGER PRIMARY KEY AUTOINCREMENT, received_ms INTEGER NOT NULL, sym TEXT NOT NULL, t INTEGER NOT NULL, dup INTEGER NOT NULL DEFAULT 0, raw TEXT NOT NULL)`,
   `CREATE INDEX IF NOT EXISTS webhooks_key ON webhooks (sym, t)`,
+  // commands from the private dashboard; the bot checks each one's HMAC (control code) before running it
+  `CREATE TABLE IF NOT EXISTS commands (id INTEGER PRIMARY KEY AUTOINCREMENT, action TEXT NOT NULL, args TEXT NOT NULL, nonce TEXT NOT NULL UNIQUE, ts INTEGER NOT NULL, mac TEXT NOT NULL, created_ms INTEGER NOT NULL, status TEXT NOT NULL DEFAULT 'pending', result TEXT, done_ms INTEGER)`,
 ];

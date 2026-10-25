@@ -112,5 +112,33 @@ ok(r.status === 200 && pull.webhooks.length === 2 && pull.webhooks[1].dup === 1 
 r = await fetch(base + "/api/hook/pull?after=0");
 ok(r.status === 401, "unsigned pull rejected");
 
+// command queue: site stores, bot pulls (signed) and acks (signed)
+{
+  const ts = Math.floor(Date.now() / 1000);
+  const cmd = (o) => fetch(base + "/api/p/commands", { method: "POST", headers: { ...view, "content-type": "application/json" }, body: JSON.stringify({ action: "run_parity", args: {}, nonce: "x".repeat(22) + Math.random().toString(36).slice(2, 8), ts, mac: "a".repeat(64), ...o }) });
+  r = await cmd({ action: "post_to_discord" });
+  ok(r.status === 400, "unknown command action rejected");
+  r = await fetch(base + "/api/p/commands", { method: "POST", headers: { "content-type": "application/json" }, body: "{}" });
+  ok(r.status === 401, "command without view key rejected");
+  r = await cmd({ ts: ts - 3600 });
+  ok(r.status === 400, "command with a stale clock rejected");
+  r = await cmd({});
+  const added = await r.json();
+  ok(r.status === 200 && added.id > 0, "command queued");
+  r = await fetch(base + "/api/cmd/pull");
+  ok(r.status === 401, "unsigned command pull rejected");
+  r = await fetch(base + "/api/cmd/pull", { headers: signed("GET", "/api/cmd/pull", null) });
+  const pulled = await r.json();
+  ok(pulled.commands.some((c) => c.id === added.id && c.mac === "a".repeat(64)), "bot pulls the command with its signature");
+  r = await fetch(base + "/api/cmd/pull", { headers: signed("GET", "/api/cmd/pull", null) });
+  ok(!(await r.json()).commands.some((c) => c.id === added.id), "a pulled command isn't handed out twice");
+  const ack = JSON.stringify({ id: added.id, ok: false, refused: true, message: "refused: wrong control code" });
+  r = await fetch(base + "/api/cmd/ack", { method: "POST", headers: signed("POST", "/api/cmd/ack", ack), body: ack });
+  ok(r.status === 200, "signed ack accepted");
+  r = await fetch(base + "/api/p/commands", { headers: view });
+  const listed = (await r.json()).commands.find((c) => c.id === added.id);
+  ok(listed && listed.status === "refused" && listed.result.includes("wrong control code"), "command result visible on the dashboard");
+}
+
 console.log(failures ? `\n${failures} FAILED` : "\nall passed");
 process.exit(failures ? 1 : 0);

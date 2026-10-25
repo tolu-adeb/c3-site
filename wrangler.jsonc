@@ -17,8 +17,8 @@
     "BOT_PUBLIC_KEY": "ot5pT59p0K9GmQYZ9wgIPacTkZet0TvqXv5+36+iI0k=",
     // SHA-256 of the private dashboard's view key (the key itself is ABG_SITE_VIEW_KEY in mnq-bot/.env).
     "VIEW_KEY_SHA256": "db485e4722f83cb061ed4b035e4cfae92307c9e0803076c42222d910036a3296",
-    // Public results page stays empty until this is "true" (after the private forward test).
-    "TRACK_RECORD_PUBLIC": "false",
+    // Public results page: on since 2026-10-25 (paper trades since ABG_SITE_TRACK_FROM in the bot's .env).
+    "TRACK_RECORD_PUBLIC": "true",
     // TradingView front door: prototype, off until the receiver design is agreed with khuovi.
     "WEBHOOK_ENABLED": "false",
     "WEBHOOK_PATH_SHA256": "",

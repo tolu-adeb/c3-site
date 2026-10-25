@@ -91,6 +91,7 @@
     if (d.last_seen_ms) sub.push("Last check-in " + ago(d.last_seen_ms) + ".");
     if (st) {
       if (st.tag) sub.push("Posting tag " + st.tag + ".");
+      if (st.alpha && st.alpha.paused && st.alpha.paused.on) sub.push("Signal posts are paused.");
       var s = st.stream || {};
       sub.push(s.enabled === false ? "Price stream off." : s.connected ? "Price stream connected." : "Price stream not connected.");
     }
@@ -102,9 +103,11 @@
     var botDays = {};
     ((st && st.uptime && st.uptime.days) || []).forEach(function (x) { botDays[x.day] = x; });
     var first = d.first_seen_ms ? new Date(d.first_seen_ms).toLocaleDateString("en-CA", { timeZone: "America/New_York" }) : null;
+    var since = st && st.uptime && st.uptime.since;          // "YYYY-MM-DD HH:MM" ET: the bot's record starts here
     var days = (d.coverage || []).map(function (x) {
       var b = botDays[x.day];
-      var known = !!b || (first && x.day >= first);
+      var botKnows = !!b && !!since && (x.day > since.slice(0, 10) || (x.day === since.slice(0, 10) && since.slice(11) < "16:00"));
+      var known = botKnows || (first && x.day >= first);
       return { day: x.day, so_far: x.so_far, known: known,
         pct: Math.max(x.pct || 0, b ? b.pct || 0 : 0), saw_open: x.saw_open || !!(b && b.saw_open) };
     }).reverse();
@@ -124,6 +127,7 @@
     ["today", "MNQ bot today"],
     ["research", "Research"],
     ["swing", "Swing desk"],
+    ["controls", "Controls"],
     ["track", "Track record"],
     ["waitlist", "Waitlist"],
     ["hooks", "Webhooks"]
@@ -226,7 +230,14 @@
       ["Idea", function (r) { return esc(r.name || r.id); }],
       ["Status", function (r) { return chip(r.status === "approved" || r.status === "ready" ? "good" : r.status === "retired" ? "dim" : "warn", r.status || "–"); }],
       ["Route", function (r) { return esc(r.route || "–"); }],
-      ["Origin", function (r) { return esc(r.origin || "–"); }]
+      ["Origin", function (r) { return esc(r.origin || "–"); }],
+      ["", function (r) {
+        var b = "";
+        if (r.id == null) return b;
+        if (r.status !== "approved" && r.status !== "retired") b += '<button type="button" class="quiet" data-cmd="approve_strategy" data-id="' + esc(r.id) + '" data-name="' + esc(r.name || r.id) + '">Approve</button> ';
+        if (r.status !== "retired") b += '<button type="button" class="quiet" data-cmd="retire_strategy" data-id="' + esc(r.id) + '" data-name="' + esc(r.name || r.id) + '">Retire</button>';
+        return b;
+      }]
     ], "No strategies in the forward lab yet.");
 
     var rf = (state.data.status && state.data.status.data && state.data.status.data.refit) || null;
@@ -330,7 +341,128 @@
     return h;
   }
 
-  var PANELS = { today: panelToday, research: panelResearch, swing: panelSwing, track: panelTrack, waitlist: panelWaitlist, hooks: panelHooks };
+  // ---------- controls: commands the bot checks with your control code before running ----------
+  var CTL_STORE = "c3.ctl";
+  function ctlCode() { try { return localStorage.getItem(CTL_STORE); } catch (e) { return null; } }
+  var LABELS = {
+    pause_posting: "Pause signal posts", resume_posting: "Resume signal posts", approve_strategy: "Approve strategy",
+    retire_strategy: "Retire strategy", run_forward_lab: "Run the forward lab", run_parity: "Run live vs backtest",
+    run_wide_backtest: "Run wide-scan backtest"
+  };
+  function sortedJSON(o) {
+    var keys = Object.keys(o || {}).sort(); var out = {};
+    keys.forEach(function (k) { out[k] = o[k]; });
+    return JSON.stringify(out);
+  }
+  function hex(buf) { return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ("0" + b.toString(16)).slice(-2); }).join(""); }
+  function nonce() {
+    var a = new Uint8Array(16); crypto.getRandomValues(a);
+    return btoa(String.fromCharCode.apply(null, a)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+  function sign(code, c) {
+    var enc = new TextEncoder();
+    var msg = c.action + "\n" + sortedJSON(c.args) + "\n" + c.nonce + "\n" + c.ts;
+    return crypto.subtle.importKey("raw", enc.encode(code), { name: "HMAC", hash: "SHA-256" }, false, ["sign"])
+      .then(function (k) { return crypto.subtle.sign("HMAC", k, enc.encode(msg)); }).then(hex);
+  }
+  function say(text, kind) {
+    state.msg = [text, kind || ""];                 // kept so a panel redraw doesn't wipe it
+    var el = $("ctl-msg");
+    if (el) { el.className = "msg " + (kind || ""); el.textContent = text; }
+  }
+  function sendCommand(action, args) {
+    var code = ctlCode();
+    if (!code) { state.tab = "controls"; drawTabs(); drawPanel(); say("Enter your control code first.", "err"); return; }
+    var c = { action: action, args: args || {}, nonce: nonce(), ts: Math.floor(Date.now() / 1000) };
+    say(LABELS[action] + ": sending…");
+    sign(code, c).then(function (mac) {
+      c.mac = mac;
+      return api("/api/p/commands", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(c) });
+    }).then(function (r) {
+      say(LABELS[action] + ": waiting for the bot (it checks every 10 seconds)…");
+      watch(r.id, action, Date.now());
+    }).catch(function () { say(LABELS[action] + ": couldn't send. Try again.", "err"); });
+  }
+  function watch(id, action, started) {
+    setTimeout(function () {
+      api("/api/p/commands").then(function (d) {
+        state.commands = d.commands;
+        var c = (d.commands || []).filter(function (x) { return x.id === id; })[0];
+        if (c && (c.status === "pending" || c.status === "sent") && Date.now() - started < 120000) return watch(id, action, started);
+        if (!c || c.status === "pending" || c.status === "sent") say(LABELS[action] + ": the bot hasn't picked it up yet. Is it running?", "err");
+        else if (c.status === "done") say(LABELS[action] + ": done.", "ok");
+        else say(LABELS[action] + ": " + (c.status === "refused" ? "refused by the bot. " : "didn't work. ") + (c.result || ""), "err");
+        load();
+      });
+    }, 4000);
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-cmd]");
+    if (!b) return;
+    var action = b.getAttribute("data-cmd");
+    var args = {};
+    if (b.getAttribute("data-id")) args.id = Number(b.getAttribute("data-id"));
+    var name = b.getAttribute("data-name");
+    var ask = {
+      approve_strategy: "Approve " + name + "? The bot uses it from the next session.",
+      retire_strategy: "Retire " + name + "?",
+      pause_posting: "Pause the MNQ bot's Discord posts? Trades are still tracked.",
+      resume_posting: "Resume the MNQ bot's Discord posts?"
+    }[action];
+    if (ask && !window.confirm(ask)) return;
+    sendCommand(action, args);
+  });
+  document.addEventListener("submit", function (e) {
+    if (e.target.id !== "ctl-form") return;
+    e.preventDefault();
+    var v = String(new FormData(e.target).get("code") || "").trim().toLowerCase();
+    if (!/^[a-z2-7]{4}(-[a-z2-7]{4}){5}$/.test(v)) { say("That doesn't look like a control code (six groups of four letters and digits).", "err"); return; }
+    try { localStorage.setItem(CTL_STORE, v); } catch (err) {}
+    drawPanel(); say("Control code saved on this device.", "ok");
+  });
+
+  function panelControls() {
+    var st = (state.data.status && state.data.status.data) || {};
+    var a = st.alpha || {};
+    var paused = a.paused && a.paused.on;
+    var botReady = st.site && st.site.controls;
+    var m = state.msg || ["", ""];
+    var h = '<p class="msg ' + esc(m[1]) + '" id="ctl-msg" role="status">' + esc(m[0]) + "</p>";
+    if (!botReady) h += '<div class="gate">' + chip("warn", "Not set up") + " The bot on your computer has no control code yet, so it will refuse commands. Add ABG_SITE_CONTROL_CODE to its .env (mnq site keygen does it) and restart it.</div>";
+    h += "<h2>Signal posts</h2>";
+    if (!a.enabled) h += '<p class="note">The signal bot is off on your computer.</p>';
+    else h += '<div class="gate">' + (paused ? chip("warn", "Paused") + " Discord posts are held since " + esc(String(a.paused.at || "").slice(0, 16)) + ". Trades are still tracked." :
+      chip("good", "Posting") + " Signals go to Discord as usual (tag " + esc(st.tag || "–") + ").") + "</div>" +
+      '<div class="row-actions"><button type="button" data-cmd="' + (paused ? "resume_posting" : "pause_posting") + '">' + (paused ? "Resume posts" : "Pause posts") + "</button></div>";
+    h += "<h2>Run now</h2>" + '<div class="row-actions">' +
+      '<button type="button" class="quiet" data-cmd="run_parity">Live vs backtest check</button>' +
+      '<button type="button" class="quiet" data-cmd="run_forward_lab">Forward lab</button>' +
+      '<button type="button" class="quiet" data-cmd="run_wide_backtest">Wide-scan backtest</button></div>' +
+      '<p class="note">Approve or retire forward-lab strategies from the Research tab. Nothing here posts to Discord.</p>';
+    h += "<h2>Control code</h2>";
+    if (ctlCode()) h += '<p class="note">This device has your control code. Every command is signed with it, and the bot checks the signature before running anything; the site never sees the code.</p><div class="row-actions"><button type="button" class="quiet" id="ctl-forget">Forget the code on this device</button></div>';
+    else h += '<form class="stack" id="ctl-form" autocomplete="off"><label>Control code <small>On your computer, in the mnq-bot folder: .venv\\Scripts\\mnq site code</small><input name="code" required spellcheck="false" autocapitalize="off" placeholder="xxxx-xxxx-xxxx-xxxx-xxxx-xxxx"></label><div><button type="submit">Save on this device</button></div></form>';
+    h += "<h2>Recent commands</h2><div id=\"cmds\"><p class=\"note\">Loading…</p></div>";
+    setTimeout(function () {
+      api("/api/p/commands").then(function (d) {
+        var box = $("cmds"); if (!box) return;
+        box.innerHTML = table(d.commands, [
+          ["Sent", function (r) { return when(r.created_ms); }],
+          ["Command", function (r) { return esc(LABELS[r.action] || r.action) + (r.args && r.args.id != null ? " #" + esc(r.args.id) : ""); }],
+          ["Result", function (r) { return chip(r.status === "done" ? "good" : r.status === "pending" || r.status === "sent" ? "dim" : "bad", r.status); }],
+          ["Details", function (r) { return esc((r.result || "").slice(0, 140)); }]
+        ], "No commands yet.");
+      });
+    }, 0);
+    return h;
+  }
+  document.addEventListener("click", function (e) {
+    if (e.target.id !== "ctl-forget") return;
+    try { localStorage.removeItem(CTL_STORE); } catch (err) {}
+    drawPanel(); say("Control code removed from this device.", "ok");
+  });
+
+  var PANELS = { today: panelToday, research: panelResearch, swing: panelSwing, controls: panelControls, track: panelTrack, waitlist: panelWaitlist, hooks: panelHooks };
   function drawPanel() {
     $("panel").setAttribute("aria-labelledby", "tab-" + state.tab);
     try { $("panel").innerHTML = PANELS[state.tab](); } catch (e) { $("panel").innerHTML = '<p class="msg err">This section couldn\'t be drawn from the latest data.</p>'; }
@@ -360,7 +492,7 @@
 
   $("refresh").addEventListener("click", load);
   $("forget").addEventListener("click", function () {
-    try { localStorage.removeItem(KEY_STORE); } catch (e) {}
+    try { localStorage.removeItem(KEY_STORE); localStorage.removeItem(CTL_STORE); } catch (e) {}
     state.key = null;
     lock("This device no longer has the private link");
   });

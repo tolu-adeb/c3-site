@@ -6,8 +6,10 @@
 //           POST /api/join              - waitlist signup
 // Bot:      POST /api/ingest            - status / snapshot / track pushes, signed with the bot's Ed25519 key
 //           GET  /api/hook/pull         - signed; the receiver collects stored TradingView webhooks
+//           GET  /api/cmd/pull, POST /api/cmd/ack - signed; the bot collects dashboard commands and reports results
 // Private:  /app/                      - dashboard shell; data needs the view key (secret link)
 //           GET  /api/p/overview, /api/p/waitlist(.csv), DELETE /api/p/waitlist/:id, GET /api/p/webhooks
+//           GET/POST /api/p/commands    - queue a command for the bot (it verifies the control code, not the site)
 // Webhooks: POST /hook/<secret path>   - TradingView front door, off unless WEBHOOK_ENABLED is "true"
 //
 // No secrets live here: the bot's PUBLIC key and SHA-256 hashes of the view key / webhook path / token are
@@ -286,6 +288,71 @@ async function hookPull(request, env, url) {
   return json({ webhooks: results, next_after: results.length ? results[results.length - 1].id : after });
 }
 
+// ---------- commands (site queues; the bot verifies the control-code HMAC and runs them) ----------
+
+const ACTIONS = new Set(["pause_posting", "resume_posting", "approve_strategy", "retire_strategy", "run_forward_lab", "run_parity", "run_wide_backtest"]);
+const CMD_MAX_AGE_MS = 10 * 60 * 1000;
+
+async function commandAdd(request, env) {
+  const body = await readBody(request, 4096);
+  if (!body) return json({ error: "Too large." }, 413);
+  let c;
+  try {
+    c = JSON.parse(new TextDecoder().decode(body));
+  } catch {
+    return json({ error: "Send JSON." }, 400);
+  }
+  const now = Date.now();
+  if (!ACTIONS.has(c.action)) return json({ error: "Unknown action." }, 400);
+  if (typeof c.nonce !== "string" || !/^[A-Za-z0-9_-]{16,64}$/.test(c.nonce)) return json({ error: "Bad nonce." }, 400);
+  if (!Number.isInteger(c.ts) || Math.abs(now / 1000 - c.ts) > 300) return json({ error: "Your device clock looks off." }, 400);
+  if (typeof c.mac !== "string" || !/^[0-9a-f]{64}$/.test(c.mac)) return json({ error: "Missing control code signature." }, 400);
+  const args = JSON.stringify(c.args && typeof c.args === "object" ? c.args : {});
+  if (args.length > 1000) return json({ error: "Too large." }, 413);
+  await ensureSchema(env.DB);
+  const r = await env.DB.prepare("INSERT INTO commands (action, args, nonce, ts, mac, created_ms) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(nonce) DO NOTHING")
+    .bind(c.action, args, c.nonce, c.ts, c.mac, now).run();
+  return json({ ok: true, id: r.meta.last_row_id });
+}
+
+async function commandList(env) {
+  await ensureSchema(env.DB);
+  const now = Date.now();
+  await env.DB.prepare("UPDATE commands SET status = 'expired', done_ms = ? WHERE status = 'pending' AND created_ms < ?").bind(now, now - CMD_MAX_AGE_MS).run();
+  const { results } = await env.DB.prepare("SELECT id, action, args, created_ms, status, result, done_ms FROM commands ORDER BY id DESC LIMIT 30").all();
+  return json({ commands: results.map((r) => ({ ...r, args: JSON.parse(r.args) })) });
+}
+
+async function commandPull(request, env) {
+  const why = await checkSignature(request, env, new Uint8Array());
+  if (why) return json({ error: why }, 401);
+  await ensureSchema(env.DB);
+  const { results } = await env.DB.prepare("SELECT id, action, args, nonce, ts, mac FROM commands WHERE status = 'pending' AND created_ms > ? ORDER BY id LIMIT 10")
+    .bind(Date.now() - CMD_MAX_AGE_MS).all();
+  if (results.length) {
+    await env.DB.batch(results.map((r) => env.DB.prepare("UPDATE commands SET status = 'sent' WHERE id = ? AND status = 'pending'").bind(r.id)));
+  }
+  return json({ commands: results.map((r) => ({ ...r, args: JSON.parse(r.args) })) });
+}
+
+async function commandAck(request, env) {
+  const body = await readBody(request, 8192);
+  if (!body) return json({ error: "too large" }, 413);
+  const why = await checkSignature(request, env, body);
+  if (why) return json({ error: why }, 401);
+  let a;
+  try {
+    a = JSON.parse(new TextDecoder().decode(body));
+  } catch {
+    return json({ error: "not json" }, 400);
+  }
+  if (!Number.isInteger(a.id)) return json({ error: "id" }, 400);
+  await ensureSchema(env.DB);
+  const status = a.refused ? "refused" : a.ok ? "done" : "failed";
+  await env.DB.prepare("UPDATE commands SET status = ?, result = ?, done_ms = ? WHERE id = ?").bind(status, String(a.message || "").slice(0, 500), Date.now(), a.id).run();
+  return json({ ok: true });
+}
+
 // ---------- router ----------
 
 async function route(request, env) {
@@ -299,6 +366,8 @@ async function route(request, env) {
   if (path === "/api/join") return m === "POST" ? join(request, env) : json({ error: "POST only" }, 405);
   if (path === "/api/track") return track(env);
   if (path === "/api/hook/pull") return m === "GET" ? hookPull(request, env, url) : json({ error: "GET only" }, 405);
+  if (path === "/api/cmd/pull") return m === "GET" ? commandPull(request, env) : json({ error: "GET only" }, 405);
+  if (path === "/api/cmd/ack") return m === "POST" ? commandAck(request, env) : json({ error: "POST only" }, 405);
 
   if (path.startsWith("/api/p/")) {
     if (!(await viewerOk(request, env))) return json({ error: "This link isn't valid." }, 401);
@@ -308,6 +377,8 @@ async function route(request, env) {
     const del = path.match(/^\/api\/p\/waitlist\/(\d+)$/);
     if (del && m === "DELETE") return waitlistDelete(env, Number(del[1]));
     if (path === "/api/p/webhooks" && m === "GET") return webhookList(env);
+    if (path === "/api/p/commands" && m === "GET") return commandList(env);
+    if (path === "/api/p/commands" && m === "POST") return commandAdd(request, env);
     return notFound();
   }
   if (path.startsWith("/api/")) return notFound();
@@ -329,6 +400,7 @@ export default {
     await env.DB.batch([
       env.DB.prepare("DELETE FROM heartbeats WHERE received_ms < ?").bind(now - 45 * DAY_MS),
       env.DB.prepare("DELETE FROM join_attempts WHERE at_ms < ?").bind(now - 2 * DAY_MS),
+      env.DB.prepare("DELETE FROM commands WHERE created_ms < ?").bind(now - 60 * DAY_MS),
     ]);
   },
 };
