@@ -2,15 +2,19 @@
 
 The c3.lab website: one Cloudflare Worker (`c3-lab`) with static pages and a small D1 database.
 
+**[docs/architecture.html](docs/architecture.html)** (open in a browser) shows who talks to the Worker and what D1
+keeps, with every box linked to its source lines. Source: `docs/architecture.archify.json`.
+
 | Path | What it is |
 | --- | --- |
 | `/` | Home page |
 | `/track-record/` | Public results. Says "no public results yet" until `TRACK_RECORD_PUBLIC` is `"true"` |
 | `/join/` | Waitlist signup (email + optional note, honeypot and 5-an-hour limit per connection) |
-| `/app/` | Private dashboard: bot status, session coverage, MNQ bot today, research, swing desk, track record preview, waitlist, webhooks |
+| `/app/` | Private dashboard: bot status, session coverage, MNQ bot today, research (approve/retire strategies), swing desk, controls, track record preview, waitlist, webhooks |
 | `POST /api/ingest` | The MNQ bot's signed pushes (status every minute, snapshot every 5 minutes, paper stats) |
 | `POST /hook/<path>` | TradingView front door, **off** (`WEBHOOK_ENABLED`) until the receiver design is agreed |
 | `GET /api/hook/pull` | Signed; the receiver collects stored webhooks (exact text, duplicates flagged) |
+| `/api/p/commands`, `/api/cmd/pull`, `/api/cmd/ack` | Controls: the dashboard queues a command signed with your control code (HMAC); the bot pulls it (signed), checks the HMAC, runs it and reports back |
 
 ## No secrets in this repo
 
@@ -44,7 +48,7 @@ public track record filter, the waitlist (dupes, bad email, honeypot, rate limit
 
 ## Turning things on later
 
-- **Public results:** set `TRACK_RECORD_PUBLIC` to `"true"` after the 4-week private forward test.
+- **Public results:** `TRACK_RECORD_PUBLIC` is `"true"` (since 2026-10-25); set it to `"false"` to hide them again.
 - **TradingView front door:** generate a token and a path, put their SHA-256 hashes in `WEBHOOK_TOKEN_SHA256` /
   `WEBHOOK_PATH_SHA256`, set `WEBHOOK_ENABLED` to `"true"`, and point the alert at
   `https://<site>/hook/<path>`. Check TradingView's sender IPs in `TRADINGVIEW_IPS` against their support page.
