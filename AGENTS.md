@@ -4,7 +4,7 @@ This is the c3.lab website: one Cloudflare Worker (`c3-lab`) with static pages, 
 Claude Code and Codex both work here.
 
 1. **Start from the plan.** [docs/build-plan.md](docs/build-plan.md) is the build plan. Section 9 lists the tasks
-   in order with acceptance criteria. Do one task per branch and pull request. Merging to `main` deploys.
+   in order with acceptance criteria. Push all changes to main, making one commit per section of the build spec.
 2. **No third parties.** No CDN scripts, fonts, analytics or trackers. The CSP stays `default-src 'self'`.
 3. **No framework, no build step.** Plain HTML, CSS and ES modules under `public/`. Charts live in
    `public/assets/charts/` and have no dependencies.
