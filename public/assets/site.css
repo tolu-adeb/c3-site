@@ -320,6 +320,7 @@ details.paper>summary:focus-visible{outline:2px solid var(--focus);outline-offse
 .stat-strip dt{color:var(--soft);font-size:.875rem}
 .stat-strip dd{margin:.4rem 0 0;font:500 clamp(1.5rem,3vw,2rem)/1.3 var(--mono)}
 .stat-strip .source{display:block;margin-top:.6rem}
+.stat-strip dd.stat-source{font:inherit;margin:.6rem 0 0}
 .pnl.positive{color:var(--bull)} .pnl.negative{color:var(--bear)}
 .segmented{display:flex;flex-wrap:wrap;gap:0;border:0;padding:0;margin:0;min-width:0}
 .segmented legend{font-size:.875rem;color:var(--soft);margin-bottom:.5rem}

@@ -7,6 +7,7 @@ export function render(el, data, opts) {
   const unit = opts.unit === "r" ? "R" : "USD / micro";
   const { plot, caption } = frame(el, { ...opts, title: opts.title || `Equity · ${unit}` }, ["Session", unit, "Sample"], rows.map((d) => [d.date, number(d.value), d.sample === "out" ? "Out of sample" : "In sample"]));
   if (rows.length) caption.prepend(document.createTextNode(`End value: ${number(rows.at(-1).value)} ${unit}. `));
+  if (!rows.length) { caption.prepend(document.createTextNode("No exported sessions in this selection. ")); return { destroy: () => destroy(el) }; }
   const cleanup = observe(plot, () => {
     const dates = rows.map((d) => Date.parse(d.date));
     const a = axes(plot, extent(dates), extent(rows.map((d) => d.value), true), { xLabel: (v) => new Date(v).toISOString().slice(5, 10), label: `Equity in ${unit}` });

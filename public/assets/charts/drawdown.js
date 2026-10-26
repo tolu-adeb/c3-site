@@ -6,6 +6,7 @@ export function render(el, data, opts) {
   const { plot, caption } = frame(el, { ...opts, title: opts.title || "Drawdown · USD / micro" }, ["Session", "Loss from peak (USD)", "Sample"], rows.map((d) => [d.date, number(d.value), d.sample === "out" ? "Out of sample" : "In sample"]));
   const worst = rows.reduce((a, b) => !a || b.value < a.value ? b : a, null);
   if (worst) caption.prepend(document.createTextNode(`Maximum daily closing drawdown: ${number(worst.value)} USD on ${worst.date}. `));
+  if (!rows.length) { caption.prepend(document.createTextNode("No exported sessions in this selection. ")); return { destroy: () => destroy(el) }; }
   const cleanup = observe(plot, () => {
     const dates = rows.map((d) => Date.parse(d.date));
     const a = axes(plot, extent(dates), extent(rows.map((d) => d.value), true), { xLabel: (v) => new Date(v).toISOString().slice(5, 10), label: "Drawdown in USD" });

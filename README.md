@@ -14,6 +14,7 @@ keeps, with every box linked to its source lines. Source: `docs/architecture.arc
 | `/join/` | Waitlist signup (email + optional note, honeypot and 5-an-hour limit per connection) |
 | `/app/` | Private dashboard: bot status, session coverage, MNQ bot today, research (approve/retire strategies), research papers, swing desk, controls, track record preview, waitlist, webhooks |
 | `/styleguide/` | Noindex instrument sheet: both themes, tokens, state chips, figures and controls. Synthetic fixtures only |
+| `/backtests/` | Exported hypothetical runs, filters, equity/drawdown, monthly values, distributions, sample comparisons and a replay-linked trade table |
 | `POST /api/ingest` | The MNQ bot's signed pushes (status every minute, snapshot every 5 minutes, paper stats) |
 | `PUT /api/publish/put?bundle=<id>&path=<relative.json>` | Signed bot upload to private R2 staging; JSON only, at most 5 MiB |
 | `POST /api/publish/commit?bundle=<id>` | Signed manifest; verifies every staged file's SHA-256 and bytes before switching the current bundle |
@@ -144,6 +145,13 @@ and redraw on width changes. No strategy logic runs in them.
 no-JS tables. `--check` verifies the projection. The public specimen is explicitly synthetic. Browser checks
 cover its known end equity and drawdown, keyboard tooltips, 320-bar canvas rendering and the 16 ms
 78-bar SVG render budget.
+
+Backtests keep run, date range, side, setup, exit, month and sort in the URL. Every chart uses the selected
+exported trades, with costs already included; it never recomputes fills. Public full-run summary tables are
+inserted by the Worker into the static HTML, so their values work without JavaScript. Preview authorization,
+charts and interactive filters need JavaScript. File hashes are checked against the manifest before drawing
+to avoid mixing data from different publications. `npm run test:budgets` walks first-party resource imports
+and enforces the gzip page budgets; current Backtests resources are about 114 KiB, home about 103 KiB.
 
 ## Turning things on later
 

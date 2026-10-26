@@ -90,6 +90,7 @@ try {
     await run("test/preview.mjs", [base, keyFile]);
     if (!process.argv.includes("--preview-only")) {
       await run("test/charts.mjs", [base]);
+      await run("test/backtests.mjs", [base]);
       await run("test/ui.mjs", [base]);
     }
   }

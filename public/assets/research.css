@@ -1,0 +1,26 @@
+.research{padding:2rem 0 4rem;min-width:0}
+.research-nav{display:flex;flex-wrap:wrap;gap:.5rem 1.25rem;border-bottom:var(--hair) solid var(--wire);padding-bottom:1rem;margin-bottom:2.5rem;font-size:.9rem;color:var(--soft)}
+.research-nav a[aria-current="page"]{color:var(--ink);text-decoration-thickness:2px}
+.research h1{font-size:clamp(3rem,8vw,6.5rem);font-weight:300;font-stretch:74%;line-height:.94;letter-spacing:-.028em;margin:1.25rem 0}
+.research h2{font-size:clamp(1.5rem,3vw,2.25rem);font-weight:400;font-stretch:88%;line-height:1.15;margin:2rem 0 1rem}
+.research .intro{max-width:44rem;color:var(--soft);margin-bottom:2rem}
+.research .notice{border-left:3px solid var(--signal);padding:.75rem 1rem;background:var(--signal-wash);margin:1.5rem 0;overflow-wrap:anywhere}
+.research .notice p{margin:.25rem 0}
+.research [hidden]{display:none}
+.filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin:1.5rem 0}
+.range-brush{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;padding:1rem;border:var(--hair) solid var(--wire);margin:1rem 0 2rem;min-width:0}
+.range-brush legend{font:500 .875rem var(--mono);padding:0 .4rem}
+.range-brush label{min-width:0}
+.range-brush input[type="range"]{padding:0;accent-color:var(--signal);min-height:2rem}
+.range-brush output{font:400 .8125rem var(--mono);color:var(--soft)}
+.two-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem}
+.two-charts>div{min-width:0}
+.sort-label,.breakdown-label{max-width:18rem;margin:1rem 0}
+.research-foot{border-top:var(--hair) solid var(--wire);padding:1.5rem 0 3rem;color:var(--soft);font-size:.875rem}
+.chart .scroll-plot{overflow-x:auto;overscroll-behavior-inline:contain}
+.chart .scroll-plot svg{min-width:600px}
+.chart .scroll-plot.heatmap svg{min-width:840px}
+.research .scroll{max-width:100%}
+.research .tbl td,.research .tbl th{font-family:var(--mono);font-size:.8125rem}
+.research .stat-strip{margin:1.5rem 0;grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:760px){.filters,.research .stat-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.two-charts,.range-brush{grid-template-columns:1fr}}

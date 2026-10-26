@@ -20,12 +20,29 @@ export async function readJSON(path, options = {}) {
     if (!key) throw new Error("Open your private dashboard link in this browser before previewing data.");
     headers.authorization = "Bearer " + key;
   }
-  const url = (preview ? "/api/p/data/" : "/data/") + path + (staging ? "?staging=" + encodeURIComponent(staging) : "");
+  const query = new URLSearchParams();
+  if (staging) query.set("staging", staging);
+  if (options.bundle) query.set("bundle", options.bundle);
+  const url = (preview ? "/api/p/data/" : "/data/") + path + (query.size ? "?" + query : "");
   const response = await fetch(url, { headers, signal: options.signal, cache: preview ? "no-store" : "default" });
   if (response.status === 404) {
     const error = new Error(preview ? "This preview is incomplete or is no longer available." : "Results not published yet.");
     error.status = 404; throw error;
   }
   if (!response.ok) throw new Error(response.status === 401 ? "This browser’s private link is no longer valid." : "Data could not be loaded. Try again later.");
+  if (options.entry) {
+    const bytes = await response.arrayBuffer();
+    const hash = [...new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))].map((b) => b.toString(16).padStart(2, "0")).join("");
+    if (bytes.byteLength !== options.entry.bytes || hash !== options.entry.sha256) throw new Error("The published bundle changed while loading. Reload this page to use one consistent version.");
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
   return response.json();
+}
+export async function loadBundle() {
+  const manifest = await readJSON("manifest.json");
+  return { manifest, read(path) {
+    const entry = manifest.files.find((file) => file.path === path);
+    if (!entry) throw new Error("This bundle does not include " + path + ".");
+    return readJSON(path, { entry, bundle: manifest.bundle });
+  } };
 }

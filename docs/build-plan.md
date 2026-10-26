@@ -507,6 +507,15 @@ URLs. The Backtests preview destination is implemented in the next task, S6.
   charts consistently (test: filtering side=short gives the fixture's known short count); deep links restore the
   view; renders its summary table without JS; budgets met.
 
+Implementation: the explorer filters exported trades and aggregates the same selection into equity,
+drawdown, monthly values, R bins, segments and sample comparisons. Dates, side, setup, exit, month, sort and
+run are shareable in the URL; the two range controls update on animation frames. Source chips name the run,
+data, sample, dates and costs. A small Worker HTML insertion supplies the exported full-run table when public,
+so it is readable without JS; private previews still require JS authorization. Bundle file hashes prevent a
+mid-load publication from silently mixing versions. Fixture checks cover seven short trades, their exact net,
+deep links, sorting, range selection, no-JS numbers and unpublished states. Page resource budget: about 114 KiB
+gzip. Next: S7.
+
 **S7. Session replay (L).** Page 7.5 with V1, scrubber, decision log, V12, day picker.
 - Accept: keyboard controls work (←/→/space/S/Home/End); the readout announces bar time and OHLC politely; with
   motion reduced the replay jumps instead of animating; the trade path and exits line up with the fixture

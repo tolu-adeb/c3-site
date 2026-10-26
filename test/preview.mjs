@@ -30,6 +30,10 @@ try {
   assert.ok((await card.locator("table").boundingBox()).height < 2500, "The mobile hash column must not collapse into one-character rows");
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
   await page.screenshot({ path: "test/artifacts/published-data-390.png", fullPage: true });
+  await card.getByRole("link", { name: "Preview bundle" }).click();
+  await page.locator("#explorer:not([hidden])").waitFor();
+  assert.match(await page.locator("#run-note").textContent(), /Private preview/);
+  assert.equal(await page.locator("#trade-table tbody tr").count(), 15);
   await page.goto(base + "/styleguide/?staging=ui-preview-bundle");
   const preview = await page.evaluate(async () => {
     const { readJSON, dataLink } = await import("/assets/data.js");
@@ -40,5 +44,5 @@ try {
   assert.ok(requests.some((url) => url.includes("/api/p/data/manifest.json?staging=ui-preview-bundle")));
   assert.equal(requests.some((url) => url.includes(api.keys.view_key)), false, "View key never appears in an HTTP URL");
   assert.deepEqual(errors, []);
-  console.log("Published data: authenticated inventory, staged preview, retention, file list, mobile layout and fragment-only key handling passed.");
+  console.log("Published data: inventory, Backtests staged preview, retention, file list, mobile layout and fragment-only key handling passed.");
 } finally { await browser.close(); }

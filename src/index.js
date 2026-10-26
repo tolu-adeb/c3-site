@@ -20,6 +20,7 @@
 import { SCHEMA } from "./schema.js";
 import { b64decode, sha256hex, timingSafeEqualHex, etParts } from "./util.js";
 import { publish, dataFile, publishedData } from "./publish.js";
+import { backtestPage } from "./pages.js";
 
 const enc = new TextEncoder();
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" };
@@ -544,6 +545,7 @@ async function route(request, env) {
   const url = new URL(request.url);
   const path = url.pathname;
   const m = request.method;
+  if ((path === "/backtests/" || path === "/backtests/index.html") && (m === "GET" || m === "HEAD")) return backtestPage(request, env);
 
   if (path.startsWith("/data/")) return dataFile(request, env);
   if (path.startsWith("/api/publish/")) return publish(request, env, { checkSignature, ensureSchema });
