@@ -45,6 +45,13 @@
       requestAnimationFrame(function () { ticking = false; onScroll(); });
     }, { passive: true });
     window.addEventListener("resize", onScroll);
+    // a restored scroll position (reload, back/forward) may not fire "scroll": check again when things settle
+    window.addEventListener("load", onScroll);
+    window.addEventListener("pageshow", onScroll);
+    if ("IntersectionObserver" in window) {
+      var io = new IntersectionObserver(onScroll, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+      steps.forEach(function (s) { io.observe(s); });
+    }
     onScroll();
   }
 
