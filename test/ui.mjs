@@ -14,6 +14,7 @@ const widths = [320, 390, 768, 1440];
 const routes = [["home", "/"], ["track", "/track-record/"], ["join", "/join/"], ["app", "/app/"], ["404", "/no-such-page/"], ["styleguide", "/styleguide/"], ["backtests", "/backtests/"], ["replay", "/replay/"]];
 routes.push(["strategies", "/strategies/"], ...["orx", "orb", "sweep", "vwap", "nq-rev", "nq-cont"].map((id) => [id, `/strategies/${id}/`]));
 routes.push(["engine", "/engine/"]);
+routes.push(["methodology", "/methodology/"]);
 const errors = [], results = [];
 await mkdir(artifacts, { recursive: true });
 const browser = await chromium.launch();
@@ -82,7 +83,7 @@ try {
               const fill = await el.locator(".fig").first().locator(selector).first().evaluate((node) => getComputedStyle(node).fill);
               assert.equal(fill === "none", !selector.includes(".down rect"), `${label}: hollow/filled encoding`);
             }
-            for (const link of await el.locator(".source").all()) assert.equal(await link.getAttribute("href"), "#fixture-methodology");
+            for (const link of await el.locator(".source").all()) assert.equal(await link.getAttribute("href"), "/methodology/#fixtures");
           }
           await page.evaluate(() => scrollTo(0, 0));
         }

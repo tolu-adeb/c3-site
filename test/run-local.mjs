@@ -95,6 +95,7 @@ try {
       await run("test/strategies.mjs", [base]);
       await run("test/engine.mjs", [base]);
       await run("test/track.mjs", [base, keyFile]);
+      await run("test/methodology.mjs", [base]);
       await run("test/ui.mjs", [base]);
     }
   }

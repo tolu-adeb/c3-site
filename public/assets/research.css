@@ -22,6 +22,15 @@
 .chart .scroll-plot.heatmap svg{min-width:840px}
 .research .scroll{max-width:100%}
 .research .tbl td,.research .tbl th{font-family:var(--mono);font-size:.8125rem}
+.method-contents{display:flex;flex-wrap:wrap;gap:.75rem 1.5rem;border-block:var(--hair) solid var(--wire);padding:1rem 0;margin:2rem 0}
+.method-copy{max-width:48rem;line-height:1.7}
+.method-copy section{border-bottom:var(--hair) solid var(--wire);padding-bottom:1.5rem}
+.method-copy h3{font-size:1.25rem;font-weight:500;margin:1.5rem 0 .75rem}
+.method-copy p{margin:.75rem 0}
+.method-copy dt{font-weight:600;margin-top:1.25rem}
+.method-copy dd{margin:.25rem 0 1rem;color:var(--soft)}
+.method-copy li{margin:.75rem 0}
+.method-copy [id]{scroll-margin-top:6rem}
 .research .stat-strip{margin:1.5rem 0;grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:760px){.filters,.research .stat-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.two-charts,.range-brush{grid-template-columns:1fr}}
 .session-picker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}

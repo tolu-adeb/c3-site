@@ -576,6 +576,13 @@ the page never requests a backtest run. D3's real paper equity export remains wo
 **S12. Methodology (S).** Page 7.8.
 - Accept: every source chip across the site links to an anchor that exists on this page (test crawls them).
 
+Implemented: static data/proxy, sample, cost/fill, walk-forward, holdout, random-walk, paper, parity,
+engine, limits and glossary sections. Source chips (including styleguide fixtures) use existing Methodology
+anchors. The crawl covers static HTML, rendered charts, server-inserted tables, source-code destinations and
+both engine descriptions. The proxy overlap claim is explicitly an unverified build-note report with no
+validating run supplied; the six-look limit is a proposed protocol, not a claim of compliance. This does
+not restore the cancelled Strategy Lab. Methodology works without JS. S13 onward remains out of this request.
+
 **S13. Home rework (M).** Page 7.1 with the featured real replay hero and schematic-linked story.
 - Accept: home ≤ 150 KB before `/data`; LCP < 2.0 s on mobile profile with the hero's static last frame as
   the LCP element; story steps still work without JS; "Illustration" chip removed only when real data loads, kept

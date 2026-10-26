@@ -23,6 +23,7 @@ try {
   const theory = $("strategy-theory");
   theory.replaceChildren();
   theory.append(stateChip(strategy.state), node("h2", {}, "Mechanism"), node("p", {}, strategy.mechanism), list("Rules", strategy.rules), list("Exits", strategy.exits), list("Filters", strategy.filters), node("h2", {}, "Scoring"), node("p", {}, strategy.scoring));
+  theory.append(sourceLink({ run_id: `Bundle ${bundle.manifest.bundle}`, source: bundle.manifest.synthetic ? "Synthetic strategy description" : "Exported strategy description", sample: "Theory and state only; no performance", methodology: "/methodology/#data" }));
   if (strategy.retired_reason) theory.append(node("p", { class: "notice" }, `Retired: ${strategy.retired_reason}`));
   if (strategy.state === "in_build") theory.append(node("p", { class: "notice" }, "In build. Theory only; no performance results are shown."));
   if (strategy.state !== "in_build" && strategy.runs.length) {

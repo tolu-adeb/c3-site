@@ -175,13 +175,17 @@ The Engine page reads optional exported `engine.json`, falling back to `public/a
 description is published. Its graph traversal only highlights diagram ancestors; it does not run engine
 logic. Nodes show last-run state only when exported. The default explicitly says it is unavailable.
 
-## Turning things on later
-
 Track record accepts optional `sample: "paper"`, `run_id`, `source`, `costs`, and `equity` in signed `track`
 pushes. Daily rows use `date`, `equity_usd`, and optional `net_usd`, `drawdown_usd`, `n`, `net_r`.
 Dates must ascend; supplied daily changes/drawdowns and the final net total must reconcile. Invalid curves
 are withheld while legacy totals remain visible. Backtest and live samples are never projected as paper.
 Parity is a separately labeled diagnostic; its paired backtest values never enter paper totals.
+
+`/methodology/` defines data sources, sample labels, fill/cost limits, paper and parity semantics, engine
+stages and chart terms. It distinguishes unverified project notes from published evidence.
+`test/methodology.mjs` crawls every static and rendered source-chip destination against its anchors.
+
+## Turning things on later
 
 - **Public results:** `TRACK_RECORD_PUBLIC` is `"true"` (since 2026-10-25); set it to `"false"` to hide them again.
 - **TradingView front door:** generate a token and a path, put their SHA-256 hashes in `WEBHOOK_TOKEN_SHA256` /

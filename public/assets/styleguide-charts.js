@@ -7,7 +7,7 @@ import { lazy } from "./charts/core.js";
 const response = await fetch("/assets/styleguide-data.json");
 if (response.ok) {
   const data = await response.json();
-  const meta = { run_id: data.summary.run_id, source: "Seeded synthetic bars", sample: "In + out of sample", range: "30 Jul–5 Aug 2026", costs: "$1.24 RT / micro; 1-tick entry and stop slippage", methodology: "#fixture-methodology" };
+  const meta = { run_id: data.summary.run_id, source: "Seeded synthetic bars", sample: "In + out of sample", range: "30 Jul–5 Aug 2026", costs: "$1.24 RT / micro; 1-tick entry and stop slippage", methodology: "/methodology/#fixtures" };
   document.querySelectorAll("[data-chart]").forEach((el) => lazy(el, () => {
     const type = el.dataset.chart;
     if (type === "candles") return candles(el, data.session, { meta: { ...meta, sample: "In sample", range: "30 Jul 2026" }, title: "V1 / Fixture session" });
