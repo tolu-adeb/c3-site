@@ -1,0 +1,229 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://c3.site/schemas/v1/session.schema.json",
+  "title": "c3.site session",
+  "description": "Replay OHLCV tuples [unix_s, open, high, low, close, volume]. Trades share the trades.json definition; time and price consistency are checked by the validator.",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "tz": {
+      "const": "America/New_York"
+    },
+    "tf": {
+      "const": "5m"
+    },
+    "source": {
+      "enum": [
+        "real",
+        "proxy",
+        "synthetic"
+      ]
+    },
+    "bars": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "prefixItems": [
+          {
+            "type": "integer",
+            "minimum": 0
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "number",
+            "minimum": 0
+          }
+        ],
+        "items": false,
+        "minItems": 6,
+        "maxItems": 6
+      },
+      "minItems": 1
+    },
+    "levels": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "price": {
+            "type": "number"
+          },
+          "from": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "name",
+          "price"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "windows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "from": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "to": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "name",
+          "from",
+          "to"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "bias": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "trend_50d": {
+          "enum": [
+            "up",
+            "down",
+            "flat",
+            "unknown"
+          ]
+        },
+        "fomc": {
+          "type": "boolean"
+        },
+        "mode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        }
+      },
+      "required": [
+        "bias",
+        "trend_50d",
+        "fomc",
+        "mode"
+      ],
+      "additionalProperties": false
+    },
+    "trades": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/trade"
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "t": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "kind": {
+            "enum": [
+              "context",
+              "signal",
+              "entry",
+              "exit",
+              "skip",
+              "gate"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "gates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "pass": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "name",
+                "pass"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 12,
+            "maxItems": 12
+          }
+        },
+        "required": [
+          "t",
+          "kind",
+          "text"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "done": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    }
+  },
+  "required": [
+    "date",
+    "tz",
+    "tf",
+    "source",
+    "bars",
+    "levels",
+    "windows",
+    "context",
+    "trades",
+    "decisions",
+    "done"
+  ],
+  "additionalProperties": false
+}

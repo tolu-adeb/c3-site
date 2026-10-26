@@ -1,0 +1,150 @@
+{
+  "run_id": "orx-synthetic-v1",
+  "strategy": "orx",
+  "label": "Synthetic fixture — hypothetical test data only",
+  "dataset": {
+    "kind": "synthetic",
+    "source": "Seeded synthetic bars (seed 20261026); no market data",
+    "start": "2026-07-30",
+    "end": "2026-08-05",
+    "sessions": 5
+  },
+  "kind": "backtest",
+  "costs": {
+    "commission_rt_usd": 1.24,
+    "entry_slip_ticks": 1,
+    "stop_slip_ticks": 1,
+    "contract": "MNQ"
+  },
+  "split": {
+    "in_sample": [
+      "2026-07-30",
+      "2026-08-03"
+    ],
+    "out_of_sample": [
+      "2026-08-04",
+      "2026-08-05"
+    ]
+  },
+  "stats": {
+    "trades": 15,
+    "win_rate": 0.6,
+    "avg_r": 0.105833,
+    "net_r": 1.5875,
+    "net_usd": 25.4,
+    "max_dd_usd": 43.44,
+    "profit_factor": 1.277778,
+    "sharpe_daily": 2.982263,
+    "months_positive": 1,
+    "months": 2,
+    "worst_month_usd": -43.44
+  },
+  "segments": {
+    "by_side": {
+      "long": {
+        "n": 8,
+        "win_rate": 0.5,
+        "avg_r": -0.04625,
+        "net_r": -0.37,
+        "net_usd": -5.92
+      },
+      "short": {
+        "n": 7,
+        "win_rate": 0.7142857142857143,
+        "avg_r": 0.279643,
+        "net_r": 1.9575,
+        "net_usd": 31.32
+      }
+    },
+    "by_regime": {
+      "trend": {
+        "n": 9,
+        "win_rate": 0.5555555555555556,
+        "avg_r": 0.005833,
+        "net_r": 0.0525,
+        "net_usd": 0.84
+      },
+      "range": {
+        "n": 6,
+        "win_rate": 0.6666666666666666,
+        "avg_r": 0.255833,
+        "net_r": 1.535,
+        "net_usd": 24.56
+      }
+    },
+    "by_time": {
+      "13:30": {
+        "n": 5,
+        "win_rate": 0.4,
+        "avg_r": -0.0775,
+        "net_r": -0.3875,
+        "net_usd": -6.2
+      },
+      "14:30": {
+        "n": 5,
+        "win_rate": 0.6,
+        "avg_r": 0.2225,
+        "net_r": 1.1125,
+        "net_usd": 17.8
+      },
+      "15:30": {
+        "n": 5,
+        "win_rate": 0.8,
+        "avg_r": 0.1725,
+        "net_r": 0.8625,
+        "net_usd": 13.8
+      }
+    },
+    "by_grade": {
+      "A": {
+        "n": 10,
+        "win_rate": 0.5,
+        "avg_r": 0.0725,
+        "net_r": 0.725,
+        "net_usd": 11.6
+      },
+      "B": {
+        "n": 5,
+        "win_rate": 0.8,
+        "avg_r": 0.1725,
+        "net_r": 0.8625,
+        "net_usd": 13.8
+      }
+    },
+    "by_exit": {
+      "stop": {
+        "n": 5,
+        "win_rate": 0,
+        "avg_r": -1.0775,
+        "net_r": -5.3875,
+        "net_usd": -86.2
+      },
+      "target": {
+        "n": 9,
+        "win_rate": 1,
+        "avg_r": 0.811389,
+        "net_r": 7.3025,
+        "net_usd": 116.84
+      },
+      "time": {
+        "n": 1,
+        "win_rate": 0,
+        "avg_r": -0.3275,
+        "net_r": -0.3275,
+        "net_usd": -5.24
+      }
+    },
+    "by_setup": {
+      "orx": {
+        "n": 15,
+        "win_rate": 0.6,
+        "avg_r": 0.105833,
+        "net_r": 1.5875,
+        "net_usd": 25.4
+      }
+    }
+  },
+  "checks": {},
+  "c3lab_commit": "0000000000000000000000000000000000000000",
+  "params_hash": "sha256:2882da2e1c86ebece1d835a029d5594e0ae6948d7838394ce1e8aa8f4e9e229f"
+}

@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://c3.site/schemas/v1/manifest.schema.json",
+  "title": "c3.site manifest",
+  "description": "Version 1 bundle inventory. Lists every file except manifest.json itself (avoids a recursive hash). synthetic marks test data, never engine results.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "bundle": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "maxLength": 100
+    },
+    "generated_at": {
+      "$ref": "common.schema.json#/$defs/timestamp"
+    },
+    "c3lab_commit": {
+      "$ref": "common.schema.json#/$defs/commit"
+    },
+    "synthetic": {
+      "type": "boolean"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "$ref": "common.schema.json#/$defs/path"
+          },
+          "sha256": {
+            "$ref": "common.schema.json#/$defs/sha256"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1500000
+          }
+        },
+        "required": [
+          "path",
+          "sha256",
+          "bytes"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "runs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+        "maxLength": 100
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "featured": {
+      "type": "object",
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "maxLength": 100
+        },
+        "day": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "required": [
+        "run",
+        "day"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "bundle",
+    "generated_at",
+    "c3lab_commit",
+    "files",
+    "runs",
+    "featured"
+  ],
+  "additionalProperties": false
+}

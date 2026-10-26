@@ -1,0 +1,47 @@
+[
+  {
+    "date": "2026-07-30",
+    "n": 3,
+    "net_r": -1.7325,
+    "net_usd": -27.72,
+    "equity_usd": -27.72,
+    "drawdown_usd": 27.72,
+    "sample": "in"
+  },
+  {
+    "date": "2026-07-31",
+    "n": 3,
+    "net_r": -0.9825,
+    "net_usd": -15.72,
+    "equity_usd": -43.44,
+    "drawdown_usd": 43.44,
+    "sample": "in"
+  },
+  {
+    "date": "2026-08-03",
+    "n": 3,
+    "net_r": 0.7675,
+    "net_usd": 12.28,
+    "equity_usd": -31.16,
+    "drawdown_usd": 31.16,
+    "sample": "in"
+  },
+  {
+    "date": "2026-08-04",
+    "n": 3,
+    "net_r": 2.5175,
+    "net_usd": 40.28,
+    "equity_usd": 9.12,
+    "drawdown_usd": 0,
+    "sample": "out"
+  },
+  {
+    "date": "2026-08-05",
+    "n": 3,
+    "net_r": 1.0175,
+    "net_usd": 16.28,
+    "equity_usd": 25.4,
+    "drawdown_usd": 0,
+    "sample": "out"
+  }
+]

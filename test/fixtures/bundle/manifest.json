@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "bundle": "synthetic-20261026-v1",
+  "generated_at": "2026-08-21T00:00:00Z",
+  "c3lab_commit": "0000000000000000000000000000000000000000",
+  "synthetic": true,
+  "files": [
+    {
+      "path": "engine.json",
+      "sha256": "be8beeeaf842e2205c681dc0d79080e404900482a81b65c36ed315984d896314",
+      "bytes": 4335
+    },
+    {
+      "path": "lab/summary.json",
+      "sha256": "8857fafb44340a69f08c147951a54c80d45f1a154cf6b2f7eab0cf919fea7bc3",
+      "bytes": 360
+    },
+    {
+      "path": "lab/trials.json",
+      "sha256": "7be40fe613b1e7f846c88eaaa0daa8d452f5b06b0c365b4ada911898b6da7983",
+      "bytes": 6138
+    },
+    {
+      "path": "parity/2026-07-30.json",
+      "sha256": "18833db57cf40fe330f41de17e4199310c95af4174b73613ef29720aa5cec63a",
+      "bytes": 4257
+    },
+    {
+      "path": "parity/2026-07-31.json",
+      "sha256": "2e7546b9f21ced186d8d5d613ff83e74acd71d44f007df54efe362cdfc2d13fc",
+      "bytes": 4448
+    },
+    {
+      "path": "parity/2026-08-03.json",
+      "sha256": "a7f0da82541070d59c0e4877ca6f8405b6e38cc7874489d54b3febb7d177d9c7",
+      "bytes": 4235
+    },
+    {
+      "path": "parity/index.json",
+      "sha256": "5ffa212a549fc4991979c6366b0228a2fb21c4e731091b685439d53cafd889ee",
+      "bytes": 434
+    },
+    {
+      "path": "runs/orb-synthetic-v1/equity.json",
+      "sha256": "250d03879a4a8e7802a620cab7c04f9d4863ccdcc8d7e21a991a4e1501030f6b",
+      "bytes": 794
+    },
+    {
+      "path": "runs/orb-synthetic-v1/monthly.json",
+      "sha256": "5c627b376661388102e030a7311dab8eead4d67319423aaf2bf693276bff9a8e",
+      "bytes": 116
+    },
+    {
+      "path": "runs/orb-synthetic-v1/sessions/2026-08-06.json",
+      "sha256": "f14871832b7c35dddd20d9aff634483685816bab7b9feefb5ae0e4d0fe416307",
+      "bytes": 13916
+    },
+    {
+      "path": "runs/orb-synthetic-v1/sessions/2026-08-07.json",
+      "sha256": "5f607438f4690d28228b8950796444aad06471b2fd9c7f04232667a9ff04ce83",
+      "bytes": 13833
+    },
+    {
+      "path": "runs/orb-synthetic-v1/sessions/2026-08-10.json",
+      "sha256": "93a1cbe4256718660acd21ab274d5d4e529b7ca887b006c4caa860c152d1a42b",
+      "bytes": 13925
+    },
+    {
+      "path": "runs/orb-synthetic-v1/sessions/2026-08-11.json",
+      "sha256": "5d1af1559f4394448537b993d6758cb5f9deafbbd28d08e203d3c5123f7a4331",
+      "bytes": 14027
+    },
+    {
+      "path": "runs/orb-synthetic-v1/sessions/2026-08-12.json",
+      "sha256": "dc82f6c28b12dd3bdf39d374f5a110d1328cdbbce2d7cc83204d4005d220bb4e",
+      "bytes": 13906
+    },
+    {
+      "path": "runs/orb-synthetic-v1/sessions/index.json",
+      "sha256": "e9839e32daa80ab94e03773378b9c9f38bdb286fb116bd15dab4af6e95c557aa",
+      "bytes": 782
+    },
+    {
+      "path": "runs/orb-synthetic-v1/summary.json",
+      "sha256": "459fa9d363ec7cde3a3d415663e5952192fa4e8861e9855def0755c482962cad",
+      "bytes": 3108
+    },
+    {
+      "path": "runs/orb-synthetic-v1/trades.json",
+      "sha256": "b51ffc0e8453111d7690f5708067d315027fac9249e80c9fc7b2ad2606434b0e",
+      "bytes": 9181
+    },
+    {
+      "path": "runs/orx-synthetic-v1/equity.json",
+      "sha256": "e74a05297c69a20c2ba8ae0ec3a149ecc65cbf961627774fd0fdfa8d44c95304",
+      "bytes": 807
+    },
+    {
+      "path": "runs/orx-synthetic-v1/monthly.json",
+      "sha256": "96d93bf2abc89ffeed499f63d2a475cacb5c2cb62acc8c8f1cf0e3026059132b",
+      "bytes": 260
+    },
+    {
+      "path": "runs/orx-synthetic-v1/sessions/2026-07-30.json",
+      "sha256": "fb69b51654427d23ac4db885fa8e8000e5f752bcd175ceafc2cd972820c3dd58",
+      "bytes": 13879
+    },
+    {
+      "path": "runs/orx-synthetic-v1/sessions/2026-07-31.json",
+      "sha256": "801579f5cb30a0faac3f7a2515983462e9f76291636f6cc650cd4595e8518bf1",
+      "bytes": 13906
+    },
+    {
+      "path": "runs/orx-synthetic-v1/sessions/2026-08-03.json",
+      "sha256": "7315dd96c6b206afced5cff9f1dded5cb5b1b0d24c0d8c5556b64c65b58aa543",
+      "bytes": 13912
+    },
+    {
+      "path": "runs/orx-synthetic-v1/sessions/2026-08-04.json",
+      "sha256": "ad304a4cd8e1b99249ec8c49cca58b50cec68fc06c1a76b92b1f267b84550cab",
+      "bytes": 13925
+    },
+    {
+      "path": "runs/orx-synthetic-v1/sessions/2026-08-05.json",
+      "sha256": "a72e6412e00a07694bd97c0d7ce22b91abeb53322bb0104a40921ce7b551dabb",
+      "bytes": 13918
+    },
+    {
+      "path": "runs/orx-synthetic-v1/sessions/index.json",
+      "sha256": "13fc459287b12d240ffc4689458c244d1554cdfbb6d16d26e33a156be2f91346",
+      "bytes": 783
+    },
+    {
+      "path": "runs/orx-synthetic-v1/summary.json",
+      "sha256": "16d07b3e701b3777777d9d783f0e5a47e07026f93e640096d48c4ecc03fb0178",
+      "bytes": 3100
+    },
+    {
+      "path": "runs/orx-synthetic-v1/trades.json",
+      "sha256": "daa885d15e16e868edc85071a2c1aa16416fa51712156912dafc1bb8f6af078a",
+      "bytes": 9200
+    },
+    {
+      "path": "strategies.json",
+      "sha256": "62d97c342a7cfa0276579e121f55258f79aa85efe64ebaa4253c85341b64511c",
+      "bytes": 1145
+    }
+  ],
+  "runs": [
+    "orx-synthetic-v1",
+    "orb-synthetic-v1"
+  ],
+  "featured": {
+    "run": "orx-synthetic-v1",
+    "day": "2026-07-30"
+  }
+}

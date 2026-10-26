@@ -1,0 +1,52 @@
+[
+  {
+    "date": "2026-08-06",
+    "n_trades": 3,
+    "net_r": 1.5175,
+    "has_bars": true,
+    "tags": [
+      "synthetic",
+      "in-sample"
+    ]
+  },
+  {
+    "date": "2026-08-07",
+    "n_trades": 3,
+    "net_r": 0.7675,
+    "has_bars": true,
+    "tags": [
+      "synthetic",
+      "in-sample"
+    ]
+  },
+  {
+    "date": "2026-08-10",
+    "n_trades": 3,
+    "net_r": 0.0175,
+    "has_bars": true,
+    "tags": [
+      "synthetic",
+      "in-sample"
+    ]
+  },
+  {
+    "date": "2026-08-11",
+    "n_trades": 3,
+    "net_r": 1.0175,
+    "has_bars": true,
+    "tags": [
+      "synthetic",
+      "out-of-sample"
+    ]
+  },
+  {
+    "date": "2026-08-12",
+    "n_trades": 3,
+    "net_r": -1.7325,
+    "has_bars": true,
+    "tags": [
+      "synthetic",
+      "out-of-sample"
+    ]
+  }
+]

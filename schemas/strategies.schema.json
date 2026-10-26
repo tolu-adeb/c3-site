@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://c3.site/schemas/v1/strategies.schema.json",
+  "title": "c3.site strategies",
+  "description": "Strategy descriptions. params_public is empty until KH approves an explicit parameter allowlist. In-build strategies have no result runs.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+        "maxLength": 100
+      },
+      "name": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      },
+      "state": {
+        "enum": [
+          "live",
+          "paper",
+          "research",
+          "retired",
+          "in_build"
+        ]
+      },
+      "one_line": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      },
+      "mechanism": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      },
+      "rules": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        }
+      },
+      "exits": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        }
+      },
+      "filters": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        }
+      },
+      "scoring": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      },
+      "params_public": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "runs": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "maxLength": 100
+        },
+        "uniqueItems": true
+      },
+      "lab_trials": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "uniqueItems": true
+      },
+      "retired_reason": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      }
+    },
+    "required": [
+      "id",
+      "name",
+      "state",
+      "one_line",
+      "mechanism",
+      "rules",
+      "exits",
+      "filters",
+      "scoring",
+      "params_public",
+      "runs",
+      "lab_trials"
+    ],
+    "additionalProperties": false,
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "state": {
+              "const": "retired"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "retired_reason"
+          ],
+          "properties": {
+            "retired_reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "state": {
+              "const": "in_build"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "runs": {
+              "type": "array",
+              "maxItems": 0
+            }
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://c3.site/schemas/v1/monthly.schema.json",
+  "title": "c3.site monthly",
+  "description": "Calendar-month results after costs.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "month": {
+        "type": "string",
+        "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
+      },
+      "trades": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "win_rate": {
+        "$ref": "common.schema.json#/$defs/rate"
+      },
+      "net_r": {
+        "type": "number"
+      },
+      "net_usd": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "month",
+      "trades",
+      "win_rate",
+      "net_r",
+      "net_usd"
+    ],
+    "additionalProperties": false
+  }
+}

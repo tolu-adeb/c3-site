@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://c3.site/schemas/v1/parity-index.schema.json",
+  "title": "c3.site parity-index",
+  "description": "Daily comparison of paper/live and backtest P&L. Mismatches carry human-readable causes.",
+  "type": "array",
+  "items": {
+    "$ref": "common.schema.json#/$defs/parityRow"
+  }
+}

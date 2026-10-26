@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://c3.site/schemas/v1/trades.schema.json",
+  "title": "c3.site trades",
+  "description": "One public row per completed trade; signed P&L after stated costs.",
+  "type": "array",
+  "items": {
+    "$ref": "common.schema.json#/$defs/trade"
+  }
+}

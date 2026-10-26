@@ -1,0 +1,307 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://c3.site/schemas/v1/summary.schema.json",
+  "title": "c3.site summary",
+  "description": "Run provenance, costs, splits and aggregate stats. Undefined ratios are null, not invented zeros or Infinity. Drawdown is a nonnegative loss magnitude.",
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "maxLength": 100
+    },
+    "strategy": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "maxLength": 100
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "dataset": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "real",
+            "proxy",
+            "synthetic"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "start": {
+          "type": "string",
+          "format": "date"
+        },
+        "end": {
+          "type": "string",
+          "format": "date"
+        },
+        "sessions": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "kind",
+        "source",
+        "start",
+        "end",
+        "sessions"
+      ],
+      "additionalProperties": false
+    },
+    "kind": {
+      "$ref": "common.schema.json#/$defs/kind"
+    },
+    "costs": {
+      "type": "object",
+      "properties": {
+        "commission_rt_usd": {
+          "type": "number",
+          "minimum": 0
+        },
+        "entry_slip_ticks": {
+          "type": "number",
+          "minimum": 0
+        },
+        "stop_slip_ticks": {
+          "type": "number",
+          "minimum": 0
+        },
+        "contract": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        }
+      },
+      "required": [
+        "commission_rt_usd",
+        "entry_slip_ticks",
+        "stop_slip_ticks",
+        "contract"
+      ],
+      "additionalProperties": false
+    },
+    "split": {
+      "type": "object",
+      "properties": {
+        "in_sample": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "date"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "out_of_sample": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "date"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        }
+      },
+      "required": [
+        "in_sample",
+        "out_of_sample"
+      ],
+      "additionalProperties": false
+    },
+    "stats": {
+      "type": "object",
+      "properties": {
+        "trades": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "win_rate": {
+          "$ref": "common.schema.json#/$defs/rate"
+        },
+        "avg_r": {
+          "type": "number"
+        },
+        "net_r": {
+          "type": "number"
+        },
+        "net_usd": {
+          "type": "number"
+        },
+        "max_dd_usd": {
+          "type": "number",
+          "minimum": 0
+        },
+        "profit_factor": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sharpe_daily": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "months_positive": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "months": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "worst_month_usd": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "trades",
+        "win_rate",
+        "avg_r",
+        "net_r",
+        "net_usd",
+        "max_dd_usd",
+        "profit_factor",
+        "sharpe_daily",
+        "months_positive",
+        "months",
+        "worst_month_usd"
+      ],
+      "additionalProperties": false
+    },
+    "segments": {
+      "type": "object",
+      "properties": {
+        "by_side": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "additionalProperties": {
+            "$ref": "common.schema.json#/$defs/segment"
+          }
+        },
+        "by_regime": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "additionalProperties": {
+            "$ref": "common.schema.json#/$defs/segment"
+          }
+        },
+        "by_time": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "additionalProperties": {
+            "$ref": "common.schema.json#/$defs/segment"
+          }
+        },
+        "by_grade": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "additionalProperties": {
+            "$ref": "common.schema.json#/$defs/segment"
+          }
+        },
+        "by_exit": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "additionalProperties": {
+            "$ref": "common.schema.json#/$defs/segment"
+          }
+        },
+        "by_setup": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "additionalProperties": {
+            "$ref": "common.schema.json#/$defs/segment"
+          }
+        }
+      },
+      "required": [
+        "by_side",
+        "by_regime",
+        "by_time",
+        "by_grade",
+        "by_exit",
+        "by_setup"
+      ],
+      "additionalProperties": false
+    },
+    "checks": {
+      "type": "object",
+      "properties": {
+        "random_walk_avg_r": {
+          "type": "number"
+        },
+        "walk_forward_avg_r": {
+          "type": "number"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "c3lab_commit": {
+      "$ref": "common.schema.json#/$defs/commit"
+    },
+    "params_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "run_id",
+    "strategy",
+    "label",
+    "dataset",
+    "kind",
+    "costs",
+    "split",
+    "stats",
+    "segments",
+    "checks",
+    "c3lab_commit",
+    "params_hash"
+  ],
+  "additionalProperties": false
+}

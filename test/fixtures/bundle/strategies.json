@@ -1,0 +1,50 @@
+[
+  {
+    "id": "orx",
+    "name": "ORX — synthetic fixture",
+    "state": "paper",
+    "one_line": "Synthetic description for testing; not a published strategy result.",
+    "mechanism": "No mechanism is evaluated in fixtures.",
+    "rules": [
+      "Render exported rows only."
+    ],
+    "exits": [
+      "Draw the exported exit."
+    ],
+    "filters": [
+      "Synthetic sessions only."
+    ],
+    "scoring": "Fixture scores exercise the 0–100 display.",
+    "params_public": {},
+    "runs": [
+      "orx-synthetic-v1"
+    ],
+    "lab_trials": [
+      1
+    ]
+  },
+  {
+    "id": "orb",
+    "name": "ORB — synthetic fixture",
+    "state": "paper",
+    "one_line": "Synthetic description for testing; not a published strategy result.",
+    "mechanism": "No mechanism is evaluated in fixtures.",
+    "rules": [
+      "Render exported rows only."
+    ],
+    "exits": [
+      "Draw the exported exit."
+    ],
+    "filters": [
+      "Synthetic sessions only."
+    ],
+    "scoring": "Fixture scores exercise the 0–100 display.",
+    "params_public": {},
+    "runs": [
+      "orb-synthetic-v1"
+    ],
+    "lab_trials": [
+      2
+    ]
+  }
+]
