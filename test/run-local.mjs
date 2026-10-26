@@ -67,9 +67,12 @@ try {
     if (!ready) await delay(200);
   }
   if (!ready) throw new Error("Local Wrangler did not become healthy within 45 seconds");
-  console.log(`Local-only Worker ready at ${base}; running unchanged smoke and fuzz suites.`);
-  await run("test/smoke.mjs", [base, keyFile]);
-  await run("test/fuzz.mjs", [base, keyFile]);
+  console.log(`Local-only Worker ready at ${base}.`);
+  if (!process.argv.includes("--ui-only")) {
+    await run("test/smoke.mjs", [base, keyFile]);
+    await run("test/fuzz.mjs", [base, keyFile]);
+  }
+  if (process.argv.includes("--ui") || process.argv.includes("--ui-only")) await run("test/ui.mjs", [base]);
 } catch (error) {
   console.error(workerLog);
   console.error(error.message);

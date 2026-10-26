@@ -8,3 +8,6 @@
 /app/*
   Cache-Control: no-store
   X-Robots-Tag: noindex, nofollow
+
+/styleguide/*
+  X-Robots-Tag: noindex, nofollow

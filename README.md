@@ -13,6 +13,7 @@ keeps, with every box linked to its source lines. Source: `docs/architecture.arc
 | `/track-record/` | Public results. Says "no public results yet" until `TRACK_RECORD_PUBLIC` is `"true"` |
 | `/join/` | Waitlist signup (email + optional note, honeypot and 5-an-hour limit per connection) |
 | `/app/` | Private dashboard: bot status, session coverage, MNQ bot today, research (approve/retire strategies), research papers, swing desk, controls, track record preview, waitlist, webhooks |
+| `/styleguide/` | Noindex instrument sheet: both themes, tokens, state chips, figures and controls. Synthetic fixtures only |
 | `POST /api/ingest` | The MNQ bot's signed pushes (status every minute, snapshot every 5 minutes, paper stats) |
 | `POST /hook/<path>` | TradingView front door, **off** (`WEBHOOK_ENABLED`) until the receiver design is agreed |
 | `GET /api/hook/pull` | Signed; the receiver collects stored webhooks (exact text, duplicates flagged) |
@@ -44,12 +45,24 @@ It uses generated test keys and an isolated local D1 database; no Cloudflare acc
 
 ```sh
 npm ci
-npm test                         # validate fixtures, test the contract, run smoke and fuzz locally
+npx playwright install chromium  # once; CI also installs the browser's Linux dependencies
+npm test                         # fixtures, contrast, smoke, fuzz and browser checks
 ```
 
-`npm run test:local` starts `wrangler dev --local`, waits for health, runs the unchanged smoke and fuzz
-suites, then removes the temporary keys and database. It does not read the checkout's `.dev.vars` or
+`npm run test:local` starts `wrangler dev --local`, waits for health, runs smoke, fuzz and browser
+checks, then removes the temporary keys and database. It does not read the checkout's `.dev.vars` or
 the private c3.lab repository. The optional Python cross-check in fuzz still needs c3.lab when run manually.
+
+`npm run test:contrast` checks the actual CSS tokens: graphics at least 3:1 and text at least 4.5:1 on both
+page and panel backgrounds. `npm run test:ui` runs the browser checks alone. Playwright covers all six routes
+in light and dark at 320, 390, 768 and 1440 px, serious/critical axe violations, console errors, third-party
+requests, theme persistence, reduced motion, keyboard controls and no-JS tables. Screenshots and the run report
+go to git-ignored `test/artifacts/`; CI uploads them as `ui-screenshots`.
+
+For a local before/after CSS review, save the prior stylesheet and pass its absolute path as
+`C3_BASELINE_CSS` when running the UI suite. It captures both versions of the existing pages at 390 and
+1440 px, including the home candles, and checks that their layout geometry stays the same. This supplements
+visual review; it is not a pixel baseline for future design changes.
 
 To test an already running local Worker with your own test keys:
 

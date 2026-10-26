@@ -116,11 +116,11 @@ Keep the phase 1 tokens (chart paper, ink, cobalt signal, Archivo, 12-column gri
 
 | Token | Light | Dark | Use |
 | --- | --- | --- | --- |
-| `--bull` | `#12805A` (4.3:1 on `--bg`) | `#2FBF8A` (7.9:1) | Up candle stroke and body outline; positive P&L |
+| `--bull` | `#117B56` (4.6:1 on `--bg`) | `#2FBF8A` (7.9:1) | Up candle stroke and body outline; positive P&L |
 | `--bear` | `#C8322F` (4.6:1) | `#F0625A` (5.8:1) | Down candle stroke and fill; negative P&L |
-| `--bull-wash` | `rgba(18,128,90,.10)` | `rgba(47,191,138,.14)` | Target zone, winning-trade band |
+| `--bull-wash` | `rgba(17,123,86,.10)` | `rgba(47,191,138,.14)` | Target zone, winning-trade band |
 | `--bear-wash` | `rgba(200,50,47,.10)` | `rgba(240,98,90,.14)` | Stop zone, drawdown area |
-| `--wire` | `#9AA6B5` | `#3A4758` | Wireframe line-work (grids, schematic edges, frames) |
+| `--wire` | `#7E8998` (3.1:1 on `--bg`) | `#58697D` (3.3:1) | Wireframe line-work (grids, schematic edges, frames) |
 | `--wire-faint` | `#CDD4DE` | `#222D3A` | Minor grid, construction lines |
 | `--hair` | `1px` (`0.75px` on DPR ≥ 2) | same | Default stroke width |
 | `--mono` | `ui-monospace, "SFMono-Regular", Menlo, monospace` | same | Prices, timestamps, run ids |
@@ -128,6 +128,11 @@ Keep the phase 1 tokens (chart paper, ink, cobalt signal, Archivo, 12-column gri
 `--up`/`--down` stay for dashboard chips; candles and P&L use `--bull`/`--bear`. Contrast figures above are
 against `--bg` and meet the 3:1 non-text minimum. Never encode direction by colour alone: **up candles are hollow
 (stroke only), down candles are filled**; P&L numbers carry a sign; series carry direct labels.
+
+S2 adjusts the draft palette to meet its acceptance criteria: the original wire colours were below 3:1.
+Light bull, faint text, dashboard up and warning colours are also slightly darker so small text meets 4.5:1.
+`node test/contrast.mjs` checks both the page and panel backgrounds in both themes. Faint grid and wash tokens
+are decorative; they do not carry text or distinguish data by themselves.
 
 ### 3.2 The wireframe language
 
@@ -420,7 +425,7 @@ trials, lab summary, parity index).
 Implementation: schemas, deterministic fixtures, validation and a local test runner are in place. `npm test`
 passes bundle validation, 13 fixture tests, 72 unchanged smoke checks and 300 unchanged fuzz cases. The CI
 workflow runs these checks on pull requests and pushes to `main`. Per AGENTS.md, this work goes directly to
-`main`; a green PR run is therefore not recorded for S1. Next: S2.
+`main`; a green PR run is therefore not recorded for S1.
 
 **S2. Design tokens v2 and components (M).** Tokens from 3.1, wireframe styles from 3.2, components from 3.3.
 Update the home illustration candles to the colored style as a first visible change.
@@ -428,6 +433,15 @@ Update the home illustration candles to the colored style as a first visible cha
   chip, figure frame and candle style in both themes; contrast check script reports ≥ 3:1 for `--bull`, `--bear`,
   `--wire` against `--bg` in both themes and ≥ 4.5:1 for text tokens; no visual regressions in the existing pages
   (Playwright screenshots reviewed in the PR).
+
+Implementation: `/styleguide/` shows both themes, all tokens and component specimens from the synthetic
+fixtures. Tables are authored in HTML and open without JS. Range radios and the scrubber use native keyboard
+controls; candles share a focus/pointer tooltip. The home illustration uses hollow bull bars and filled bear
+bars. Inactive story text keeps full contrast; cobalt rules and numbers mark the active step.
+Playwright checks 48 route/theme/width combinations (320/390/768/1440), keyboard controls, motion settings,
+system and saved themes, DPR and the no-JS fallback. CI saves screenshots as an artifact. Local before/after
+screenshots and layout comparisons cover the existing pages; as for S1, work goes directly to main under
+AGENTS.md, so there is no PR screenshot review. Next: S3.
 
 **S3. Chart kit core (L).** `public/assets/charts/` with shared scales, axes, grid, frame, tooltip, table
 fallback, and V1 (candles + overlays), V2, V3, V13.

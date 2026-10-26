@@ -24,7 +24,7 @@ async function push(kind, data, ts) {
 const view = { authorization: "Bearer " + keys.view_key };
 
 // public pages
-for (const p of ["/", "/track-record/", "/join/", "/app/", "/assets/site.css", "/robots.txt"]) {
+for (const p of ["/", "/track-record/", "/join/", "/app/", "/styleguide/", "/assets/site.css", "/robots.txt"]) {
   const r = await fetch(base + p);
   ok(r.status === 200, `GET ${p} -> ${r.status}`);
 }
@@ -32,6 +32,8 @@ let r = await fetch(base + "/nope");
 ok(r.status === 404 && (await r.text()).includes("Nothing here"), "unknown page -> styled 404");
 r = await fetch(base + "/");
 ok((r.headers.get("content-security-policy") || "").includes("default-src 'self'"), "security headers on pages");
+r = await fetch(base + "/styleguide/");
+ok((r.headers.get("x-robots-tag") || "").includes("noindex") && (await r.text()).includes('name="robots" content="noindex, nofollow"'), "styleguide excluded from indexing");
 r = await fetch(base + "/api/health");
 ok((await r.json()).ok === true, "health");
 

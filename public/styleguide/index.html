@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Styleguide | c3.lab</title><meta name="robots" content="noindex, nofollow"><meta name="description" content="The c3.lab instrument components. Synthetic examples only."><meta name="color-scheme" content="light dark"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preload" href="/assets/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/styleguide.css"><script src="/assets/theme.js"></script></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="wrap bar">
+  <a class="mark" href="/"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><rect x="1" y="9" width="4" height="8" fill="currentColor"/><rect x="7" y="5" width="4" height="12" fill="currentColor"/><rect x="13" y="1" width="4" height="16" fill="currentColor"/></svg>c3.lab</a>
+  <nav aria-label="Site">
+    <a class="navlink" href="/#how">How it works</a><a class="navlink" href="/track-record/">Track record</a><a class="navlink" href="/join/">Join the waitlist</a>
+    <span class="toolwrap"><button type="button" class="tool" id="display-btn" aria-expanded="false" aria-controls="display">Display</button>
+      <div class="pop" id="display" role="dialog" aria-label="Display settings" hidden>
+        <h2>Display</h2>
+        <div class="row"><span id="theme-l">Theme</span><div class="seg-btns" role="group" aria-labelledby="theme-l"><button type="button" data-theme-set="system">System</button><button type="button" data-theme-set="light">Light</button><button type="button" data-theme-set="dark">Dark</button></div></div>
+        <div class="row"><span id="motion-l">Motion</span><div class="seg-btns" role="group" aria-labelledby="motion-l"><button type="button" data-motion-set="full">Full</button><button type="button" data-motion-set="reduced">Reduced</button></div></div>
+        <p class="weight" id="weight">Measuring this page…</p>
+      </div></span>
+    <button type="button" class="tool" id="menu-btn" aria-expanded="false" aria-controls="menu">Menu</button>
+  </nav>
+</header>
+<div class="menu" id="menu" hidden>
+  <button type="button" class="tool close" id="menu-close">Close</button>
+  <nav aria-label="Menu"><ol class="tiles"><li><a href="/" aria-current="page"><span class="n">01</span><span class="t">Home</span></a></li><li><a href="/#how"><span class="n">02</span><span class="t">How it works</span></a></li><li><a href="/track-record/"><span class="n">03</span><span class="t">Track record</span></a></li><li><a href="/join/"><span class="n">04</span><span class="t">Join the waitlist</span></a></li></ol></nav>
+</div>
+
+<main class="wrap styleguide" id="main"><span class="tag">Design system / S2</span><h1>The instrument sheet</h1><p class="intro">Hairline frames. Labeled states. Hollow up bars and filled down bars. The same components are shown in both themes, independent of your display setting.</p>
+<section class="theme-preview" data-theme="light" aria-labelledby="light-title">
+ <div class="preview-heading"><h2 id="light-title">01 / Light</h2><span class="fig-index">WIREFRAME INSTRUMENT / V2</span></div>
+ <h3>Tokens</h3><dl class="token-grid"><div><span class="swatch" data-token="--bg" aria-hidden="true"></span><dt>--bg</dt><dd data-token-value="--bg">#edf0f3</dd></div>
+<div><span class="swatch" data-token="--ink" aria-hidden="true"></span><dt>--ink</dt><dd data-token-value="--ink">#0d141c</dd></div>
+<div><span class="swatch" data-token="--soft" aria-hidden="true"></span><dt>--soft</dt><dd data-token-value="--soft">#4b5767</dd></div>
+<div><span class="swatch" data-token="--faint" aria-hidden="true"></span><dt>--faint</dt><dd data-token-value="--faint">#616d7d</dd></div>
+<div><span class="swatch" data-token="--rule" aria-hidden="true"></span><dt>--rule</dt><dd data-token-value="--rule">#c3cbd6</dd></div>
+<div><span class="swatch" data-token="--panel" aria-hidden="true"></span><dt>--panel</dt><dd data-token-value="--panel">#f6f8fa</dd></div>
+<div><span class="swatch" data-token="--signal" aria-hidden="true"></span><dt>--signal</dt><dd data-token-value="--signal">#2b46e0</dd></div>
+<div><span class="swatch" data-token="--signal-wash" aria-hidden="true"></span><dt>--signal-wash</dt><dd data-token-value="--signal-wash">rgba(43,70,224,.09)</dd></div>
+<div><span class="swatch" data-token="--up" aria-hidden="true"></span><dt>--up</dt><dd data-token-value="--up">#19785f</dd></div>
+<div><span class="swatch" data-token="--down" aria-hidden="true"></span><dt>--down</dt><dd data-token-value="--down">#b5413a</dd></div>
+<div><span class="swatch" data-token="--warn" aria-hidden="true"></span><dt>--warn</dt><dd data-token-value="--warn">#926010</dd></div>
+<div><span class="swatch" data-token="--zone" aria-hidden="true"></span><dt>--zone</dt><dd data-token-value="--zone">#dbe2ec</dd></div>
+<div><span class="swatch" data-token="--focus" aria-hidden="true"></span><dt>--focus</dt><dd data-token-value="--focus">#2b46e0</dd></div>
+<div><span class="swatch" data-token="--bull" aria-hidden="true"></span><dt>--bull</dt><dd data-token-value="--bull">#117b56</dd></div>
+<div><span class="swatch" data-token="--bear" aria-hidden="true"></span><dt>--bear</dt><dd data-token-value="--bear">#c8322f</dd></div>
+<div><span class="swatch" data-token="--bull-wash" aria-hidden="true"></span><dt>--bull-wash</dt><dd data-token-value="--bull-wash">rgba(17,123,86,.10)</dd></div>
+<div><span class="swatch" data-token="--bear-wash" aria-hidden="true"></span><dt>--bear-wash</dt><dd data-token-value="--bear-wash">rgba(200,50,47,.10)</dd></div>
+<div><span class="swatch" data-token="--wire" aria-hidden="true"></span><dt>--wire</dt><dd data-token-value="--wire">#7e8998</dd></div>
+<div><span class="swatch" data-token="--wire-faint" aria-hidden="true"></span><dt>--wire-faint</dt><dd data-token-value="--wire-faint">#cdd4de</dd></div><div class="type-token"><dt>--hair</dt><dd data-token-value="--hair">1px</dd></div>
+<div class="type-token"><dt>--mono</dt><dd data-token-value="--mono">ui-monospace,"SFMono-Regular",Menlo,monospace</dd></div>
+<div class="type-token"><dt>--ease</dt><dd data-token-value="--ease">cubic-bezier(.3,.6,.1,1)</dd></div>
+<div class="type-token"><dt>--quick</dt><dd data-token-value="--quick">.18s</dd></div>
+<div class="type-token"><dt>--calm</dt><dd data-token-value="--calm">.42s</dd></div>
+<div class="type-token"><dt>--gutter</dt><dd data-token-value="--gutter">clamp(1rem,3.2vw,2.25rem)</dd></div></dl>
+ <h3>States</h3><div class="state-examples"><span class="chip state" data-state="backtest">Backtest</span><span class="chip state" data-state="out">Out of sample</span><span class="chip state" data-state="paper">Paper</span><span class="chip state" data-state="live">Live</span><span class="chip state" data-state="illustration">Illustration</span></div>
+ <p class="component-note">Labels and border patterns carry the state. Every example below is synthetic.</p>
+ <h3>Stat strip</h3>
+ <dl class="stat-strip">
+ <div><dt>Fixture trades · full run</dt><dd>15</dd><dd class="stat-source"><a class="source" href="#fixture-methodology">orx-synthetic-v1 · seeded synthetic data · in + out of sample · 30 Jul–5 Aug 2026 · Methodology</a></dd></div>
+ <div><dt>Fixture net · full run</dt><dd class="pnl positive">+$25.40</dd><dd class="stat-source"><a class="source" href="#fixture-methodology">orx-synthetic-v1 · seeded synthetic data · in + out of sample · 30 Jul–5 Aug 2026 · Methodology</a></dd></div>
+ <div><dt>First trade · in-sample</dt><dd class="pnl negative">−$17.24</dd><dd class="stat-source"><a class="source" href="#fixture-methodology">orx-synthetic-v1 · seeded synthetic data · in-sample · 30 Jul 2026 · Methodology</a></dd></div>
+ <div><dt>Fixture drawdown · full run</dt><dd class="pnl negative">−$43.44</dd><dd class="stat-source"><a class="source" href="#fixture-methodology">orx-synthetic-v1 · seeded synthetic data · in + out of sample · 30 Jul–5 Aug 2026 · Methodology</a></dd></div>
+ </dl>
+ <h3>Range picker</h3><fieldset class="segmented"><legend>Sample window</legend><label><input type="radio" name="sample-light" value="all" checked><span>Full run</span></label><label><input type="radio" name="sample-light" value="in"><span>In sample</span></label><label><input type="radio" name="sample-light" value="out"><span>Out of sample</span></label></fieldset>
+ <p class="component-note">Control specimen. Selecting a window demonstrates state; the examples keep the same six bars.</p>
+ <h3>Figure, candles and overlays</h3>
+ <figure class="fig" aria-labelledby="light-figure-title"><div class="fig-head"><span class="fig-index" id="light-figure-title">FIG 02 / SYNTHETIC BARS</span><span class="chip state" data-state="illustration">Illustration</span></div>
+ <div class="plot-axis"><span>MNQ price points</span><span>19,996.50–20,012.50</span></div>
+ <div class="fig-plot"><svg viewBox="0 0 420 240" role="group" aria-label="Six synthetic candles with sample entry, stop and target levels">
+ <rect class="reward-zone" x="18" y="45.75" width="384" height="47.50"/>
+ <rect class="risk-zone" x="18" y="93.25" width="384" height="95.00"/>
+ <line class="chart-level" x1="18" x2="402" y1="170.44" y2="170.44"/>
+ <line class="chart-target" x1="18" x2="402" y1="45.75" y2="45.75"/>
+ <line class="chart-entry" x1="18" x2="402" y1="93.25" y2="93.25"/>
+ <line class="chart-stop" x1="18" x2="402" y1="188.25" y2="188.25"/>
+ <g class="candle down" tabindex="0" role="img" aria-label="09:20 ET · O 20,006.25 · H 20,007.25 · L 20,002.50 · C 20,003.50" data-tooltip="09:20 ET · O 20,006.25 · H 20,007.25 · L 20,002.50 · C 20,003.50"><line x1="55" x2="55" y1="84.34" y2="140.75"/><rect x="36.4" y="96.22" width="37.2" height="32.66"/></g>
+<g class="candle" tabindex="0" role="img" aria-label="09:25 ET · O 20,003.50 · H 20,007.50 · L 20,002.50 · C 20,006.50" data-tooltip="09:25 ET · O 20,003.50 · H 20,007.50 · L 20,002.50 · C 20,006.50"><line x1="117" x2="117" y1="81.38" y2="140.75"/><rect x="98.4" y="93.25" width="37.2" height="35.63"/></g>
+<g class="candle down" tabindex="0" role="img" aria-label="09:30 ET · O 20,006.50 · H 20,007.00 · L 20,004.75 · C 20,005.25" data-tooltip="09:30 ET · O 20,006.50 · H 20,007.00 · L 20,004.75 · C 20,005.25"><line x1="179" x2="179" y1="87.31" y2="114.03"/><rect x="160.4" y="93.25" width="37.2" height="14.84"/></g>
+<g class="candle down" tabindex="0" role="img" aria-label="09:35 ET · O 20,005.25 · H 20,005.75 · L 20,003.25 · C 20,003.75" data-tooltip="09:35 ET · O 20,005.25 · H 20,005.75 · L 20,003.25 · C 20,003.75"><line x1="241" x2="241" y1="102.16" y2="131.84"/><rect x="222.4" y="108.09" width="37.2" height="17.82"/></g>
+<g class="candle down" tabindex="0" role="img" aria-label="09:40 ET · O 20,003.75 · H 20,004.25 · L 20,002.00 · C 20,002.50" data-tooltip="09:40 ET · O 20,003.75 · H 20,004.25 · L 20,002.00 · C 20,002.50"><line x1="303" x2="303" y1="119.97" y2="146.69"/><rect x="284.4" y="125.91" width="37.2" height="14.84"/></g>
+<g class="candle down" tabindex="0" role="img" aria-label="09:45 ET · O 20,002.50 · H 20,003.00 · L 20,000.75 · C 20,001.25" data-tooltip="09:45 ET · O 20,002.50 · H 20,003.00 · L 20,000.75 · C 20,001.25"><line x1="365" x2="365" y1="134.81" y2="161.53"/><rect x="346.4" y="140.75" width="37.2" height="14.84"/></g>
+ </svg></div><div class="plot-axis"><span>09:20 ET</span><span>09:45 ET</span></div>
+ <ul class="legend-inline"><li><span class="key" aria-hidden="true"></span>Up / hollow</li><li><span class="key down" aria-hidden="true"></span>Down / filled</li></ul>
+ <ul class="legend-inline level-labels"><li>Entry 20,006.50</li><li>Stop 19,998.50</li><li>Target 20,010.50</li><li>Level 20,000.00</li></ul>
+ <div class="scrubber" role="group" aria-label="light candle specimen controls"><button class="js-control quiet" type="button" data-step="-1" aria-label="Previous bar">←</button><button class="js-control quiet" type="button" data-play aria-pressed="false">Play</button><button class="js-control quiet" type="button" data-step="1" aria-label="Next bar">→</button><label for="light-bar">Bar position<input id="light-bar" type="range" disabled min="0" max="5" value="5" step="1"></label><output for="light-bar" aria-live="polite">All six bars shown. JavaScript enables stepping and playback.</output></div>
+ <details class="data-table" data-table open><summary>Data table</summary><div class="scroll" role="region" aria-label="light synthetic OHLCV data" tabindex="0"><table class="tbl"><caption>Six synthetic bars · 30 Jul 2026 · in-sample</caption><thead><tr><th scope="col">Time</th><th scope="col" class="n">Open</th><th scope="col" class="n">High</th><th scope="col" class="n">Low</th><th scope="col" class="n">Close</th><th scope="col" class="n">Volume</th></tr></thead><tbody><tr data-bar data-readout="09:20 ET · O 20,006.25 · H 20,007.25 · L 20,002.50 · C 20,003.50"><th scope="row">09:20 ET</th><td class="n">20,006.25</td><td class="n">20,007.25</td><td class="n">20,002.50</td><td class="n">20,003.50</td><td class="n">844.00</td></tr>
+<tr data-bar data-readout="09:25 ET · O 20,003.50 · H 20,007.50 · L 20,002.50 · C 20,006.50"><th scope="row">09:25 ET</th><td class="n">20,003.50</td><td class="n">20,007.50</td><td class="n">20,002.50</td><td class="n">20,006.50</td><td class="n">928.00</td></tr>
+<tr data-bar data-readout="09:30 ET · O 20,006.50 · H 20,007.00 · L 20,004.75 · C 20,005.25"><th scope="row">09:30 ET</th><td class="n">20,006.50</td><td class="n">20,007.00</td><td class="n">20,004.75</td><td class="n">20,005.25</td><td class="n">802.00</td></tr>
+<tr data-bar data-readout="09:35 ET · O 20,005.25 · H 20,005.75 · L 20,003.25 · C 20,003.75"><th scope="row">09:35 ET</th><td class="n">20,005.25</td><td class="n">20,005.75</td><td class="n">20,003.25</td><td class="n">20,003.75</td><td class="n">546.00</td></tr>
+<tr data-bar data-readout="09:40 ET · O 20,003.75 · H 20,004.25 · L 20,002.00 · C 20,002.50"><th scope="row">09:40 ET</th><td class="n">20,003.75</td><td class="n">20,004.25</td><td class="n">20,002.00</td><td class="n">20,002.50</td><td class="n">383.00</td></tr>
+<tr data-bar data-readout="09:45 ET · O 20,002.50 · H 20,003.00 · L 20,000.75 · C 20,001.25"><th scope="row">09:45 ET</th><td class="n">20,002.50</td><td class="n">20,003.00</td><td class="n">20,000.75</td><td class="n">20,001.25</td><td class="n">280.00</td></tr></tbody></table></div></details>
+ <figcaption><p>Hollow up bars. Filled down bars. Hover or focus a bar for its values; use ← / → to move between bars. Lines show exported trade levels. This is a component specimen, not a session replay.</p><a class="source" href="#fixture-methodology">orx-synthetic-v1 · seeded synthetic data · in-sample · 30 Jul 2026 · Methodology</a></figcaption>
+ </figure>
+ <h3>Line drawing</h3><svg viewBox="0 0 480 60" role="img" aria-label="Example signal path, illustration only"><path class="wire-path wire-draw" d="M2 48H100L150 16H240L290 40H380L430 8H478"/></svg>
+ </section><section class="theme-preview" data-theme="dark" aria-labelledby="dark-title">
+ <div class="preview-heading"><h2 id="dark-title">02 / Dark</h2><span class="fig-index">WIREFRAME INSTRUMENT / V2</span></div>
+ <h3>Tokens</h3><dl class="token-grid"><div><span class="swatch" data-token="--bg" aria-hidden="true"></span><dt>--bg</dt><dd data-token-value="--bg">#0e141b</dd></div>
+<div><span class="swatch" data-token="--ink" aria-hidden="true"></span><dt>--ink</dt><dd data-token-value="--ink">#e6ecf3</dd></div>
+<div><span class="swatch" data-token="--soft" aria-hidden="true"></span><dt>--soft</dt><dd data-token-value="--soft">#9aa7b8</dd></div>
+<div><span class="swatch" data-token="--faint" aria-hidden="true"></span><dt>--faint</dt><dd data-token-value="--faint">#7b8899</dd></div>
+<div><span class="swatch" data-token="--rule" aria-hidden="true"></span><dt>--rule</dt><dd data-token-value="--rule">#283444</dd></div>
+<div><span class="swatch" data-token="--panel" aria-hidden="true"></span><dt>--panel</dt><dd data-token-value="--panel">#141c26</dd></div>
+<div><span class="swatch" data-token="--signal" aria-hidden="true"></span><dt>--signal</dt><dd data-token-value="--signal">#8197ff</dd></div>
+<div><span class="swatch" data-token="--signal-wash" aria-hidden="true"></span><dt>--signal-wash</dt><dd data-token-value="--signal-wash">rgba(129,151,255,.12)</dd></div>
+<div><span class="swatch" data-token="--up" aria-hidden="true"></span><dt>--up</dt><dd data-token-value="--up">#3fb393</dd></div>
+<div><span class="swatch" data-token="--down" aria-hidden="true"></span><dt>--down</dt><dd data-token-value="--down">#e2665d</dd></div>
+<div><span class="swatch" data-token="--warn" aria-hidden="true"></span><dt>--warn</dt><dd data-token-value="--warn">#e0a84a</dd></div>
+<div><span class="swatch" data-token="--zone" aria-hidden="true"></span><dt>--zone</dt><dd data-token-value="--zone">#1b2532</dd></div>
+<div><span class="swatch" data-token="--focus" aria-hidden="true"></span><dt>--focus</dt><dd data-token-value="--focus">#8197ff</dd></div>
+<div><span class="swatch" data-token="--bull" aria-hidden="true"></span><dt>--bull</dt><dd data-token-value="--bull">#2fbf8a</dd></div>
+<div><span class="swatch" data-token="--bear" aria-hidden="true"></span><dt>--bear</dt><dd data-token-value="--bear">#f0625a</dd></div>
+<div><span class="swatch" data-token="--bull-wash" aria-hidden="true"></span><dt>--bull-wash</dt><dd data-token-value="--bull-wash">rgba(47,191,138,.14)</dd></div>
+<div><span class="swatch" data-token="--bear-wash" aria-hidden="true"></span><dt>--bear-wash</dt><dd data-token-value="--bear-wash">rgba(240,98,90,.14)</dd></div>
+<div><span class="swatch" data-token="--wire" aria-hidden="true"></span><dt>--wire</dt><dd data-token-value="--wire">#58697d</dd></div>
+<div><span class="swatch" data-token="--wire-faint" aria-hidden="true"></span><dt>--wire-faint</dt><dd data-token-value="--wire-faint">#222d3a</dd></div><div class="type-token"><dt>--hair</dt><dd data-token-value="--hair">1px</dd></div>
+<div class="type-token"><dt>--mono</dt><dd data-token-value="--mono">ui-monospace,"SFMono-Regular",Menlo,monospace</dd></div>
+<div class="type-token"><dt>--ease</dt><dd data-token-value="--ease">cubic-bezier(.3,.6,.1,1)</dd></div>
+<div class="type-token"><dt>--quick</dt><dd data-token-value="--quick">.18s</dd></div>
+<div class="type-token"><dt>--calm</dt><dd data-token-value="--calm">.42s</dd></div>
+<div class="type-token"><dt>--gutter</dt><dd data-token-value="--gutter">clamp(1rem,3.2vw,2.25rem)</dd></div></dl>
+ <h3>States</h3><div class="state-examples"><span class="chip state" data-state="backtest">Backtest</span><span class="chip state" data-state="out">Out of sample</span><span class="chip state" data-state="paper">Paper</span><span class="chip state" data-state="live">Live</span><span class="chip state" data-state="illustration">Illustration</span></div>
+ <p class="component-note">Labels and border patterns carry the state. Every example below is synthetic.</p>
+ <h3>Stat strip</h3>
+ <dl class="stat-strip">
+ <div><dt>Fixture trades · full run</dt><dd>15</dd><dd class="stat-source"><a class="source" href="#fixture-methodology">orx-synthetic-v1 · seeded synthetic data · in + out of sample · 30 Jul–5 Aug 2026 · Methodology</a></dd></div>
+ <div><dt>Fixture net · full run</dt><dd class="pnl positive">+$25.40</dd><dd class="stat-source"><a class="source" href="#fixture-methodology">orx-synthetic-v1 · seeded synthetic data · in + out of sample · 30 Jul–5 Aug 2026 · Methodology</a></dd></div>
+ <div><dt>First trade · in-sample</dt><dd class="pnl negative">−$17.24</dd><dd class="stat-source"><a class="source" href="#fixture-methodology">orx-synthetic-v1 · seeded synthetic data · in-sample · 30 Jul 2026 · Methodology</a></dd></div>
+ <div><dt>Fixture drawdown · full run</dt><dd class="pnl negative">−$43.44</dd><dd class="stat-source"><a class="source" href="#fixture-methodology">orx-synthetic-v1 · seeded synthetic data · in + out of sample · 30 Jul–5 Aug 2026 · Methodology</a></dd></div>
+ </dl>
+ <h3>Range picker</h3><fieldset class="segmented"><legend>Sample window</legend><label><input type="radio" name="sample-dark" value="all" checked><span>Full run</span></label><label><input type="radio" name="sample-dark" value="in"><span>In sample</span></label><label><input type="radio" name="sample-dark" value="out"><span>Out of sample</span></label></fieldset>
+ <p class="component-note">Control specimen. Selecting a window demonstrates state; the examples keep the same six bars.</p>
+ <h3>Figure, candles and overlays</h3>
+ <figure class="fig" aria-labelledby="dark-figure-title"><div class="fig-head"><span class="fig-index" id="dark-figure-title">FIG 02 / SYNTHETIC BARS</span><span class="chip state" data-state="illustration">Illustration</span></div>
+ <div class="plot-axis"><span>MNQ price points</span><span>19,996.50–20,012.50</span></div>
+ <div class="fig-plot"><svg viewBox="0 0 420 240" role="group" aria-label="Six synthetic candles with sample entry, stop and target levels">
+ <rect class="reward-zone" x="18" y="45.75" width="384" height="47.50"/>
+ <rect class="risk-zone" x="18" y="93.25" width="384" height="95.00"/>
+ <line class="chart-level" x1="18" x2="402" y1="170.44" y2="170.44"/>
+ <line class="chart-target" x1="18" x2="402" y1="45.75" y2="45.75"/>
+ <line class="chart-entry" x1="18" x2="402" y1="93.25" y2="93.25"/>
+ <line class="chart-stop" x1="18" x2="402" y1="188.25" y2="188.25"/>
+ <g class="candle down" tabindex="0" role="img" aria-label="09:20 ET · O 20,006.25 · H 20,007.25 · L 20,002.50 · C 20,003.50" data-tooltip="09:20 ET · O 20,006.25 · H 20,007.25 · L 20,002.50 · C 20,003.50"><line x1="55" x2="55" y1="84.34" y2="140.75"/><rect x="36.4" y="96.22" width="37.2" height="32.66"/></g>
+<g class="candle" tabindex="0" role="img" aria-label="09:25 ET · O 20,003.50 · H 20,007.50 · L 20,002.50 · C 20,006.50" data-tooltip="09:25 ET · O 20,003.50 · H 20,007.50 · L 20,002.50 · C 20,006.50"><line x1="117" x2="117" y1="81.38" y2="140.75"/><rect x="98.4" y="93.25" width="37.2" height="35.63"/></g>
+<g class="candle down" tabindex="0" role="img" aria-label="09:30 ET · O 20,006.50 · H 20,007.00 · L 20,004.75 · C 20,005.25" data-tooltip="09:30 ET · O 20,006.50 · H 20,007.00 · L 20,004.75 · C 20,005.25"><line x1="179" x2="179" y1="87.31" y2="114.03"/><rect x="160.4" y="93.25" width="37.2" height="14.84"/></g>
+<g class="candle down" tabindex="0" role="img" aria-label="09:35 ET · O 20,005.25 · H 20,005.75 · L 20,003.25 · C 20,003.75" data-tooltip="09:35 ET · O 20,005.25 · H 20,005.75 · L 20,003.25 · C 20,003.75"><line x1="241" x2="241" y1="102.16" y2="131.84"/><rect x="222.4" y="108.09" width="37.2" height="17.82"/></g>
+<g class="candle down" tabindex="0" role="img" aria-label="09:40 ET · O 20,003.75 · H 20,004.25 · L 20,002.00 · C 20,002.50" data-tooltip="09:40 ET · O 20,003.75 · H 20,004.25 · L 20,002.00 · C 20,002.50"><line x1="303" x2="303" y1="119.97" y2="146.69"/><rect x="284.4" y="125.91" width="37.2" height="14.84"/></g>
+<g class="candle down" tabindex="0" role="img" aria-label="09:45 ET · O 20,002.50 · H 20,003.00 · L 20,000.75 · C 20,001.25" data-tooltip="09:45 ET · O 20,002.50 · H 20,003.00 · L 20,000.75 · C 20,001.25"><line x1="365" x2="365" y1="134.81" y2="161.53"/><rect x="346.4" y="140.75" width="37.2" height="14.84"/></g>
+ </svg></div><div class="plot-axis"><span>09:20 ET</span><span>09:45 ET</span></div>
+ <ul class="legend-inline"><li><span class="key" aria-hidden="true"></span>Up / hollow</li><li><span class="key down" aria-hidden="true"></span>Down / filled</li></ul>
+ <ul class="legend-inline level-labels"><li>Entry 20,006.50</li><li>Stop 19,998.50</li><li>Target 20,010.50</li><li>Level 20,000.00</li></ul>
+ <div class="scrubber" role="group" aria-label="dark candle specimen controls"><button class="js-control quiet" type="button" data-step="-1" aria-label="Previous bar">←</button><button class="js-control quiet" type="button" data-play aria-pressed="false">Play</button><button class="js-control quiet" type="button" data-step="1" aria-label="Next bar">→</button><label for="dark-bar">Bar position<input id="dark-bar" type="range" disabled min="0" max="5" value="5" step="1"></label><output for="dark-bar" aria-live="polite">All six bars shown. JavaScript enables stepping and playback.</output></div>
+ <details class="data-table" data-table open><summary>Data table</summary><div class="scroll" role="region" aria-label="dark synthetic OHLCV data" tabindex="0"><table class="tbl"><caption>Six synthetic bars · 30 Jul 2026 · in-sample</caption><thead><tr><th scope="col">Time</th><th scope="col" class="n">Open</th><th scope="col" class="n">High</th><th scope="col" class="n">Low</th><th scope="col" class="n">Close</th><th scope="col" class="n">Volume</th></tr></thead><tbody><tr data-bar data-readout="09:20 ET · O 20,006.25 · H 20,007.25 · L 20,002.50 · C 20,003.50"><th scope="row">09:20 ET</th><td class="n">20,006.25</td><td class="n">20,007.25</td><td class="n">20,002.50</td><td class="n">20,003.50</td><td class="n">844.00</td></tr>
+<tr data-bar data-readout="09:25 ET · O 20,003.50 · H 20,007.50 · L 20,002.50 · C 20,006.50"><th scope="row">09:25 ET</th><td class="n">20,003.50</td><td class="n">20,007.50</td><td class="n">20,002.50</td><td class="n">20,006.50</td><td class="n">928.00</td></tr>
+<tr data-bar data-readout="09:30 ET · O 20,006.50 · H 20,007.00 · L 20,004.75 · C 20,005.25"><th scope="row">09:30 ET</th><td class="n">20,006.50</td><td class="n">20,007.00</td><td class="n">20,004.75</td><td class="n">20,005.25</td><td class="n">802.00</td></tr>
+<tr data-bar data-readout="09:35 ET · O 20,005.25 · H 20,005.75 · L 20,003.25 · C 20,003.75"><th scope="row">09:35 ET</th><td class="n">20,005.25</td><td class="n">20,005.75</td><td class="n">20,003.25</td><td class="n">20,003.75</td><td class="n">546.00</td></tr>
+<tr data-bar data-readout="09:40 ET · O 20,003.75 · H 20,004.25 · L 20,002.00 · C 20,002.50"><th scope="row">09:40 ET</th><td class="n">20,003.75</td><td class="n">20,004.25</td><td class="n">20,002.00</td><td class="n">20,002.50</td><td class="n">383.00</td></tr>
+<tr data-bar data-readout="09:45 ET · O 20,002.50 · H 20,003.00 · L 20,000.75 · C 20,001.25"><th scope="row">09:45 ET</th><td class="n">20,002.50</td><td class="n">20,003.00</td><td class="n">20,000.75</td><td class="n">20,001.25</td><td class="n">280.00</td></tr></tbody></table></div></details>
+ <figcaption><p>Hollow up bars. Filled down bars. Hover or focus a bar for its values; use ← / → to move between bars. Lines show exported trade levels. This is a component specimen, not a session replay.</p><a class="source" href="#fixture-methodology">orx-synthetic-v1 · seeded synthetic data · in-sample · 30 Jul 2026 · Methodology</a></figcaption>
+ </figure>
+ <h3>Line drawing</h3><svg viewBox="0 0 480 60" role="img" aria-label="Example signal path, illustration only"><path class="wire-path wire-draw" d="M2 48H100L150 16H240L290 40H380L430 8H478"/></svg>
+ </section>
+<section id="fixture-methodology" aria-labelledby="methodology-title"><span class="tag line">Methodology / fixtures</span><h2 id="methodology-title">Test values, with a source</h2><p>Run <code>orx-synthetic-v1</code>. Source: seeded synthetic bars, seed 20261026. Dates: 30 Jul–5 Aug 2026. The six displayed bars are in-sample; run totals include the labeled in- and out-of-sample partitions.</p><p>Run costs: $1.24 round-trip commission per MNQ micro, one tick entry slippage and one tick stop slippage. These are fixture settings. No trading strategy was evaluated. Drawdown is the loss from the highest daily closing equity; it is shown with a minus sign.</p><p>The tables contain the values drawn above. Without JavaScript, all six bars and their tables remain visible. The sample picker is a control specimen. The replay controls only reveal these exported bars.</p></section></main>
+<footer class="wrap styleguide-foot">Alert-only. Educational, not financial advice. Futures carry substantial risk of loss. Past and hypothetical results do not guarantee future results. <a href="/">Back to c3.lab</a></footer>
+<script src="/assets/chrome.js"></script><script type="module" src="/assets/styleguide.js"></script></body></html>
