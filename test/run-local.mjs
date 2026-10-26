@@ -92,6 +92,7 @@ try {
       await run("test/charts.mjs", [base]);
       await run("test/backtests.mjs", [base]);
       await run("test/replay.mjs", [base]);
+      await run("test/strategies.mjs", [base]);
       await run("test/ui.mjs", [base]);
     }
   }

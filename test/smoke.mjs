@@ -28,6 +28,10 @@ for (const p of ["/", "/track-record/", "/join/", "/app/", "/styleguide/", "/bac
   const r = await fetch(base + p);
   ok(r.status === 200, `GET ${p} -> ${r.status}`);
 }
+for (const id of ["", "orx/", "orb/", "sweep/", "vwap/", "nq-rev/", "nq-cont/"]) {
+  const response = await fetch(base + "/strategies/" + id);
+  ok(response.status === 200, `GET /strategies/${id} -> ${response.status}`);
+}
 let r = await fetch(base + "/nope");
 ok(r.status === 404 && (await r.text()).includes("Nothing here"), "unknown page -> styled 404");
 r = await fetch(base + "/");

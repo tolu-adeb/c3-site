@@ -32,3 +32,27 @@ export async function backtestPage(request, env) {
   result.headers.delete("etag"); result.headers.delete("last-modified");
   return result;
 }
+
+export async function strategyPage(request, env) {
+  const headers = new Headers(request.headers); headers.delete("if-none-match"); headers.delete("if-modified-since");
+  const response = await env.ASSETS.fetch(new Request(request, { headers })), url = new URL(request.url);
+  if (response.status !== 200 || !env.DATA || env.BACKTESTS_PUBLIC !== "true" || url.searchParams.has("staging") || url.searchParams.has("preview")) return response;
+  const pointer = await env.DATA.get("live/current.json"); if (!pointer) return response;
+  const { bundle } = await pointer.json(), object = await env.DATA.get(`live/${bundle}/strategies.json`);
+  if (!object) return response;
+  const strategies = await object.json(), id = url.pathname.split("/").filter(Boolean)[1];
+  const source = `<a class="source" href="/methodology/#data">Bundle ${esc(bundle)} · exported strategy descriptions · states are not performance · Methodology</a>`;
+  const labels = { live: "Live", paper: "Paper", research: "Research", retired: "Retired", in_build: "In build" };
+  let rewriter = new HTMLRewriter();
+  if (!id || id === "index.html") {
+    const html = `<div class="scroll"><table class="tbl"><caption>Published strategy states</caption><thead><tr><th scope="col">Strategy</th><th scope="col">State</th><th scope="col">Description / limit</th></tr></thead><tbody>${strategies.map((s) => `<tr><th scope="row"><a href="/strategies/${esc(s.id)}/">${esc(s.name)}</a></th><td>${esc(labels[s.state])}</td><td>${esc(s.retired_reason || s.one_line)}</td></tr>`).join("")}</tbody></table></div>${source}`;
+    rewriter = rewriter.on("#strategy-cards", { element(element) { element.setInnerContent(html, { html: true }); } });
+  } else {
+    const strategy = strategies.find((s) => s.id === id); if (!strategy) return response;
+    const list = (title, values) => `<h2>${title}</h2>${values.length ? `<ul>${values.map((v) => `<li>${esc(v)}</li>`).join("")}</ul>` : "<p>Not published.</p>"}`;
+    const html = `<p><strong>${esc(labels[strategy.state])}</strong></p>${strategy.retired_reason ? `<p>Retired: ${esc(strategy.retired_reason)}</p>` : ""}<h2>Mechanism</h2><p>${esc(strategy.mechanism)}</p>${list("Rules", strategy.rules)}${list("Exits", strategy.exits)}${list("Filters", strategy.filters)}<h2>Scoring</h2><p>${esc(strategy.scoring)}</p>${strategy.state === "in_build" ? "<p>Theory only. No performance results are shown.</p>" : strategy.runs.length ? `<a href="/backtests/?run=${encodeURIComponent(strategy.runs[0])}">Read the exported full-run summary and trades</a>` : ""}${source}`;
+    rewriter = rewriter.on("#strategy-theory", { element(element) { element.setInnerContent(html, { html: true }); } }).on("#page-title", { element(element) { element.setInnerContent(strategy.name); } });
+  }
+  rewriter = rewriter.on("#data-status", { element(element) { element.setInnerContent("Published strategy descriptions. The data source and limits are labeled below."); } });
+  const result = rewriter.transform(response); result.headers.set("cache-control", "no-store"); result.headers.delete("etag"); result.headers.delete("last-modified"); return result;
+}

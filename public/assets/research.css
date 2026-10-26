@@ -49,3 +49,11 @@
 .calendar-day[aria-pressed="true"]{outline:2px solid var(--focus);outline-offset:1px}
 .calendar-missing{color:var(--faint)}
 @media(max-width:900px){.replay-layout{grid-template-columns:1fr}.session-calendar{grid-template-columns:1fr}}
+.strategy-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem}
+.strategy-card{border-top:var(--hair) solid var(--wire);padding:1.25rem 0;min-width:0}
+.strategy-card h2{margin:.75rem 0}
+.strategy-card p{color:var(--soft)}
+.strategy-sessions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.session-card{min-width:0}
+.session-card h3{font-size:1rem;font-weight:500}
+@media(max-width:900px){.strategy-cards,.strategy-sessions{grid-template-columns:1fr}}

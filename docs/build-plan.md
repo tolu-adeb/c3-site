@@ -533,6 +533,14 @@ Backtests trade-table destination. Local trace: 59.9 fps median cadence, 2.6 ms 
 - Accept: each strategy's state chip matches the data; retired strategies say why; "in build" strategies show
   theory only with no numbers; best/worst/typical day links open the replay on those days.
 
+Implementation: index and detail pages read the exported descriptions and states, show retired reasons,
+and isolate theory-only strategies from performance requests. Hypothetical headline runs reuse the chart kit;
+best, worst and median daily net-R sessions link to their recorded replays. The exporter contract has no
+strategy-specific forward series yet, so the page states that limit and links to the separately labeled
+aggregate paper record. Public descriptions and the strategy-state table are inserted into static HTML for
+no-JS readers. Fixtures now cover paper, retired and in-build states. Browser checks cover all six routes and
+their state/number separation. Next: S9.
+
 **S9. Engine page and schematic (M).** `engine.json` default in `public/assets/`, V11, node panels.
 - Accept: every node links to its spec section in Methodology or the strategy page; keyboard can walk every node
   in pipeline order; works without JS as an ordered list of the same nodes.

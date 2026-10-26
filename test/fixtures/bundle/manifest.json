@@ -142,8 +142,8 @@
     },
     {
       "path": "strategies.json",
-      "sha256": "62d97c342a7cfa0276579e121f55258f79aa85efe64ebaa4253c85341b64511c",
-      "bytes": 1145
+      "sha256": "c0f116a571b051af40b301f996d4513b0ad71e6cf1177a04d7c33cbff5a4b473",
+      "bytes": 3302
     }
   ],
   "runs": [

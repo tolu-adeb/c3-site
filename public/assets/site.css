@@ -299,6 +299,7 @@ details.paper>summary:focus-visible{outline:2px solid var(--focus);outline-offse
 .chip.state[data-state="paper"]{border-style:double;border-width:3px;color:var(--soft)}
 .chip.state[data-state="live"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .chip.state[data-state="illustration"]{border-style:dashed;color:var(--soft)}
+.chip.state[data-state="retired"],.chip.state[data-state="research"],.chip.state[data-state="in_build"]{border-style:dashed;color:var(--soft)}
 .fig{min-width:0;margin:0;border:var(--hair) solid var(--wire);background:var(--bg);position:relative}
 .fig-head{padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem 1rem;border-bottom:var(--hair) solid var(--wire)}
 .fig-index{font:500 .8125rem var(--mono);overflow-wrap:anywhere}

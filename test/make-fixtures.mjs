@@ -131,6 +131,13 @@ export function buildFixtureBundle(seed = DEFAULT_SEED) {
       rules: ["Render exported rows only."], exits: ["Draw the exported exit."], filters: ["Synthetic sessions only."],
       scoring: "Fixture scores exercise the 0–100 display.", params_public: {}, runs: [run], lab_trials: [runNumber + 1] });
   }
+  for (const [id, name, state] of [["sweep", "Sweep", "retired"], ["vwap", "VWAP", "retired"], ["nq-rev", "NQ reversal", "in_build"], ["nq-cont", "NQ continuation", "in_build"]]) {
+    strategies.push({ id, name: `${name} — synthetic fixture`, state,
+      one_line: state === "retired" ? "Synthetic retired example; no published edge." : "Synthetic theory-only example; no results.",
+      mechanism: state === "retired" ? "A synthetic rejected mechanism, included to test honest failure states." : "A theory-only fixture. No market behaviour was evaluated.",
+      rules: ["This synthetic description is for display testing only."], exits: [], filters: [], scoring: "No score model is published for this fixture.",
+      params_public: {}, runs: [], lab_trials: [], ...(state === "retired" ? { retired_reason: "Synthetic failure example: insufficient evidence of an edge." } : {}) });
+  }
   put("strategies.json", strategies);
   const nodes = ["feed", "structure", "context", "intraday", "models", "score", "gates", "tracker", "alerts", "ledger", "lab", "site"];
   put("engine.json", { nodes: nodes.map((id, i) => ({ id, name: id[0].toUpperCase() + id.slice(1),

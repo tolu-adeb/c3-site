@@ -16,6 +16,7 @@ keeps, with every box linked to its source lines. Source: `docs/architecture.arc
 | `/styleguide/` | Noindex instrument sheet: both themes, tokens, state chips, figures and controls. Synthetic fixtures only |
 | `/backtests/` | Exported hypothetical runs, filters, equity/drawdown, monthly values, distributions, sample comparisons and a replay-linked trade table |
 | `/replay/?run=<id>&day=<date>` | Exported five-minute session, trade overlays, decision log, score/gates and keyboard scrubber |
+| `/strategies/`, `/strategies/<id>/` | Exported states and theory, separate hypothetical headline runs, recorded session examples and lab history |
 | `POST /api/ingest` | The MNQ bot's signed pushes (status every minute, snapshot every 5 minutes, paper stats) |
 | `PUT /api/publish/put?bundle=<id>&path=<relative.json>` | Signed bot upload to private R2 staging; JSON only, at most 5 MiB |
 | `POST /api/publish/commit?bundle=<id>` | Signed manifest; verifies every staged file's SHA-256 and bytes before switching the current bundle |
@@ -160,6 +161,12 @@ to the final frame. `test/replay.mjs` checks keyboard controls, hidden future de
 alignment and animation-frame scrubbing, saving `replay-trace.zip` and timing samples to `test/artifacts/`.
 The no-JS message links to the exported Backtests table, which the Worker inserts alongside the public
 summary with 100-row pages. Private previews require JavaScript and retain their mode in navigation links.
+
+Strategies show no performance figures or requests for `in_build` rows. Retired rows retain the reason.
+Best/worst/median replay examples are ranked from exported daily net R; the median is not an expectation.
+The current contract has no per-strategy forward series, so detail pages state that limit and link to the
+aggregate paper record separately. Public strategy descriptions and the index table work without JS.
+`scripts/page-shell.mjs` is an optional authoring helper for shared chrome; its plain HTML output is committed.
 
 ## Turning things on later
 

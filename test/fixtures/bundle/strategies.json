@@ -46,5 +46,71 @@
     "lab_trials": [
       2
     ]
+  },
+  {
+    "id": "sweep",
+    "name": "Sweep — synthetic fixture",
+    "state": "retired",
+    "one_line": "Synthetic retired example; no published edge.",
+    "mechanism": "A synthetic rejected mechanism, included to test honest failure states.",
+    "rules": [
+      "This synthetic description is for display testing only."
+    ],
+    "exits": [],
+    "filters": [],
+    "scoring": "No score model is published for this fixture.",
+    "params_public": {},
+    "runs": [],
+    "lab_trials": [],
+    "retired_reason": "Synthetic failure example: insufficient evidence of an edge."
+  },
+  {
+    "id": "vwap",
+    "name": "VWAP — synthetic fixture",
+    "state": "retired",
+    "one_line": "Synthetic retired example; no published edge.",
+    "mechanism": "A synthetic rejected mechanism, included to test honest failure states.",
+    "rules": [
+      "This synthetic description is for display testing only."
+    ],
+    "exits": [],
+    "filters": [],
+    "scoring": "No score model is published for this fixture.",
+    "params_public": {},
+    "runs": [],
+    "lab_trials": [],
+    "retired_reason": "Synthetic failure example: insufficient evidence of an edge."
+  },
+  {
+    "id": "nq-rev",
+    "name": "NQ reversal — synthetic fixture",
+    "state": "in_build",
+    "one_line": "Synthetic theory-only example; no results.",
+    "mechanism": "A theory-only fixture. No market behaviour was evaluated.",
+    "rules": [
+      "This synthetic description is for display testing only."
+    ],
+    "exits": [],
+    "filters": [],
+    "scoring": "No score model is published for this fixture.",
+    "params_public": {},
+    "runs": [],
+    "lab_trials": []
+  },
+  {
+    "id": "nq-cont",
+    "name": "NQ continuation — synthetic fixture",
+    "state": "in_build",
+    "one_line": "Synthetic theory-only example; no results.",
+    "mechanism": "A theory-only fixture. No market behaviour was evaluated.",
+    "rules": [
+      "This synthetic description is for display testing only."
+    ],
+    "exits": [],
+    "filters": [],
+    "scoring": "No score model is published for this fixture.",
+    "params_public": {},
+    "runs": [],
+    "lab_trials": []
   }
 ]
