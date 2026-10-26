@@ -4,50 +4,91 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>c3.lab</title>
-<meta name="description" content="c3.lab: a research lab for NQ futures intraday alerts. Rules written as code and tested before they ever post.">
+<meta name="description" content="c3.lab is an alert-only research lab for NQ futures. Every alert has to pass twelve fixed gates, and every alert is tracked as a virtual trade.">
+<meta name="color-scheme" content="light dark">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<link rel="preload" href="/assets/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/theme.js"></script>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header class="wrap bar">
-  <a class="mark" href="/">c3.lab</a>
-  <nav aria-label="Site"><a href="/track-record/">Track record</a><a href="/join/">Join the waitlist</a></nav>
+  <a class="mark" href="/"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><rect x="1" y="9" width="4" height="8" fill="currentColor"/><rect x="7" y="5" width="4" height="12" fill="currentColor"/><rect x="13" y="1" width="4" height="16" fill="currentColor"/></svg>c3.lab</a>
+  <nav aria-label="Site">
+    <a class="navlink" href="/#how">How it works</a><a class="navlink" href="/track-record/">Track record</a><a class="navlink" href="/join/">Join the waitlist</a>
+    <span class="toolwrap"><button type="button" class="tool" id="display-btn" aria-expanded="false" aria-controls="display">Display</button>
+      <div class="pop" id="display" role="dialog" aria-label="Display settings" hidden>
+        <h2>Display</h2>
+        <div class="row"><span id="theme-l">Theme</span><div class="seg-btns" role="group" aria-labelledby="theme-l"><button type="button" data-theme-set="system">System</button><button type="button" data-theme-set="light">Light</button><button type="button" data-theme-set="dark">Dark</button></div></div>
+        <div class="row"><span id="motion-l">Motion</span><div class="seg-btns" role="group" aria-labelledby="motion-l"><button type="button" data-motion-set="full">Full</button><button type="button" data-motion-set="reduced">Reduced</button></div></div>
+        <p class="weight" id="weight">Measuring this page…</p>
+      </div></span>
+    <button type="button" class="tool" id="menu-btn" aria-expanded="false" aria-controls="menu">Menu</button>
+  </nav>
 </header>
-<main class="wrap hero">
-  <h1 class="display">c3.lab</h1>
-  <p class="lede">A research lab for NQ futures intraday alerts. Every rule is written as code, and every rule is tested before it is allowed to post.</p>
+<div class="menu" id="menu" hidden>
+  <button type="button" class="tool close" id="menu-close">Close</button>
+  <nav aria-label="Menu"><ol class="tiles"><li><a href="/" aria-current="page"><span class="n">01</span><span class="t">Home</span></a></li><li><a href="/#how"><span class="n">02</span><span class="t">How it works</span></a></li><li><a href="/track-record/"><span class="n">03</span><span class="t">Track record</span></a></li><li><a href="/join/"><span class="n">04</span><span class="t">Join the waitlist</span></a></li></ol></nav>
+</div>
+<main id="main">
+  <section class="wrap hero" aria-labelledby="hero-title">
+    <span class="tag">Alert-only research lab for NQ futures</span>
+    <h1 class="display" id="hero-title">Every alert has to pass twelve gates first</h1>
+    <p class="lede">c3.lab reads the NQ futures market minute by minute and alerts only when a setup clears every rule. Each rule is written as code and tested before it is allowed to post.</p>
+    <a class="more" href="#how">See how an alert is made</a>
+  </section>
 
-  <figure class="tape" aria-label="Illustration of one trading session with the 9:30 to 12:00 ET window highlighted">
-    <svg id="tape" viewBox="0 0 1000 220" role="img" aria-hidden="true"></svg>
-    <figcaption><span>One session, minute by minute. Alerts can only arm in the shaded window.</span><span>9:30–12:00 ET</span></figcaption>
-  </figure>
-
-  <section class="cols">
-    <div>
-      <h2>What it does</h2>
-      <ul>
-        <li>Reads 1-minute NQ and ES structure</li>
-        <li>Scores each setup from 0 to 100</li>
-        <li>Posts alerts and tracks them as virtual trades</li>
-      </ul>
-    </div>
-    <div>
-      <h2>What it never does</h2>
-      <p>Place orders. It is alert-only. Decisions come from fixed, deterministic rules, so the same market always gets the same answer.</p>
-    </div>
-    <div>
-      <h2>Where it stands</h2>
-      <p>In private testing. Results go on the <a href="/track-record/">track record</a> after at least four weeks of forward testing. <a href="/join/">Join the waitlist</a> to hear when alerts open.</p>
+  <section class="wrap story" id="how" aria-label="How an alert is made">
+    <figure class="figure"><div class="sticky">
+      <svg id="chart" class="show-1 show-2 show-3 show-4 show-5" viewBox="0 0 1000 410" role="img" aria-labelledby="chart-title"><title id="chart-title">Illustration: one session in five-minute bars. The overnight low is swept, structure breaks upward inside the 9:30 to 12:00 window, the setup passes its gates and scores 82, and the virtual trade runs from entry to target.</title><g class="grid"><line x1="30" x2="970" y1="304.3" y2="304.3"/><line x1="30" x2="970" y1="234.8" y2="234.8"/><line x1="30" x2="970" y1="165.2" y2="165.2"/><line x1="30" x2="970" y1="95.7" y2="95.7"/></g><g class="s s1"><text class="lbl" x="30.0" y="396">9:00</text><text class="lbl" x="164.3" y="396">9:30</text><text class="lbl" x="298.6" y="396">10:00</text><text class="lbl" x="432.9" y="396">10:30</text><text class="lbl" x="567.1" y="396">11:00</text><text class="lbl" x="701.4" y="396">11:30</text><text class="lbl" x="835.7" y="396">12:00</text></g><g class="s s1 candles"><g class="up"><line x1="41.2" x2="41.2" y1="223.0" y2="252.5"/><rect x="34.5" y="234.8" width="13.4" height="1.5"/></g><g class="up"><line x1="63.6" x2="63.6" y1="223.7" y2="247.4"/><rect x="56.9" y="234.8" width="13.4" height="1.5"/></g><g class="up"><line x1="86.0" x2="86.0" y1="223.7" y2="251.1"/><rect x="79.2" y="234.8" width="13.4" height="3.5"/></g><g class="dn"><line x1="108.3" x2="108.3" y1="226.6" y2="242.8"/><rect x="101.6" y="231.5" width="13.4" height="3.3"/></g><g class="up"><line x1="130.7" x2="130.7" y1="219.3" y2="253.1"/><rect x="124.0" y="234.8" width="13.4" height="4.6"/></g><g class="up"><line x1="153.1" x2="153.1" y1="216.7" y2="257.7"/><rect x="146.4" y="234.8" width="13.4" height="5.1"/></g><g class="dn"><line x1="175.5" x2="175.5" y1="221.5" y2="275.1"/><rect x="168.8" y="233.1" width="13.4" height="36.5"/></g><g class="dn"><line x1="197.9" x2="197.9" y1="263.6" y2="301.8"/><rect x="191.1" y="275.0" width="13.4" height="22.4"/></g><g class="dn"><line x1="220.2" x2="220.2" y1="293.4" y2="337.7"/><rect x="213.5" y="300.8" width="13.4" height="23.0"/></g><g class="up"><line x1="242.6" x2="242.6" y1="280.4" y2="340.2"/><rect x="235.9" y="290.4" width="13.4" height="33.8"/></g><g class="up"><line x1="265.0" x2="265.0" y1="239.5" y2="300.3"/><rect x="258.3" y="251.5" width="13.4" height="38.7"/></g><g class="up"><line x1="287.4" x2="287.4" y1="208.6" y2="256.8"/><rect x="280.7" y="218.1" width="13.4" height="31.6"/></g><g class="up"><line x1="309.8" x2="309.8" y1="170.8" y2="227.1"/><rect x="303.0" y="187.5" width="13.4" height="25.1"/></g><g class="up"><line x1="332.1" x2="332.1" y1="157.6" y2="191.7"/><rect x="325.4" y="165.2" width="13.4" height="19.9"/></g><g class="dn"><line x1="354.5" x2="354.5" y1="163.3" y2="188.7"/><rect x="347.8" y="167.6" width="13.4" height="8.8"/></g><g class="dn"><line x1="376.9" x2="376.9" y1="165.6" y2="205.9"/><rect x="370.2" y="177.5" width="13.4" height="21.2"/></g><g class="dn"><line x1="399.3" x2="399.3" y1="182.4" y2="214.6"/><rect x="392.6" y="193.5" width="13.4" height="17.6"/></g><g class="up"><line x1="421.7" x2="421.7" y1="182.0" y2="222.5"/><rect x="415.0" y="194.4" width="13.4" height="19.9"/></g><g class="up"><line x1="444.0" x2="444.0" y1="171.4" y2="193.3"/><rect x="437.3" y="179.1" width="13.4" height="10.0"/></g><g class="up"><line x1="466.4" x2="466.4" y1="157.9" y2="184.1"/><rect x="459.7" y="169.7" width="13.4" height="8.0"/></g><g class="up"><line x1="488.8" x2="488.8" y1="153.2" y2="188.1"/><rect x="482.1" y="160.2" width="13.4" height="14.1"/></g><g class="up"><line x1="511.2" x2="511.2" y1="146.0" y2="163.5"/><rect x="504.5" y="150.7" width="13.4" height="6.6"/></g><g class="up"><line x1="533.6" x2="533.6" y1="137.2" y2="167.2"/><rect x="526.9" y="141.3" width="13.4" height="13.9"/></g><g class="up"><line x1="556.0" x2="556.0" y1="122.4" y2="153.1"/><rect x="549.2" y="131.8" width="13.4" height="13.0"/></g><g class="up"><line x1="578.3" x2="578.3" y1="111.0" y2="140.2"/><rect x="571.6" y="122.4" width="13.4" height="12.9"/></g><g class="up"><line x1="600.7" x2="600.7" y1="108.2" y2="128.8"/><rect x="594.0" y="112.9" width="13.4" height="7.9"/></g><g class="up"><line x1="623.1" x2="623.1" y1="97.1" y2="130.0"/><rect x="616.4" y="103.4" width="13.4" height="12.7"/></g><g class="up"><line x1="645.5" x2="645.5" y1="87.2" y2="113.0"/><rect x="638.8" y="94.0" width="13.4" height="6.1"/></g><g class="up"><line x1="667.9" x2="667.9" y1="76.8" y2="109.8"/><rect x="661.1" y="84.5" width="13.4" height="12.7"/></g><g class="up"><line x1="690.2" x2="690.2" y1="70.5" y2="97.0"/><rect x="683.5" y="75.1" width="13.4" height="7.9"/></g><g class="up"><line x1="712.6" x2="712.6" y1="66.9" y2="90.7"/><rect x="705.9" y="73.4" width="13.4" height="4.9"/></g><g class="dn"><line x1="735.0" x2="735.0" y1="68.9" y2="91.5"/><rect x="728.3" y="75.3" width="13.4" height="12.0"/></g><g class="up"><line x1="757.4" x2="757.4" y1="69.7" y2="97.7"/><rect x="750.7" y="79.0" width="13.4" height="12.9"/></g><g class="dn"><line x1="779.8" x2="779.8" y1="70.7" y2="102.2"/><rect x="773.0" y="77.8" width="13.4" height="16.4"/></g><g class="up"><line x1="802.1" x2="802.1" y1="75.3" y2="97.8"/><rect x="795.4" y="83.1" width="13.4" height="6.0"/></g><g class="dn"><line x1="824.5" x2="824.5" y1="73.9" y2="96.4"/><rect x="817.8" y="79.1" width="13.4" height="12.4"/></g><g class="up"><line x1="846.9" x2="846.9" y1="73.6" y2="92.7"/><rect x="840.2" y="84.5" width="13.4" height="2.4"/></g><g class="dn"><line x1="869.3" x2="869.3" y1="77.8" y2="107.6"/><rect x="862.6" y="88.0" width="13.4" height="7.7"/></g><g class="up"><line x1="891.7" x2="891.7" y1="76.0" y2="109.7"/><rect x="885.0" y="87.3" width="13.4" height="11.7"/></g><g class="dn"><line x1="914.0" x2="914.0" y1="79.2" y2="97.2"/><rect x="907.3" y="86.2" width="13.4" height="6.7"/></g><g class="up"><line x1="936.4" x2="936.4" y1="74.5" y2="103.4"/><rect x="929.7" y="85.9" width="13.4" height="12.1"/></g><g class="dn"><line x1="958.8" x2="958.8" y1="78.0" y2="100.3"/><rect x="952.1" y="83.6" width="13.4" height="6.5"/></g></g><g class="s s2"><line class="liq" x1="30" x2="354.5" y1="312.7" y2="312.7"/><text class="lbl" x="30" y="330.7">Overnight low</text><circle class="swing" cx="220.2" cy="337.7" r="5"/><text class="lbl ink" x="230.2" y="342.7">Swept</text><line class="liq" x1="153.1" x2="354.5" y1="216.7" y2="216.7"/><circle class="swing" cx="153.1" cy="216.7" r="5"/><circle class="swing" cx="309.8" cy="216.7" r="5"/><text class="lbl ink" x="30" y="204.7">Break of structure</text></g><g class="s s3"><rect class="window" x="164.3" y="26" width="671.4" height="334"/><line class="wedge" x1="164.3" x2="164.3" y1="26" y2="360"/><line class="wedge" x1="835.7" x2="835.7" y1="26" y2="360"/><text class="lbl ink" x="172.3" y="44">Alert window 9:30 to 12:00</text></g><g class="s s4"><rect class="panelbox" x="843.7" y="205" width="196" height="150" rx="3"/><text class="lbl" x="857.7" y="231">Reversal model</text><text class="lbl ink" x="857.7" y="255">Score 82 of 100</text><rect class="gate ok" x="857.7" y="269" width="16" height="16"/><rect class="gate ok" x="880.7" y="269" width="16" height="16"/><rect class="gate ok" x="903.7" y="269" width="16" height="16"/><rect class="gate ok" x="926.7" y="269" width="16" height="16"/><rect class="gate ok" x="949.7" y="269" width="16" height="16"/><rect class="gate ok" x="972.7" y="269" width="16" height="16"/><rect class="gate ok" x="857.7" y="292" width="16" height="16"/><rect class="gate ok" x="880.7" y="292" width="16" height="16"/><rect class="gate ok" x="903.7" y="292" width="16" height="16"/><rect class="gate ok" x="926.7" y="292" width="16" height="16"/><rect class="gate ok" x="949.7" y="292" width="16" height="16"/><rect class="gate ok" x="972.7" y="292" width="16" height="16"/><text class="lbl" x="857.7" y="343">12 of 12 gates</text></g><g class="s s5"><line class="entry" x1="399.3" x2="698.2" y1="209.7" y2="209.7"/><line class="stop" x1="399.3" x2="698.2" y1="264.0" y2="264.0"/><line class="target" x1="399.3" x2="698.2" y1="76.2" y2="76.2"/><text class="lbl" x="704.2" y="214.7">Entry</text><text class="lbl" x="704.2" y="269.0">Stop</text><text class="lbl" x="405.3" y="67.2">Target</text><polyline class="path" points="399.3,209.7 421.7,194.4 444.0,179.1 466.4,169.7 488.8,160.2 511.2,150.7 533.6,141.3 556.0,131.8 578.3,122.4 600.7,112.9 623.1,103.4 645.5,94.0 667.9,84.5 690.2,76.2"/></g></svg>
+      <figcaption><span>Illustration, not real data: one session in five-minute bars.</span><span id="chart-step">Step 5 of 5</span></figcaption>
+    </div></figure>
+    <div class="steps">
+    <article class="step" id="read" data-step="1">
+      <div class="head"><span class="num" aria-hidden="true">01</span><span class="tag line">§3 Read</span></div>
+      <h2>One-minute NQ and ES bars arrive from TradingView.</h2>
+      <details class="more"><summary>How it works</summary><p>Every bar comes in through a webhook checked against a secret token. Duplicates are dropped, and the same minutes are rolled up into the higher timeframes, so every timeframe agrees with the others.</p></details>
+    </article>
+    <article class="step" id="structure" data-step="2">
+      <div class="head"><span class="num" aria-hidden="true">02</span><span class="tag line">§4 Structure</span></div>
+      <h2>Swing points, breaks of structure and liquidity levels are marked as they form.</h2>
+      <details class="more"><summary>How it works</summary><p>Only closed bars count. Nothing is drawn with hindsight, so what the bot sees at 10:05 is exactly what it could have seen at 10:05.</p></details>
+    </article>
+    <article class="step" id="context" data-step="3">
+      <div class="head"><span class="num" aria-hidden="true">03</span><span class="tag line">§5 Context</span></div>
+      <h2>Each morning starts with a brief: the bias, the levels that matter and the window.</h2>
+      <details class="more"><summary>How it works</summary><p>Alerts can only arm between 9:30 and 12:00 ET. Outside that window the bot keeps watching and keeps quiet.</p></details>
+    </article>
+    <article class="step" id="score" data-step="4">
+      <div class="head"><span class="num" aria-hidden="true">04</span><span class="tag line">§8 Score</span></div>
+      <h2>A setup must fit a model, pass all twelve gates and score from 0 to 100.</h2>
+      <details class="more"><summary>How it works</summary><p>There are two models, reversal and continuation. The gates and the score are fixed, deterministic rules: the same market always gets the same answer, and no AI makes the call.</p></details>
+    </article>
+    <article class="step" id="track" data-step="5">
+      <div class="head"><span class="num" aria-hidden="true">05</span><span class="tag line">§12 Track</span></div>
+      <h2>Every alert becomes a virtual trade, followed from entry to exit, losses included.</h2>
+      <details class="more"><summary>How it works</summary><p>A circuit breaker stops alerts after a bad run. Each closed trade goes into the record behind the public track record.</p></details>
+    </article>
     </div>
   </section>
+
+  <section class="wrap results" id="results" aria-labelledby="results-title">
+    <span class="tag">Results</span>
+    <h2 id="results-title">Losses stay on the record too</h2>
+    <div class="body"><div id="results-live"><p>Every alert is followed to its exit and counted, win or loss. The track record shows the forward test as it happens, never a backtest.</p></div>
+      <a class="btn" href="/track-record/">See the track record</a></div>
+  </section>
 </main>
+<nav class="rail" id="rail" aria-label="Story sections"><ol><li><a href="#read" data-step="1">01 Read</a></li><li><a href="#structure" data-step="2">02 Structure</a></li><li><a href="#context" data-step="3">03 Context</a></li><li><a href="#score" data-step="4">04 Score</a></li><li><a href="#track" data-step="5">05 Track</a></li><li class="pct" aria-hidden="true"><span id="rail-pct">0%</span></li></ol><span class="fill" id="rail-fill"></span></nav>
 <footer class="wrap foot">
-  <span>Educational, not financial advice.</span>
-  <span>© 2026 c3.lab</span>
+  <a class="big-link" href="/join/">Join the waitlist</a>
+  <div class="col"><h2>Site</h2><ul><li><a href="/">Home</a></li><li><a href="/#how">How it works</a></li><li><a href="/track-record/">Track record</a></li><li><a href="/join/">Join the waitlist</a></li></ul></div>
+  <div class="col"><h2>The lab</h2><p>Alert-only: it never places orders.</p><p>Fixed, tested rules decide every alert.</p><p>Educational, not financial advice.</p></div>
+  <div class="col"><h2>This site</h2><p>No cookies, no trackers and no third-party requests. Your theme and motion choices stay in this browser.</p></div>
+  <div class="base"><span>© 2026 c3.lab</span><a href="#main">Back to top</a></div>
 </footer>
+<script src="/assets/chrome.js"></script>
 <script src="/assets/home.js"></script>
 </body>
 </html>

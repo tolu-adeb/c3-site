@@ -2,6 +2,7 @@
 
 The c3.lab website: one Cloudflare Worker (`c3-lab`) with static pages and a small D1 database.
 
+**[docs/redesign/blueprint.md](docs/redesign/blueprint.md)** explains the design (what was learned from a reference site, the tokens, budgets and next phases).
 **[docs/architecture.html](docs/architecture.html)** (open in a browser) shows who talks to the Worker and what D1
 keeps, with every box linked to its source lines. Source: `docs/architecture.archify.json`.
 

@@ -4,22 +4,38 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Join the waitlist | c3.lab</title>
-<meta name="description" content="Hear when c3.lab alerts open.">
+<meta name="description" content="Hear once, when c3.lab alerts open.">
+<meta name="color-scheme" content="light dark">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<link rel="preload" href="/assets/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/theme.js"></script>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header class="wrap bar">
-  <a class="mark" href="/">c3.lab</a>
-  <nav aria-label="Site"><a href="/track-record/">Track record</a><a href="/join/" aria-current="page">Join the waitlist</a></nav>
+  <a class="mark" href="/"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><rect x="1" y="9" width="4" height="8" fill="currentColor"/><rect x="7" y="5" width="4" height="12" fill="currentColor"/><rect x="13" y="1" width="4" height="16" fill="currentColor"/></svg>c3.lab</a>
+  <nav aria-label="Site">
+    <a class="navlink" href="/#how">How it works</a><a class="navlink" href="/track-record/">Track record</a><a class="navlink" href="/join/" aria-current="page">Join the waitlist</a>
+    <span class="toolwrap"><button type="button" class="tool" id="display-btn" aria-expanded="false" aria-controls="display">Display</button>
+      <div class="pop" id="display" role="dialog" aria-label="Display settings" hidden>
+        <h2>Display</h2>
+        <div class="row"><span id="theme-l">Theme</span><div class="seg-btns" role="group" aria-labelledby="theme-l"><button type="button" data-theme-set="system">System</button><button type="button" data-theme-set="light">Light</button><button type="button" data-theme-set="dark">Dark</button></div></div>
+        <div class="row"><span id="motion-l">Motion</span><div class="seg-btns" role="group" aria-labelledby="motion-l"><button type="button" data-motion-set="full">Full</button><button type="button" data-motion-set="reduced">Reduced</button></div></div>
+        <p class="weight" id="weight">Measuring this page…</p>
+      </div></span>
+    <button type="button" class="tool" id="menu-btn" aria-expanded="false" aria-controls="menu">Menu</button>
+  </nav>
 </header>
-<main class="wrap page">
+<div class="menu" id="menu" hidden>
+  <button type="button" class="tool close" id="menu-close">Close</button>
+  <nav aria-label="Menu"><ol class="tiles"><li><a href="/"><span class="n">01</span><span class="t">Home</span></a></li><li><a href="/#how"><span class="n">02</span><span class="t">How it works</span></a></li><li><a href="/track-record/"><span class="n">03</span><span class="t">Track record</span></a></li><li><a href="/join/" aria-current="page"><span class="n">04</span><span class="t">Join the waitlist</span></a></li></ol></nav>
+</div>
+<main class="wrap page" id="main">
+  <span class="tag">Waitlist</span>
   <h1>Join the waitlist</h1>
   <p class="big">Alerts are in private testing. Leave your email and you'll hear once, when they open.</p>
-  <form class="stack" id="join" novalidate>
+  <div class="side"><form class="stack" id="join" novalidate>
     <label>Email
       <input type="email" name="email" autocomplete="email" required maxlength="254">
     </label>
@@ -30,12 +46,16 @@
     <div><button type="submit">Join the waitlist</button></div>
     <p class="msg" id="join-msg" role="status"></p>
   </form>
-  <p class="note">Your email is only used to tell you when alerts open. Nothing else is sent, and it's never shared.</p>
+  <p class="note">Your email is only used to tell you when alerts open. Nothing else is sent, and it's never shared.</p></div>
 </main>
 <footer class="wrap foot">
-  <span>Educational, not financial advice.</span>
-  <span>© 2026 c3.lab</span>
+  <a class="big-link" href="/track-record/">See the track record</a>
+  <div class="col"><h2>Site</h2><ul><li><a href="/">Home</a></li><li><a href="/#how">How it works</a></li><li><a href="/track-record/">Track record</a></li><li><a href="/join/">Join the waitlist</a></li></ul></div>
+  <div class="col"><h2>The lab</h2><p>Alert-only: it never places orders.</p><p>Fixed, tested rules decide every alert.</p><p>Educational, not financial advice.</p></div>
+  <div class="col"><h2>This site</h2><p>No cookies, no trackers and no third-party requests. Your theme and motion choices stay in this browser.</p></div>
+  <div class="base"><span>© 2026 c3.lab</span><a href="#main">Back to top</a></div>
 </footer>
+<script src="/assets/chrome.js"></script>
 <script src="/assets/join.js"></script>
 </body>
 </html>
