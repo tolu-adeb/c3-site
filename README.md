@@ -39,9 +39,22 @@ pinned by ID in `wrangler.jsonc`; the Worker creates its tables on first use.
 
 ## Local check
 
+Use Node 22 or newer. CI runs the same checks on pull requests and pushes to `main`.
+It uses generated test keys and an isolated local D1 database; no Cloudflare account or secrets are needed.
+
 ```sh
-npm install
-npx wrangler dev --local          # needs a .dev.vars with test keys (git-ignored)
+npm ci
+npm test                         # validate fixtures, test the contract, run smoke and fuzz locally
+```
+
+`npm run test:local` starts `wrangler dev --local`, waits for health, runs the unchanged smoke and fuzz
+suites, then removes the temporary keys and database. It does not read the checkout's `.dev.vars` or
+the private c3.lab repository. The optional Python cross-check in fuzz still needs c3.lab when run manually.
+
+To test an already running local Worker with your own test keys:
+
+```sh
+npx wrangler dev --local          # .dev.vars with test keys (git-ignored)
 node test/smoke.mjs http://127.0.0.1:8787 <test-keys.json>
 node test/fuzz.mjs  http://127.0.0.1:8787 <test-keys.json> ../c3.lab/mnq-bot   # 300 generated cases
 ```
@@ -49,6 +62,24 @@ node test/fuzz.mjs  http://127.0.0.1:8787 <test-keys.json> ../c3.lab/mnq-bot   #
 `test/smoke.mjs` covers pages and headers, research papers (upload limits, signed pull and download, chunk clean-up, result push, delete, the daily cap), signed/unsigned/tampered/stale/replayed pushes, the private views, the
 public track record filter, the waitlist (dupes, bad email, honeypot, rate limit, CSV, delete) and the front door
 (path, token, IP allowlist, duplicates, signed pull).
+
+## Data fixtures and contract
+
+[schemas/README.md](schemas/README.md) documents the version 1 bundle contract. JSON Schemas reject
+unknown fields, including private parameters and trial rationale. The validator also checks file hashes,
+byte limits, references, sample splits and P&L totals. Schema validation does not replace exporter redaction.
+
+```sh
+npm run fixtures                # regenerate the committed bundle with the default seed
+node test/validate.mjs           # validate test/fixtures/bundle/
+node test/validate.mjs <bundle-directory>
+npm run test:fixtures            # determinism and invalid-bundle checks
+```
+
+The fixture bundle contains two runs, ten 78-bar sessions, thirty trades, twelve lab trials and three
+parity days. All prices and results are synthetic. It lives outside `public/` and is not served or uploaded.
+Regeneration is byte-identical for the same seed. Tests compare the committed files with a fresh generation.
+R2 publishing and local R2 seeding come in S4.
 
 ## Turning things on later
 

@@ -1,0 +1,21 @@
+{
+  "tried": 12,
+  "passed_search": 6,
+  "passed_holdout": 3,
+  "approved": 1,
+  "by_verdict": {
+    "rejected": 6,
+    "failed_holdout": 3,
+    "candidate": 2,
+    "approved": 1
+  },
+  "holdout_windows": [
+    {
+      "id": "synthetic-holdout",
+      "start": "2026-08-04",
+      "end": "2026-08-12",
+      "looks_used": 6,
+      "looks_limit": 6
+    }
+  ]
+}

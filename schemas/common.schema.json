@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://c3.site/schemas/v1/common.schema.json",
+  "title": "c3.site common",
+  "$defs": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "strings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      }
+    },
+    "trade": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "setup": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "maxLength": 100
+        },
+        "side": {
+          "enum": [
+            "long",
+            "short"
+          ]
+        },
+        "grade": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "regime": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "opened": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closed": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "entry": {
+          "type": "number"
+        },
+        "stop": {
+          "type": "number"
+        },
+        "t1": {
+          "type": "number"
+        },
+        "final": {
+          "type": "number"
+        },
+        "risk_pts": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "exit": {
+          "type": "number"
+        },
+        "exit_reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "t1_hit": {
+          "type": "boolean"
+        },
+        "r": {
+          "type": "number"
+        },
+        "pts": {
+          "type": "number"
+        },
+        "usd": {
+          "type": "number"
+        },
+        "mfe_pts": {
+          "type": "number",
+          "minimum": 0
+        },
+        "mae_pts": {
+          "type": "number",
+          "minimum": 0
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "sample": {
+          "enum": [
+            "in",
+            "out"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "date",
+        "setup",
+        "side",
+        "grade",
+        "regime",
+        "opened",
+        "closed",
+        "entry",
+        "stop",
+        "t1",
+        "final",
+        "risk_pts",
+        "exit",
+        "exit_reason",
+        "t1_hit",
+        "r",
+        "pts",
+        "usd",
+        "mfe_pts",
+        "mae_pts",
+        "score",
+        "reasons",
+        "sample"
+      ],
+      "additionalProperties": false
+    },
+    "trialStats": {
+      "type": "object",
+      "properties": {
+        "trades": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "win_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "net_usd": {
+          "type": "number"
+        },
+        "max_dd_usd": {
+          "type": "number",
+          "minimum": 0
+        },
+        "avg_r": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "trades",
+        "win_rate",
+        "net_usd",
+        "max_dd_usd",
+        "avg_r"
+      ],
+      "additionalProperties": false
+    },
+    "parityRow": {
+      "type": "object",
+      "properties": {
+        "day": {
+          "type": "string",
+          "format": "date"
+        },
+        "verdict": {
+          "enum": [
+            "match",
+            "differs"
+          ]
+        },
+        "live_r": {
+          "type": "number"
+        },
+        "backtest_r": {
+          "type": "number"
+        },
+        "causes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        }
+      },
+      "required": [
+        "day",
+        "verdict",
+        "live_r",
+        "backtest_r",
+        "causes"
+      ],
+      "additionalProperties": false
+    },
+    "verdict": {
+      "enum": [
+        "rejected",
+        "failed_holdout",
+        "candidate",
+        "approved"
+      ]
+    }
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://c3.site/schemas/v1/manifest.schema.json",
+  "title": "c3.site manifest",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "bundle": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "maxLength": 100
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "c3lab_commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{7,40}$"
+    },
+    "synthetic": {
+      "const": true
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "pattern": "^(?!.*\\.\\.)(?!.*//)[a-z0-9][a-z0-9/_.-]{0,200}\\.json$"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1500000
+          }
+        },
+        "required": [
+          "path",
+          "sha256",
+          "bytes"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "runs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+        "maxLength": 100
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "featured": {
+      "type": "object",
+      "properties": {
+        "run": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "maxLength": 100
+        },
+        "day": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "required": [
+        "run",
+        "day"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "bundle",
+    "generated_at",
+    "c3lab_commit",
+    "files",
+    "runs",
+    "featured"
+  ],
+  "additionalProperties": false
+}

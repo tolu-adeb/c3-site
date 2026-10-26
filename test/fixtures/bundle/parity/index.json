@@ -1,0 +1,25 @@
+[
+  {
+    "day": "2026-07-30",
+    "verdict": "match",
+    "live_r": -1.7325,
+    "backtest_r": -1.7325,
+    "causes": []
+  },
+  {
+    "day": "2026-07-31",
+    "verdict": "differs",
+    "live_r": -1.1075,
+    "backtest_r": -0.9825,
+    "causes": [
+      "Synthetic uptime gap delayed a paper fill."
+    ]
+  },
+  {
+    "day": "2026-08-03",
+    "verdict": "match",
+    "live_r": 0.7675,
+    "backtest_r": 0.7675,
+    "causes": []
+  }
+]

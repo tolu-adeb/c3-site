@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://c3.site/schemas/v1/equity.schema.json",
+  "title": "c3.site equity",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "date": {
+        "type": "string",
+        "format": "date"
+      },
+      "n": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "net_r": {
+        "type": "number"
+      },
+      "net_usd": {
+        "type": "number"
+      },
+      "equity_usd": {
+        "type": "number"
+      },
+      "drawdown_usd": {
+        "type": "number",
+        "minimum": 0
+      },
+      "sample": {
+        "enum": [
+          "in",
+          "out"
+        ]
+      }
+    },
+    "required": [
+      "date",
+      "n",
+      "net_r",
+      "net_usd",
+      "equity_usd",
+      "drawdown_usd",
+      "sample"
+    ],
+    "additionalProperties": false
+  }
+}

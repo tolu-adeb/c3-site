@@ -417,6 +417,11 @@ trials, lab summary, parity index).
 - Accept: CI green on a PR; fixtures validate against the schemas (`node test/validate.mjs`); smoke and fuzz
   still pass unchanged.
 
+Implementation: schemas, deterministic fixtures, validation and a local test runner are in place. `npm test`
+passes bundle validation, 13 fixture tests, 72 unchanged smoke checks and 300 unchanged fuzz cases. The CI
+workflow runs these checks on pull requests and pushes to `main`. Per AGENTS.md, this work goes directly to
+`main`; a green PR run is therefore not recorded for S1. Next: S2.
+
 **S2. Design tokens v2 and components (M).** Tokens from 3.1, wireframe styles from 3.2, components from 3.3.
 Update the home illustration candles to the colored style as a first visible change.
 - Accept: tokens defined for light, dark and `[data-theme]`; a `/styleguide/` page (noindex) shows every token,
