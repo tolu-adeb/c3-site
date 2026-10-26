@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://c3.site/schemas/v1/trials.schema.json",
+  "title": "c3.site trials",
+  "description": "Newest first. Private rationale and tuning parameters are excluded. changes stays empty pending an explicit public allowlist.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "ts": {
+        "$ref": "common.schema.json#/$defs/timestamp"
+      },
+      "source": {
+        "enum": [
+          "research agent",
+          "KH",
+          "CLI"
+        ]
+      },
+      "name": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      },
+      "changes": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "verdict": {
+        "$ref": "common.schema.json#/$defs/verdict"
+      },
+      "failed_check": {
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "summary": {
+        "$ref": "common.schema.json#/$defs/trialStats"
+      },
+      "baseline": {
+        "$ref": "common.schema.json#/$defs/trialStats"
+      },
+      "holdout_looks": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 6
+      }
+    },
+    "required": [
+      "id",
+      "ts",
+      "source",
+      "name",
+      "changes",
+      "verdict",
+      "failed_check",
+      "summary",
+      "baseline",
+      "holdout_looks"
+    ],
+    "additionalProperties": false
+  }
+}
