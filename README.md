@@ -1,4 +1,4 @@
-# c3-site
+# c3.site
 
 The c3.lab website: one Cloudflare Worker (`c3-lab`) with static pages, D1 and private R2 data storage.
 
