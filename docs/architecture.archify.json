@@ -10,84 +10,367 @@
       "url": "https://github.com/tolu-adeb/c3-site",
       "provider": "github",
       "link_mode": "web",
-      "revision": "6b79c9c1883c9127a9e39a805e1bff9da3c676b8"
+      "revision": "9f75396b6429b250e5a1eb5633f4977f3418ad6b"
     }
   },
   "components": [
     {
-      "id": "visitors", "type": "external", "label": "Visitors", "sublabel": "anyone on the web", "pos": [40, 40], "size": [150, 62],
-      "sources": [{ "path": "public/index.html", "line": 17, "end_line": 17, "label": "public navigation" }]
-    },
-    {
-      "id": "pages", "type": "frontend", "label": "Public pages", "sublabel": "home, track record, waitlist", "pos": [290, 40], "size": [170, 62],
+      "id": "visitors",
+      "type": "external",
+      "label": "Visitors",
+      "sublabel": "anyone on the web",
+      "pos": [
+        40,
+        40
+      ],
+      "size": [
+        150,
+        62
+      ],
       "sources": [
-        { "path": "wrangler.jsonc", "line": 6, "end_line": 11, "label": "static assets, 404 page" },
-        { "path": "public/join/index.html", "line": 22, "end_line": 32, "label": "waitlist form" },
-        { "path": "public/_headers", "line": 1, "end_line": 10, "label": "CSP and no-store" }
+        {
+          "path": "public/index.html",
+          "line": 17,
+          "end_line": 17,
+          "label": "public navigation"
+        }
       ]
     },
     {
-      "id": "cron", "type": "backend", "label": "Daily clean-up", "sublabel": "cron 09:17 UTC", "pos": [830, 40], "size": [160, 62],
+      "id": "pages",
+      "type": "frontend",
+      "label": "Public pages",
+      "sublabel": "home, track record, waitlist",
+      "pos": [
+        290,
+        40
+      ],
+      "size": [
+        170,
+        62
+      ],
       "sources": [
-        { "path": "wrangler.jsonc", "line": 30, "end_line": 30, "label": "cron trigger" },
-        { "path": "src/index.js", "line": 397, "end_line": 406, "label": "scheduled prune" }
+        {
+          "path": "wrangler.jsonc",
+          "line": 6,
+          "end_line": 11,
+          "label": "static assets, 404 page"
+        },
+        {
+          "path": "public/join/index.html",
+          "line": 22,
+          "end_line": 32,
+          "label": "waitlist form"
+        },
+        {
+          "path": "public/_headers",
+          "line": 1,
+          "end_line": 10,
+          "label": "CSP and no-store"
+        }
       ]
     },
     {
-      "id": "you", "type": "external", "label": "You", "sublabel": "private link + control code", "pos": [40, 210], "size": [150, 62],
-      "sources": [{ "path": "public/assets/app.js", "line": 9, "end_line": 20, "label": "key from #fragment" }]
-    },
-    {
-      "id": "app", "type": "frontend", "label": "Private dashboard", "sublabel": "/app/, runs in your browser", "pos": [290, 210], "size": [170, 62],
+      "id": "cron",
+      "type": "backend",
+      "label": "Daily clean-up",
+      "sublabel": "cron 09:17 UTC",
+      "pos": [
+        830,
+        40
+      ],
+      "size": [
+        160,
+        62
+      ],
       "sources": [
-        { "path": "public/assets/app.js", "line": 362, "end_line": 372, "label": "HMAC with control code" },
-        { "path": "public/assets/app.js", "line": 472, "end_line": 480, "label": "Bearer view key" }
+        {
+          "path": "wrangler.jsonc",
+          "line": 30,
+          "end_line": 30,
+          "label": "cron trigger"
+        },
+        {
+          "path": "src/index.js",
+          "line": 588,
+          "end_line": 599,
+          "label": "scheduled prune"
+        }
       ]
     },
     {
-      "id": "worker", "type": "security", "label": "Worker c3-lab", "sublabel": "routes and auth checks", "pos": [560, 210], "size": [170, 62],
+      "id": "you",
+      "type": "external",
+      "label": "You",
+      "sublabel": "private link + control code",
+      "pos": [
+        40,
+        210
+      ],
+      "size": [
+        150,
+        62
+      ],
       "sources": [
-        { "path": "src/index.js", "line": 358, "end_line": 386, "label": "router" },
-        { "path": "src/index.js", "line": 58, "end_line": 79, "label": "Ed25519 + view-key checks" },
-        { "path": "src/index.js", "line": 217, "end_line": 243, "label": "waitlist with rate limit" }
+        {
+          "path": "public/assets/app.js",
+          "line": 9,
+          "end_line": 20,
+          "label": "key from #fragment"
+        }
       ]
     },
     {
-      "id": "d1", "type": "database", "label": "D1 c3-site", "sublabel": "status, snapshots, signups, commands", "pos": [830, 210], "size": [180, 62],
+      "id": "app",
+      "type": "frontend",
+      "label": "Private dashboard",
+      "sublabel": "/app/ tabs, incl. research papers",
+      "pos": [
+        290,
+        210
+      ],
+      "size": [
+        170,
+        62
+      ],
       "sources": [
-        { "path": "src/schema.js", "line": 1, "end_line": 15, "label": "tables" },
-        { "path": "wrangler.jsonc", "line": 14, "end_line": 14, "label": "pinned database" }
+        {
+          "path": "public/assets/app.js",
+          "line": 364,
+          "end_line": 369,
+          "label": "HMAC with control code"
+        },
+        {
+          "path": "public/assets/app.js",
+          "line": 665,
+          "end_line": 673,
+          "label": "Bearer view key"
+        },
+        {
+          "path": "public/assets/app.js",
+          "line": 483,
+          "end_line": 520,
+          "label": "Research papers tab"
+        }
       ]
     },
     {
-      "id": "bot", "type": "external", "label": "MNQ bot", "sublabel": "your laptop, outbound only", "pos": [290, 390], "size": [170, 62],
+      "id": "worker",
+      "type": "security",
+      "label": "Worker c3-lab",
+      "sublabel": "routes and auth checks",
+      "pos": [
+        560,
+        210
+      ],
+      "size": [
+        170,
+        62
+      ],
       "sources": [
-        { "path": "src/index.js", "line": 90, "end_line": 132, "label": "signed ingest" },
-        { "path": "src/index.js", "line": 326, "end_line": 356, "label": "command pull + ack" }
+        {
+          "path": "src/index.js",
+          "line": 542,
+          "end_line": 577,
+          "label": "router"
+        },
+        {
+          "path": "src/index.js",
+          "line": 60,
+          "end_line": 81,
+          "label": "Ed25519 + view-key checks"
+        },
+        {
+          "path": "src/index.js",
+          "line": 324,
+          "end_line": 384,
+          "label": "paper upload: PDF check, 20 MB, 10 a day"
+        }
       ]
     },
     {
-      "id": "github", "type": "external", "label": "GitHub c3-site", "sublabel": "push to main deploys", "pos": [560, 390], "size": [170, 62],
-      "sources": [{ "path": "README.md", "line": 28, "end_line": 31, "label": "Workers Builds" }]
+      "id": "d1",
+      "type": "database",
+      "label": "D1 c3-site",
+      "sublabel": "status, signups, commands, papers",
+      "pos": [
+        830,
+        210
+      ],
+      "size": [
+        180,
+        62
+      ],
+      "sources": [
+        {
+          "path": "src/schema.js",
+          "line": 1,
+          "end_line": 19,
+          "label": "tables incl. papers + chunks"
+        },
+        {
+          "path": "wrangler.jsonc",
+          "line": 14,
+          "end_line": 14,
+          "label": "pinned database"
+        }
+      ]
     },
     {
-      "id": "tv", "type": "external", "label": "TradingView", "sublabel": "front door, switched off", "pos": [830, 390], "size": [180, 62],
-      "sources": [{ "path": "src/index.js", "line": 258, "end_line": 291, "label": "hook + signed pull" }]
+      "id": "bot",
+      "type": "external",
+      "label": "MNQ bot",
+      "sublabel": "your laptop, outbound only",
+      "pos": [
+        290,
+        390
+      ],
+      "size": [
+        170,
+        62
+      ],
+      "sources": [
+        {
+          "path": "src/index.js",
+          "line": 92,
+          "end_line": 138,
+          "label": "signed ingest (incl. papers)"
+        },
+        {
+          "path": "src/index.js",
+          "line": 499,
+          "end_line": 509,
+          "label": "command pull"
+        },
+        {
+          "path": "src/index.js",
+          "line": 410,
+          "end_line": 436,
+          "label": "paper pull + file download"
+        }
+      ]
+    },
+    {
+      "id": "github",
+      "type": "external",
+      "label": "GitHub c3-site",
+      "sublabel": "push to main deploys",
+      "pos": [
+        560,
+        390
+      ],
+      "size": [
+        170,
+        62
+      ],
+      "sources": [
+        {
+          "path": "README.md",
+          "line": 33,
+          "end_line": 36,
+          "label": "Workers Builds"
+        }
+      ]
+    },
+    {
+      "id": "tv",
+      "type": "external",
+      "label": "TradingView",
+      "sublabel": "front door, switched off",
+      "pos": [
+        830,
+        390
+      ],
+      "size": [
+        180,
+        62
+      ],
+      "sources": [
+        {
+          "path": "src/index.js",
+          "line": 266,
+          "end_line": 297,
+          "label": "hook + signed pull"
+        }
+      ]
     }
   ],
   "boundaries": [
-    { "kind": "region", "label": "Cloudflare: c3-lab.twaza18.workers.dev", "wraps": ["pages", "cron", "app", "worker", "d1"], "pad": 22 }
+    {
+      "kind": "region",
+      "label": "Cloudflare: c3-lab.twaza18.workers.dev",
+      "wraps": [
+        "pages",
+        "cron",
+        "app",
+        "worker",
+        "d1"
+      ],
+      "pad": 22
+    }
   ],
   "connections": [
-    { "id": "browse", "from": "visitors", "to": "pages", "label": "HTTPS", "variant": "emphasis" },
-    { "id": "pageapi", "from": "pages", "to": "worker", "label": "join, track" },
-    { "id": "open", "from": "you", "to": "app", "label": "link", "variant": "emphasis" },
-    { "id": "private", "from": "app", "to": "worker", "label": "view key", "variant": "security" },
-    { "id": "sql", "from": "worker", "to": "d1", "label": "SQL", "variant": "emphasis" },
-    { "id": "prune", "from": "cron", "to": "d1", "label": "prune" },
-    { "id": "ingest", "from": "bot", "to": "worker", "label": "signed push, pull", "variant": "security" },
-    { "id": "deploy", "from": "github", "to": "worker", "label": "deploys", "variant": "dashed" },
-    { "id": "hook", "from": "tv", "to": "worker", "label": "webhook (off)", "variant": "dashed" }
+    {
+      "id": "browse",
+      "from": "visitors",
+      "to": "pages",
+      "label": "HTTPS",
+      "variant": "emphasis"
+    },
+    {
+      "id": "pageapi",
+      "from": "pages",
+      "to": "worker",
+      "label": "join, track"
+    },
+    {
+      "id": "open",
+      "from": "you",
+      "to": "app",
+      "label": "link",
+      "variant": "emphasis"
+    },
+    {
+      "id": "private",
+      "from": "app",
+      "to": "worker",
+      "label": "view key",
+      "variant": "security"
+    },
+    {
+      "id": "sql",
+      "from": "worker",
+      "to": "d1",
+      "label": "SQL",
+      "variant": "emphasis"
+    },
+    {
+      "id": "prune",
+      "from": "cron",
+      "to": "d1",
+      "label": "prune"
+    },
+    {
+      "id": "ingest",
+      "from": "bot",
+      "to": "worker",
+      "label": "signed push, pulls",
+      "variant": "security"
+    },
+    {
+      "id": "deploy",
+      "from": "github",
+      "to": "worker",
+      "label": "deploys",
+      "variant": "dashed"
+    },
+    {
+      "id": "hook",
+      "from": "tv",
+      "to": "worker",
+      "label": "webhook (off)",
+      "variant": "dashed"
+    }
   ],
   "cards": [
     {
@@ -95,9 +378,9 @@
       "title": "Who can do what",
       "items": [
         "Anyone: the public pages, the waitlist form and the public track record",
-        "Your private link: the dashboard data and the waitlist; the key rides in the #fragment, then an Authorization header",
-        "The bot: pushes and command pulls, each signed with its Ed25519 key; the site holds only the public key",
-        "Commands queue here, but the bot runs one only if its HMAC matches the control code, which the site never sees"
+        "Your private link: the dashboard data, the waitlist and adding papers; the key rides in the #fragment, then an Authorization header",
+        "The bot: pushes, command pulls and paper downloads, each signed with its Ed25519 key; the site holds only the public key",
+        "Commands queue here, but the bot runs one only if its HMAC matches the control code, which the site never sees; Analyse paper is pinned to the file's SHA-256"
       ]
     },
     {
@@ -106,8 +389,9 @@
       "items": [
         "Latest status, snapshot and paper results from the bot, plus one heartbeat row a minute for session coverage",
         "Waitlist signups (email, optional note) and hashed signup attempts for the 5-an-hour limit",
+        "Research papers and their analyses; an uploaded PDF sits in 1.5 MB rows only until the bot has its copy",
         "Commands with their status and result; front-door webhooks as exact text, duplicates flagged",
-        "The daily cron drops heartbeats after 45 days, attempts after 2 and commands after 60"
+        "The daily cron drops heartbeats after 45 days, attempts after 2, commands after 60 and unclaimed PDFs after 30"
       ]
     },
     {
