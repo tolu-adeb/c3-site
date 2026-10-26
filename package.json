@@ -9,11 +9,12 @@
     "fuzz": "node test/fuzz.mjs",
     "fixtures": "node test/make-fixtures.mjs",
     "validate": "node test/validate.mjs",
-    "test:fixtures": "node --test test/fixtures.test.mjs && node scripts/update-chart-specimens.mjs --check",
+    "test:fixtures": "node --test test/*.test.mjs && node scripts/update-chart-specimens.mjs --check",
     "test:local": "node test/run-local.mjs --ui",
     "test": "npm run validate && npm run test:fixtures && npm run test:contrast && npm run test:local",
     "test:contrast": "node test/contrast.mjs",
-    "test:ui": "node test/run-local.mjs --ui-only"
+    "test:ui": "node test/run-local.mjs --ui-only",
+    "test:publish": "node test/run-local.mjs --publish-only"
   },
   "keywords": [],
   "author": "",

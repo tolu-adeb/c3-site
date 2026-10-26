@@ -19,6 +19,7 @@
 
 import { SCHEMA } from "./schema.js";
 import { b64decode, sha256hex, timingSafeEqualHex, etParts } from "./util.js";
+import { publish, dataFile } from "./publish.js";
 
 const enc = new TextEncoder();
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" };
@@ -544,6 +545,9 @@ async function route(request, env) {
   const path = url.pathname;
   const m = request.method;
 
+  if (path.startsWith("/data/")) return dataFile(request, env);
+  if (path.startsWith("/api/publish/")) return publish(request, env, { checkSignature, ensureSchema });
+
   if (path.startsWith("/hook/")) return m === "POST" ? hook(request, env, path.slice(6)) : notFound();
   if (path === "/api/health") return json({ ok: true });
   if (path === "/api/ingest") return m === "POST" ? ingest(request, env) : json({ error: "POST only" }, 405);
@@ -558,6 +562,7 @@ async function route(request, env) {
 
   if (path.startsWith("/api/p/")) {
     if (!(await viewerOk(request, env))) return json({ error: "This link isn't valid." }, 401);
+    if (path.startsWith("/api/p/data/")) return dataFile(request, env, true);
     if (path === "/api/p/overview" && m === "GET") return overview(env);
     if (path === "/api/p/waitlist" && m === "GET") return waitlistList(env, false);
     if (path === "/api/p/waitlist.csv" && m === "GET") return waitlistList(env, true);
@@ -589,6 +594,7 @@ export default {
     await ensureSchema(env.DB);
     const now = Date.now();
     await env.DB.batch([
+      env.DB.prepare("DELETE FROM publish_receipts WHERE ts < ?").bind(Math.floor(now / 1000) - 600),
       env.DB.prepare("DELETE FROM heartbeats WHERE received_ms < ?").bind(now - 45 * DAY_MS),
       env.DB.prepare("DELETE FROM join_attempts WHERE at_ms < ?").bind(now - 2 * DAY_MS),
       env.DB.prepare("DELETE FROM commands WHERE created_ms < ?").bind(now - 60 * DAY_MS),

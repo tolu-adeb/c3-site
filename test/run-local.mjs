@@ -42,7 +42,7 @@ try {
     database_id: "00000000-0000-0000-0000-000000000001", remote: false }));
   const vars = { BOT_PUBLIC_KEY: publicKey.export({ type: "spki", format: "der" }).subarray(-32).toString("base64"),
     VIEW_KEY_SHA256: sha(keys.view_key), WEBHOOK_PATH_SHA256: sha(keys.webhook_path), WEBHOOK_TOKEN_SHA256: sha(keys.webhook_token),
-    WEBHOOK_ENABLED: "true", TRACK_RECORD_PUBLIC: "true" };
+    WEBHOOK_ENABLED: "true", TRACK_RECORD_PUBLIC: "true", BACKTESTS_PUBLIC: "false" };
   // Wrangler reads .dev.vars beside this isolated config, never the checkout's file.
   await writeFile(join(dir, ".dev.vars"), Object.entries(vars).map(([k, v]) => `${k}=${JSON.stringify(v)}`).join("\n") + "\n", { mode: 0o600 });
   const configFile = join(dir, "wrangler.json");
@@ -52,32 +52,46 @@ try {
   const port = reservation.address().port;
   await new Promise((done) => reservation.close(done));
   const base = `http://127.0.0.1:${port}`;
-  worker = spawn(process.execPath, [join(root, "node_modules/wrangler/bin/wrangler.js"), "dev", "--local", "--config", configFile,
-    "--persist-to", join(dir, "state"), "--ip", "127.0.0.1", "--port", String(port), "--inspector-port", "0"], {
-    cwd: dir, stdio: ["ignore", "pipe", "pipe"],
-    env: { ...process.env, WRANGLER_SEND_METRICS: "false", WRANGLER_LOG_PATH: join(dir, "wrangler.log"),
-      CLOUDFLARE_API_TOKEN: "", CLOUDFLARE_ACCOUNT_ID: "" }
-  });
-  workerExit = once(worker, "exit");
-  for (const stream of [worker.stdout, worker.stderr]) stream.on("data", (chunk) => { workerLog = (workerLog + chunk).slice(-30000); });
-  let ready = false;
-  const deadline = Date.now() + 45000;
-  while (!ready && Date.now() < deadline && !interrupted && worker.exitCode === null) {
-    try { ready = (await fetch(base + "/api/health", { signal: AbortSignal.timeout(1000) })).ok; } catch { /* starting */ }
-    if (!ready) await delay(200);
+  async function startWorker() {
+    workerLog = "";
+    worker = spawn(process.execPath, [join(root, "node_modules/wrangler/bin/wrangler.js"), "dev", "--local", "--config", configFile,
+      "--persist-to", join(dir, "state"), "--ip", "127.0.0.1", "--port", String(port), "--inspector-port", "0"], {
+      cwd: dir, stdio: ["ignore", "pipe", "pipe"],
+      env: { ...process.env, WRANGLER_SEND_METRICS: "false", WRANGLER_LOG_PATH: join(dir, "wrangler.log"),
+        CLOUDFLARE_API_TOKEN: "", CLOUDFLARE_ACCOUNT_ID: "" }
+    });
+    workerExit = once(worker, "exit");
+    for (const stream of [worker.stdout, worker.stderr]) stream.on("data", (chunk) => { workerLog = (workerLog + chunk).slice(-30000); });
+    let ready = false;
+    const deadline = Date.now() + 45000;
+    while (!ready && Date.now() < deadline && !interrupted && worker.exitCode === null) {
+      try { ready = (await fetch(base + "/api/health", { signal: AbortSignal.timeout(1000) })).ok; } catch { /* starting */ }
+      if (!ready) await delay(200);
+    }
+    if (!ready) throw new Error("Local Wrangler did not become healthy within 45 seconds");
   }
-  if (!ready) throw new Error("Local Wrangler did not become healthy within 45 seconds");
+  async function stopWorker() {
+    if (worker && worker.exitCode === null) { worker.kill("SIGTERM"); await workerExit; }
+  }
+  await startWorker();
   console.log(`Local-only Worker ready at ${base}.`);
-  if (!process.argv.includes("--ui-only")) {
+  if (!process.argv.includes("--ui-only") && !process.argv.includes("--publish-only")) {
     await run("test/smoke.mjs", [base, keyFile]);
     await run("test/fuzz.mjs", [base, keyFile]);
   }
+  if (process.argv.includes("--ui-only")) await run("scripts/seed-r2.mjs", [base, keyFile]);
+  else await run("test/publish.mjs", [base, keyFile, "private"]);
+  await stopWorker();
+  vars.BACKTESTS_PUBLIC = "true";
+  await writeFile(join(dir, ".dev.vars"), Object.entries(vars).map(([k, v]) => `${k}=${JSON.stringify(v)}`).join("\n") + "\n", { mode: 0o600 });
+  await startWorker();
+  if (!process.argv.includes("--ui-only")) await run("test/publish.mjs", [base, keyFile, "public"]);
   if (process.argv.includes("--ui") || process.argv.includes("--ui-only")) {
     await run("test/charts.mjs", [base]);
     await run("test/ui.mjs", [base]);
   }
 } catch (error) {
-  console.error(workerLog);
+  console.error(workerLog.slice(-4000));
   console.error(error.message);
   process.exitCode = 1;
 } finally {

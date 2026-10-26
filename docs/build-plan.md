@@ -463,6 +463,13 @@ and a 16 ms render budget. Local warm 78-bar render median: 2.7 ms. Next: S4.
   returns 404 and `/api/p/data/*` works with the view key; `live/current.json` only changes on a successful
   commit; old bundles beyond 3 are deleted; README documents the routes.
 
+Implementation: signed, bounded JSON uploads; single-use signatures; serialized publish mutations; verified
+byte copies; immutable committed IDs; atomic final pointer; private staging preview; ETags and public gating
+are covered by local D1/R2 tests. Retention keeps current plus two previous bundles, following this task's
+three-bundle acceptance limit. `scripts/seed-r2.mjs` validates and publishes fixtures to local hosts only.
+Production bucket provisioning could not be checked from this machine: Wrangler has no Cloudflare API token.
+The configured bucket is `c3-site-data`; publishing remains private. Site tasks continue against fixtures.
+
 **D1. Exporter skeleton in c3.lab (M).** New `mnq site export --out <dir>` (in `mnq-bot/mnq/app/`) that writes
 the bundle layout in 5.2 for the 42-day real-bar run from `data/alpha_backtest.json` + `data/mnq_5m.csv`, plus
 `strategies.json`, `lab/*.json` from `lab.sqlite3`, and `parity/*` from `data/parity/`. Allowlist plus `redact()`.

@@ -1,5 +1,8 @@
 // Tables are created on first use, so a fresh D1 database needs no migration step.
 export const SCHEMA = [
+  `CREATE TABLE IF NOT EXISTS publish_receipts (signature TEXT PRIMARY KEY, ts INTEGER NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS publish_lock (id INTEGER PRIMARY KEY CHECK (id = 1), owner TEXT NOT NULL, expires_ms INTEGER NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS publish_bundles (id TEXT PRIMARY KEY, state TEXT NOT NULL, updated_ms INTEGER NOT NULL, committed_ms INTEGER, manifest TEXT)`,
   // latest push of each kind from the bot: status (every minute), snapshot (every 5 minutes), track
   `CREATE TABLE IF NOT EXISTS latest (kind TEXT PRIMARY KEY, ts INTEGER NOT NULL, received_ms INTEGER NOT NULL, body TEXT NOT NULL)`,
   // one row per status push: the site's own record of when the bot was alive
