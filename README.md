@@ -2,7 +2,7 @@
 
 The c3.lab website: one Cloudflare Worker (`c3-lab`) with static pages and a small D1 database.
 
-**[docs/plan/](docs/plan/README.md)** is the build plan: an index with the run order, then one file per Codex model and effort level.
+**[docs/build-plan.md](docs/build-plan.md)** is the build plan for what comes next (Codex handoff, tasks with acceptance criteria).
 **[docs/redesign/blueprint.md](docs/redesign/blueprint.md)** explains the design (what was learned from a reference site, the tokens, budgets and next phases).
 **[docs/architecture.html](docs/architecture.html)** (open in a browser) shows who talks to the Worker and what D1
 keeps, with every box linked to its source lines. Source: `docs/architecture.archify.json`.
