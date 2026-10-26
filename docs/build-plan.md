@@ -449,6 +449,13 @@ fallback, and V1 (candles + overlays), V2, V3, V13.
   and 300+ bars via canvas; the table fallback matches the drawn values; keyboard focus moves point to point with
   arrow keys and the tooltip follows focus; no third-party code.
 
+Implementation: shared scales, axes, construction grids, frames, source chips, tables, tooltips and resize
+cleanup live in `public/assets/charts/`. Candles use SVG below 300 bars and canvas from 300; equity separates
+in/out segments and labels the holdout boundary; drawdown shares its date axis; sparklines are 80 × 24 px.
+The styleguide includes both themes, authored no-JS tables, a 78-bar fixture and a clearly labeled 320-bar
+density specimen. The browser gate checks known values, keyboard focus, cursor visibility, canvas, R units
+and a 16 ms render budget. Local warm 78-bar render median: 2.7 ms. Next: S4.
+
 ### Phase B: data pipeline
 
 **S4. R2 publish API and `/data` (M).** Routes and config in 5.1.

@@ -356,3 +356,8 @@ details.paper>summary:focus-visible{outline:2px solid var(--focus);outline-offse
 .wire-draw{stroke-dasharray:1000;stroke-dashoffset:0;animation:wire-draw var(--calm) var(--ease)}
 @keyframes wire-draw{from{stroke-dashoffset:1000}}
 @media (max-width:760px){.stat-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.stat-strip>div:nth-child(2){border-right:0}.stat-strip>div:nth-child(-n+2){border-bottom:var(--hair) solid var(--wire-faint)}}
+.chart{margin:1rem 0}
+.chart .chart-direct-labels{padding:0 1rem}
+.chart-point:focus-visible{outline:2px solid var(--focus);outline-offset:4px}
+.candle-canvas{position:absolute;inset:0;display:block}
+.chart .fig-plot .sparkline{width:80px;height:24px}

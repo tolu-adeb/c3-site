@@ -59,6 +59,10 @@ try {
           assert.match(await page.locator('meta[name="robots"]').getAttribute("content"), /noindex/);
           for (const specimen of ["light", "dark"]) {
             const el = page.locator(`.theme-preview[data-theme="${specimen}"]`);
+            for (const host of await el.locator("[data-chart]").all()) {
+              await host.scrollIntoViewIfNeeded();
+              await host.locator("svg").waitFor();
+            }
             const tokens = await el.evaluate((node) => Object.fromEntries([...node.querySelectorAll("[data-token-value]")].map((entry) => [entry.dataset.tokenValue, getComputedStyle(node).getPropertyValue(entry.dataset.tokenValue).trim()])));
             const expected = themeTokens(specimen);
             for (const key of Object.keys(tokens)) if (key !== "--hair" && key !== "--gutter") assert.equal(tokens[key], key === "--quick" || key === "--calm" ? "0s" : expected[key], `${label}: ${specimen} ${key}`);
@@ -68,11 +72,12 @@ try {
               assert.ok(table[index].includes(bar[4].toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })), `${label}: table close ${index}`);
             }
             for (const selector of [".candle:not(.down) rect", ".candle.down rect"]) {
-              const fill = await el.locator(selector).first().evaluate((node) => getComputedStyle(node).fill);
+              const fill = await el.locator(".fig").first().locator(selector).first().evaluate((node) => getComputedStyle(node).fill);
               assert.equal(fill === "none", !selector.includes(".down rect"), `${label}: hollow/filled encoding`);
             }
             for (const link of await el.locator(".source").all()) assert.equal(await link.getAttribute("href"), "#fixture-methodology");
           }
+          await page.evaluate(() => scrollTo(0, 0));
         }
         if (width === 320 || width === 1440) {
           await page.evaluate(axe);
@@ -113,19 +118,20 @@ try {
   const page = await browser.newPage({ viewport: { width: 390, height: 900 }, reducedMotion: "reduce" });
   await page.goto(base + "/styleguide/");
   const specimen = page.locator('.theme-preview[data-theme="light"]');
-  const slider = specimen.locator('input[type="range"]');
+  const demo = specimen.locator(".fig").first();
+  const slider = demo.locator('input[type="range"]');
   await slider.focus();
   await page.keyboard.press("Home");
   assert.equal(await slider.inputValue(), "0");
-  assert.equal(await specimen.locator(".candle:visible").count(), 1);
+  assert.equal(await demo.locator(".candle:visible").count(), 1);
   await page.keyboard.press("ArrowRight");
   assert.equal(await slider.inputValue(), "1");
-  assert.match(await specimen.locator("output").textContent(), /Bar 2 of 6/);
+  assert.match(await demo.locator("output").textContent(), /Bar 2 of 6/);
   await page.keyboard.press("End");
   await specimen.locator("[data-play]").click();
   assert.equal(await slider.inputValue(), "5", "Reduced motion jumps to the final frame");
   assert.equal(await specimen.locator("[data-play]").getAttribute("aria-pressed"), "false");
-  const points = specimen.locator(".candle");
+  const points = demo.locator(".candle");
   await points.first().focus();
   assert.equal(await page.locator(".tooltip:visible").count(), 1);
   const firstTip = await page.locator(".tooltip").textContent();
@@ -134,8 +140,8 @@ try {
   assert.notEqual(await page.locator(".tooltip").textContent(), firstTip);
   await page.keyboard.press("Escape");
   assert.equal(await page.locator(".tooltip:visible").count(), 0);
-  await specimen.locator(".data-table summary").click();
-  assert.equal(await specimen.locator(".data-table").evaluate((node) => node.open), true);
+  await demo.locator(".data-table summary").click();
+  assert.equal(await demo.locator(".data-table").evaluate((node) => node.open), true);
   const firstRadio = specimen.locator('input[type="radio"]').first();
   await firstRadio.focus();
   await page.keyboard.press("ArrowRight");
@@ -170,7 +176,7 @@ try {
   await highDPR.close();
   const noJS = await browser.newPage({ javaScriptEnabled: false, viewport: { width: 320, height: 900 } });
   await noJS.goto(base + "/styleguide/");
-  assert.equal(await noJS.locator(".data-table[open]").count(), 2);
+  assert.equal(await noJS.locator(".data-table[open]").count(), 12);
   assert.equal(await noJS.locator(".candle:visible").count(), 12);
   assert.equal(await noJS.locator("[data-bar]:visible").count(), 12);
   assert.equal(await noJS.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);

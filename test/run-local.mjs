@@ -72,7 +72,10 @@ try {
     await run("test/smoke.mjs", [base, keyFile]);
     await run("test/fuzz.mjs", [base, keyFile]);
   }
-  if (process.argv.includes("--ui") || process.argv.includes("--ui-only")) await run("test/ui.mjs", [base]);
+  if (process.argv.includes("--ui") || process.argv.includes("--ui-only")) {
+    await run("test/charts.mjs", [base]);
+    await run("test/ui.mjs", [base]);
+  }
 } catch (error) {
   console.error(workerLog);
   console.error(error.message);

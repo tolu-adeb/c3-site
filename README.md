@@ -94,6 +94,23 @@ parity days. All prices and results are synthetic. It lives outside `public/` an
 Regeneration is byte-identical for the same seed. Tests compare the committed files with a fresh generation.
 R2 publishing and local R2 seeding come in S4.
 
+## Chart kit
+
+The dependency-free ES modules in `public/assets/charts/` expose `render(el, data, opts)` and `destroy(el)`.
+`render` also returns a `destroy()` handle. One chart owns each host; rendering a different type disposes the
+previous observer and handlers. `opts.meta` requires `run_id`, `source` and `sample`, with optional range,
+costs and Methodology link. Every chart includes a source caption and data table.
+
+Candles use SVG below 300 bars and canvas above that, with exported levels, trade plans and exits. Passing
+`cursor` limits visible bars and hides future entries/exits. Equity supports USD or cumulative exported R;
+drawdown uses daily closing loss from peak. Sparkline SVGs are 80 × 24 px. Charts load near the viewport
+and redraw on width changes. No strategy logic runs in them.
+
+`node scripts/update-chart-specimens.mjs` refreshes the styleguide's committed fixture projection and
+no-JS tables. `--check` verifies the projection. The public specimen is explicitly synthetic. Browser checks
+cover its known end equity and drawdown, keyboard tooltips, 320-bar canvas rendering and the 16 ms
+78-bar SVG render budget.
+
 ## Turning things on later
 
 - **Public results:** `TRACK_RECORD_PUBLIC` is `"true"` (since 2026-10-25); set it to `"false"` to hide them again.
