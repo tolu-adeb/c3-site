@@ -3,6 +3,12 @@ const params = new URLSearchParams(location.search);
 export const staging = params.get("staging");
 export const preview = params.get("preview") === "current" || params.has("staging");
 export const slug = (value) => typeof value === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value) && value.length <= 100;
+export function viewKey() {
+  let key = "";
+  try { key = localStorage.getItem("c3.view") || ""; } catch { /* storage unavailable */ }
+  if (!key) throw new Error("Open your private dashboard link in this browser before previewing data.");
+  return key;
+}
 export function dataLink(path, values = {}) {
   const url = new URL(path, location.origin);
   for (const [key, value] of Object.entries(values)) if (value !== null && value !== undefined && value !== "") url.searchParams.set(key, value);
@@ -15,10 +21,7 @@ export async function readJSON(path, options = {}) {
   const headers = {};
   if (preview) {
     if (params.has("staging") && !slug(staging)) throw new Error("Invalid staging bundle.");
-    let key = "";
-    try { key = localStorage.getItem("c3.view") || ""; } catch { /* storage unavailable */ }
-    if (!key) throw new Error("Open your private dashboard link in this browser before previewing data.");
-    headers.authorization = "Bearer " + key;
+    headers.authorization = "Bearer " + viewKey();
   }
   const query = new URLSearchParams();
   if (staging) query.set("staging", staging);

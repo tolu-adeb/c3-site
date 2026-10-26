@@ -9,7 +9,7 @@ function hatching(root) {
 }
 export function renderMonthly(el, data, opts) {
   release(el);
-  const { plot } = frame(el, { ...opts, title: opts.title || "Monthly net · USD / micro", description: "Signed values after run costs. Hatched cells have no exported session. Scroll horizontally for other months on a narrow screen." }, ["Month", "Trades", "Net USD", "Net R"], data.map((d) => [d.month, d.trades, signed(d.net_usd), signed(d.net_r, "R")]));
+  const { plot } = frame(el, { ...opts, title: opts.title || "Monthly net · USD / micro", description: opts.description || "Signed values after run costs. Hatched cells have no exported session. Scroll horizontally for other months on a narrow screen." }, ["Month", "Trades", "Net USD", "Net R"], data.map((d) => [d.month, d.trades, signed(d.net_usd), Number.isFinite(d.net_r) ? signed(d.net_r, "R") : "Not exported"]));
   plot.classList.add("scroll-plot", "heatmap"); plot.tabIndex = 0; plot.role = "region"; plot.setAttribute("aria-label", "Monthly heatmap; scroll horizontally on narrow screens");
   const years = [...new Set(data.map((d) => d.month.slice(0, 4)))];
   const root = svg("svg", { viewBox: `0 0 840 ${Math.max(1, years.length) * 64 + 38}`, role: "group", "aria-label": "Monthly net USD, by calendar year" }), hatch = hatching(root), cells = [];

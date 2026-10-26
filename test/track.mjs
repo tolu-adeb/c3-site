@@ -1,0 +1,55 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { chromium } from "playwright";
+import { publisher } from "./lib/publish.mjs";
+const base = process.argv[2], api = await publisher(base, process.argv[3]);
+const pairs = JSON.parse(await readFile(new URL("./fixtures/bundle/parity/index.json", import.meta.url)));
+let timestamp = Math.floor(Date.now() / 1000) + 30;
+async function push(data) {
+  const ts = timestamp++, body = JSON.stringify({ kind: "track", ts, data });
+  const response = await api.send("POST", "/api/ingest", body, { ts });
+  assert.equal(response.status, 200, await response.text());
+}
+const browser = await chromium.launch();
+try {
+  const page = await browser.newPage({ viewport: { width: 390, height: 900 } }), requests = [], errors = [];
+  page.on("request", (request) => requests.push(new URL(request.url()).pathname));
+  page.on("pageerror", (error) => errors.push(error.message));
+  const open = async () => { await page.goto(base + "/track-record/"); await page.locator('#main[aria-busy="false"]').waitFor(); };
+  await push({ trades: 12, wins: 9, losses: 3, win_rate: .75, net_pts: 120.5, avg_r: .42, months: [{ month: "2026-10", trades: 12, net_usd: 230.1, private_note: "hidden" }] });
+  await open();
+  assert.match(await page.locator("#paper-stats").textContent(), /12.*75%.*120.5.*0.42R/);
+  assert.match(await page.locator("#paper-equity").textContent(), /not been exported yet/);
+  assert.match(await page.locator("#paper-monthly table").textContent(), /230.1.*Not exported/);
+  assert.match(await page.locator("#track .source").first().textContent(), /Run id not exported.*source not exported.*Paper/);
+  assert.doesNotMatch(await page.locator("#track").textContent(), /NaN|hidden|Backtest|In sample|Out of sample/);
+  for (const row of pairs.filter((d) => d.verdict === "differs")) for (const cause of row.causes) assert.ok((await page.locator("#parity-causes").textContent()).includes(cause));
+  assert.equal(await page.locator("#parity table tbody tr").count(), pairs.length);
+  const data = { kind: "paper", sample: "paper", run_id: "paper-fixture-v1", source: "Synthetic paper fixture", trades: 2, wins: 1, losses: 1, win_rate: .5, net_pts: 3.74, avg_r: .25, net_usd: 5, since: "2026-10-01", last: "2026-10-02", costs: { commission_rt_usd: 1.24, entry_slip_ticks: 1, stop_slip_ticks: 1, contract: "MNQ" }, months: [{ month: "2026-10", trades: 2, net_usd: 5, net_r: .5 }], equity: [{ date: "2026-10-01", net_usd: 10, equity_usd: 10, drawdown_usd: 0 }, { date: "2026-10-02", net_usd: -5, equity_usd: 5, drawdown_usd: 5 }] };
+  await push(data); await open();
+  assert.match(await page.locator("#paper-equity table").textContent(), /2026-10-01.*10.*Paper.*2026-10-02.*5.*Paper/);
+  assert.equal(await page.locator("#paper-equity circle").count(), 2);
+  assert.equal(await page.locator("#paper-equity").getByText("Holdout starts").count(), 0);
+  assert.match(await page.locator("#paper-equity .source").textContent(), /paper-fixture-v1.*Synthetic paper fixture.*Paper/);
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  await page.screenshot({ path: "test/artifacts/track-paper-390.png", fullPage: true });
+  const noJS = await browser.newPage({ javaScriptEnabled: false });
+  await noJS.goto(base + "/track-record/");
+  assert.match(await noJS.locator("#track").textContent(), /Paper daily closing equity.*2026-10-02.*5.*Paper monthly/);
+  await noJS.close();
+  const invalid = structuredClone(data); invalid.equity[1].sample = "out";
+  await push(invalid); await open();
+  assert.equal(await page.locator("#paper-equity svg").count(), 0);
+  assert.match(await page.locator("#paper-equity").textContent(), /inconsistent/);
+  await push({ ...data, kind: "backtest" }); await open();
+  assert.equal(await page.locator("#paper-stats").count(), 0);
+  assert.match(await page.locator("#track").textContent(), /No public paper results/);
+  const unauthorized = await fetch(base + "/api/p/track"); assert.equal(unauthorized.status, 401);
+  await push(data);
+  const privateRead = await fetch(base + "/api/p/track", { headers: api.view });
+  assert.equal(privateRead.status, 200); assert.equal(privateRead.headers.get("cache-control"), "no-store");
+  assert.equal((await privateRead.json()).stats.run_id, data.run_id);
+  assert.equal(requests.some((path) => /\/runs\//.test(path)), false, "Paper page must never fetch backtest run results");
+  assert.deepEqual(errors, []);
+  console.log("Track record: legacy fallback, paper-only daily equity, monthly table, provenance, parity causes, no-JS tables and authenticated private snapshot passed.");
+} finally { await browser.close(); }

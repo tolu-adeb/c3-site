@@ -1,5 +1,23 @@
 // Insert an exported public summary so the table remains readable without JS.
 const esc = (value) => String(value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+export async function trackPage(request, env, snapshot) {
+  const headers = new Headers(request.headers); headers.delete("if-none-match"); headers.delete("if-modified-since");
+  const response = await env.ASSETS.fetch(new Request(request, { headers })), url = new URL(request.url);
+  if (response.status !== 200 || url.searchParams.has("staging") || url.searchParams.has("preview")) return response;
+  const data = await (await snapshot()).json(), s = data.stats;
+  if (!data.public || !s) return response;
+  const fmt = (value) => Number.isFinite(value) ? esc(value.toLocaleString("en-US", { maximumFractionDigits: 2 })) : "Not exported";
+  const table = (caption, columns, rows) => `<div class="scroll"><table class="tbl"><caption>${caption}</caption><thead><tr>${columns.map((label) => `<th scope="col">${label}</th>`).join("")}</tr></thead><tbody>${rows.map((row) => `<tr>${row.map((value, i) => i ? `<td>${value}</td>` : `<th scope="row">${value}</th>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+  let html = table("Paper (virtual) trades · signed snapshot", ["Measure", "Value"], [["Closed trades", fmt(s.trades)], ["Win rate (%)", fmt(s.win_rate === undefined ? undefined : s.win_rate * 100)], ["Net points", fmt(s.net_pts)], ["Average R", fmt(s.avg_r)]]);
+  const costs = s.costs ? `${fmt(s.costs.commission_rt_usd)} USD round trip / ${esc(s.costs.contract || "contract not exported")}; ${fmt(s.costs.entry_slip_ticks)} entry ticks; ${fmt(s.costs.stop_slip_ticks)} stop ticks` : "Commission included; fill and slippage metadata not exported";
+  const source = `<a class="source" href="/methodology/#paper">${esc(s.run_id || "Run id not exported")} · ${esc(s.source || "Market data source not exported (signed bot snapshot)")} · Paper (virtual) trades · ${costs} · Methodology</a>`;
+  html += source;
+  if (s.equity?.length) html += table("Paper daily closing equity · USD / micro", ["Day", "Equity USD"], s.equity.map((d) => [esc(d.date), fmt(d.equity_usd)])) + source;
+  else html += "<p>Daily paper equity has not been exported or could not be verified. Signed totals remain available.</p>";
+  if (s.months?.length) html += table("Paper monthly net · USD / micro · after reported commission", ["Month", "Trades", "Net USD"], s.months.map((d) => [esc(d.month), fmt(d.trades), fmt(d.net_usd)])) + source;
+  const result = new HTMLRewriter().on("#track", { element(element) { element.setInnerContent(html, { html: true }); } }).transform(response);
+  result.headers.set("cache-control", "no-store"); result.headers.delete("etag"); result.headers.delete("last-modified"); return result;
+}
 export async function backtestPage(request, env) {
   const url = new URL(request.url), headers = new Headers(request.headers);
   headers.delete("if-none-match"); headers.delete("if-modified-since");

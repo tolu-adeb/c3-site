@@ -177,6 +177,12 @@ logic. Nodes show last-run state only when exported. The default explicitly says
 
 ## Turning things on later
 
+Track record accepts optional `sample: "paper"`, `run_id`, `source`, `costs`, and `equity` in signed `track`
+pushes. Daily rows use `date`, `equity_usd`, and optional `net_usd`, `drawdown_usd`, `n`, `net_r`.
+Dates must ascend; supplied daily changes/drawdowns and the final net total must reconcile. Invalid curves
+are withheld while legacy totals remain visible. Backtest and live samples are never projected as paper.
+Parity is a separately labeled diagnostic; its paired backtest values never enter paper totals.
+
 - **Public results:** `TRACK_RECORD_PUBLIC` is `"true"` (since 2026-10-25); set it to `"false"` to hide them again.
 - **TradingView front door:** generate a token and a path, put their SHA-256 hashes in `WEBHOOK_TOKEN_SHA256` /
   `WEBHOOK_PATH_SHA256`, set `WEBHOOK_ENABLED` to `"true"`, and point the alert at

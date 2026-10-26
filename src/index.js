@@ -20,7 +20,8 @@
 import { SCHEMA } from "./schema.js";
 import { b64decode, sha256hex, timingSafeEqualHex, etParts } from "./util.js";
 import { publish, dataFile, publishedData } from "./publish.js";
-import { backtestPage, strategyPage, enginePage } from "./pages.js";
+import { backtestPage, strategyPage, enginePage, trackPage } from "./pages.js";
+import { paperProjection } from "./track.js";
 
 const enc = new TextEncoder();
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" };
@@ -250,17 +251,13 @@ async function join(request, env) {
   return json({ ok: true });
 }
 
-const TRACK_FIELDS = ["trades", "wins", "losses", "win_rate", "net_pts", "avg_r", "max_dd_usd", "net_usd", "first", "last", "months", "label", "since"];
-
-async function track(env) {
-  if (env.TRACK_RECORD_PUBLIC !== "true") return json({ public: false });
+async function track(env, privateView = false) {
+  if (!privateView && env.TRACK_RECORD_PUBLIC !== "true") return json({ public: false });
   await ensureSchema(env.DB);
   const r = await env.DB.prepare("SELECT received_ms, body FROM latest WHERE kind = 'track'").first();
   if (!r) return json({ public: true, stats: null });
-  const d = JSON.parse(r.body);
-  const stats = {};
-  for (const k of TRACK_FIELDS) if (d[k] !== undefined) stats[k] = d[k];
-  return json({ public: true, updated_ms: r.received_ms, stats }, 200, { "cache-control": "public, max-age=120" });
+  const stats = paperProjection(JSON.parse(r.body));
+  return json({ public: !privateView, updated_ms: r.received_ms, stats }, 200, { "cache-control": privateView ? "no-store" : "public, max-age=120" });
 }
 
 // ---------- TradingView front door ----------
@@ -545,6 +542,7 @@ async function route(request, env) {
   const url = new URL(request.url);
   const path = url.pathname;
   const m = request.method;
+  if ((path === "/track-record/" || path === "/track-record/index.html") && (m === "GET" || m === "HEAD")) return trackPage(request, env, () => track(env));
   if ((path === "/backtests/" || path === "/backtests/index.html") && (m === "GET" || m === "HEAD")) return backtestPage(request, env);
   if (path.startsWith("/strategies/") && (m === "GET" || m === "HEAD")) return strategyPage(request, env);
   if ((path === "/engine/" || path === "/engine/index.html") && (m === "GET" || m === "HEAD")) return enginePage(request, env);
@@ -567,6 +565,7 @@ async function route(request, env) {
   if (path.startsWith("/api/p/")) {
     if (!(await viewerOk(request, env))) return json({ error: "This link isn't valid." }, 401);
     if (path.startsWith("/api/p/data/")) return dataFile(request, env, true);
+    if (path === "/api/p/track" && m === "GET") return track(env, true);
     if (path === "/api/p/published" && m === "GET") { await ensureSchema(env.DB); return publishedData(env); }
     if (path === "/api/p/overview" && m === "GET") return overview(env);
     if (path === "/api/p/waitlist" && m === "GET") return waitlistList(env, false);

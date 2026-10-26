@@ -566,6 +566,13 @@ Continue with S11.
 - Accept: the page never shows backtest numbers; parity days list causes in plain text; works when the bot has
   not pushed an equity series yet (falls back to the current view).
 
+Implemented: signed paper projection, optional validated daily closing equity, monthly heatmap and open table,
+legacy totals fallback, and public no-JS tables. Other sample kinds are withheld. Run/source/cost omissions
+are labeled rather than inferred. A private snapshot route supports dashboard previews. Parity pairs and
+plain-text causes live in a separate diagnostic section; as required by V8, that section explicitly labels
+its hypothetical backtest comparison. Backtest values never enter paper performance or its figures, and
+the page never requests a backtest run. D3's real paper equity export remains work in c3.lab.
+
 **S12. Methodology (S).** Page 7.8.
 - Accept: every source chip across the site links to an anchor that exists on this page (test crawls them).
 

@@ -24,6 +24,7 @@ async function ready(page) {
   if (new URL(page.url()).pathname === "/replay/") await page.locator("#replay-workspace:not([hidden])").waitFor();
   if (new URL(page.url()).pathname.startsWith("/strategies/")) await page.locator('#main[aria-busy="false"]').waitFor();
   if (new URL(page.url()).pathname === "/engine/") await page.locator('#main[aria-busy="false"]').waitFor();
+  if (new URL(page.url()).pathname === "/track-record/") await page.locator('#main[aria-busy="false"]').waitFor();
 }
 async function layout(page) {
   return page.evaluate(() => [...document.querySelectorAll("header,main,footer,h1,h2,.story,.step,.figure,form,.tbl,.lock")].map((el) => {
