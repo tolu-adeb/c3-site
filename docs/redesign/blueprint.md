@@ -1,6 +1,7 @@
 # c3.lab redesign blueprint
 
 Reference: enpowertrading.co.za (an electricity trader's site, studied 2026-10-25 for technique only).
+Diagram: [architecture.html](architecture.html) (open in a browser; source `architecture.archify.json`).
 Status: **phase 1 is built and live** (home story, tile menu, display panel, restyled inner pages and dashboard).
 Phases 2 and 3 below are proposals.
 

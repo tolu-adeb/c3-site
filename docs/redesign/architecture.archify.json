@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "c3.lab public site after the redesign: pages, shared chrome and the routes they call",
+    "output": "docs/redesign/architecture.html",
+    "quality_profile": "showcase",
+    "locale": "en",
+    "repository": {
+      "url": "https://github.com/tolu-adeb/c3-site",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "96c2af1309b1ac9483ccd841835b82dda11af23b"
+    }
+  },
+  "components": [
+    {
+      "id": "visitor", "type": "external", "label": "Visitor", "sublabel": "any browser, JS optional", "pos": [40, 150], "size": [160, 62],
+      "sources": [{ "path": "public/assets/theme.js", "line": 1, "end_line": 10, "label": "theme before paint" }]
+    },
+    {
+      "id": "home", "type": "frontend", "label": "Home story", "sublabel": "5 steps, SVG chart, rail", "pos": [300, 40], "size": [170, 62],
+      "sources": [
+        { "path": "public/index.html", "line": 42, "end_line": 75, "label": "story and inline chart" },
+        { "path": "public/assets/home.js", "line": 11, "end_line": 41, "label": "step layers + rail" },
+        { "path": "public/assets/home.js", "line": 58, "end_line": 73, "label": "live results" }
+      ]
+    },
+    {
+      "id": "track", "type": "frontend", "label": "Track record", "sublabel": "stats + monthly table", "pos": [300, 150], "size": [170, 62],
+      "sources": [
+        { "path": "public/track-record/index.html", "line": 1, "end_line": 50, "label": "page" },
+        { "path": "public/assets/track.js", "line": 1, "end_line": 29, "label": "fetches /api/track" }
+      ]
+    },
+    {
+      "id": "join", "type": "frontend", "label": "Waitlist", "sublabel": "email + optional note", "pos": [300, 260], "size": [170, 62],
+      "sources": [
+        { "path": "public/join/index.html", "line": 1, "end_line": 61, "label": "page" },
+        { "path": "public/assets/join.js", "line": 1, "end_line": 38, "label": "posts /api/join" }
+      ]
+    },
+    {
+      "id": "chrome", "type": "frontend", "label": "Shared chrome", "sublabel": "menu, Display panel, CSS", "pos": [580, 40], "size": [180, 62],
+      "sources": [
+        { "path": "public/assets/chrome.js", "line": 9, "end_line": 56, "label": "Display panel, page weight" },
+        { "path": "public/assets/chrome.js", "line": 57, "end_line": 84, "label": "tile menu, focus trap" },
+        { "path": "public/assets/site.css", "line": 1, "end_line": 30, "label": "self-hosted font, tokens" }
+      ]
+    },
+    {
+      "id": "worker", "type": "security", "label": "Worker c3-lab", "sublabel": "CSP, /api/track, /api/join", "pos": [580, 150], "size": [180, 62],
+      "sources": [
+        { "path": "src/index.js", "line": 548, "end_line": 552, "label": "public routes" },
+        { "path": "src/index.js", "line": 251, "end_line": 262, "label": "track: whitelisted fields" },
+        { "path": "public/_headers", "line": 1, "end_line": 6, "label": "self-only CSP" }
+      ]
+    },
+    {
+      "id": "d1", "type": "database", "label": "D1 c3-site", "sublabel": "latest track, waitlist", "pos": [860, 150], "size": [170, 62],
+      "sources": [{ "path": "src/schema.js", "line": 4, "end_line": 9, "label": "latest, waitlist, attempts" }]
+    },
+    {
+      "id": "bot", "type": "external", "label": "MNQ bot", "sublabel": "signed paper results", "pos": [860, 400], "size": [170, 62],
+      "sources": [{ "path": "src/index.js", "line": 92, "end_line": 138, "label": "signed ingest" }]
+    },
+    {
+      "id": "method", "type": "frontend", "label": "Methodology page", "sublabel": "from the build spec", "tag": "proposed", "pos": [40, 370], "size": [170, 62],
+      "sources": [{ "path": "docs/redesign/blueprint.md", "line": 142, "end_line": 142, "label": "phase 2" }]
+    }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Cloudflare: c3-lab.twaza18.workers.dev", "wraps": ["home", "track", "join", "chrome", "worker", "d1"], "pad": 22 }
+  ],
+  "connections": [
+    { "id": "browse", "from": "visitor", "to": "track", "label": "HTTPS", "variant": "emphasis" },
+    { "id": "chromeuse", "from": "chrome", "to": "home", "label": "every page" },
+    { "id": "homeapi", "from": "home", "to": "worker", "label": "/api/track" },
+    { "id": "trackapi", "from": "track", "to": "worker", "label": "/api/track", "variant": "emphasis" },
+    { "id": "joinapi", "from": "join", "to": "worker", "label": "/api/join" },
+    { "id": "sql", "from": "worker", "to": "d1", "label": "SQL", "variant": "emphasis" },
+    { "id": "push", "from": "bot", "to": "d1", "label": "via ingest", "variant": "security" },
+    { "id": "later", "from": "visitor", "to": "method", "label": "phase 2", "variant": "dashed" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "What the redesign changed",
+      "items": [
+        "Home tells how an alert is made in five steps; one inline SVG session chart gains a layer per step",
+        "A section rail shows progress; a numbered tile menu and a Display panel are on every page",
+        "Theme and motion choices are saved in the browser; theme.js applies them before the page paints"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Weight and privacy",
+      "items": [
+        "Home is about 104 KB with no third-party requests; the Archivo font is served from the site",
+        "The CSP allows only the site itself for scripts, styles, fonts and connections",
+        "Every text and chart layer shows without JavaScript; there is no loading screen"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Next (proposed)",
+      "items": [
+        "Phase 2: a methodology page, a monthly chart on the track record, 320 px and accessibility checks",
+        "The private dashboard is unchanged in behaviour; it shares the tokens and type"
+      ]
+    }
+  ]
+}
