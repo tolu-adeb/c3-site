@@ -1,0 +1,218 @@
+{
+  "nodes": [
+    {
+      "id": "feed",
+      "name": "Feed",
+      "text": "Synthetic feed node for schematic tests.",
+      "spec_section": "§3",
+      "href": "/methodology/#feed",
+      "inputs": [
+        "bars"
+      ],
+      "outputs": [
+        "structure"
+      ],
+      "state": "fixture only"
+    },
+    {
+      "id": "structure",
+      "name": "Structure",
+      "text": "Synthetic structure node for schematic tests.",
+      "spec_section": "§4",
+      "href": "/methodology/#structure",
+      "inputs": [
+        "feed"
+      ],
+      "outputs": [
+        "context"
+      ],
+      "state": "fixture only"
+    },
+    {
+      "id": "context",
+      "name": "Context",
+      "text": "Synthetic context node for schematic tests.",
+      "spec_section": "§5",
+      "href": "/methodology/#context",
+      "inputs": [
+        "structure"
+      ],
+      "outputs": [
+        "intraday"
+      ],
+      "state": "fixture only"
+    },
+    {
+      "id": "intraday",
+      "name": "Intraday",
+      "text": "Synthetic intraday node for schematic tests.",
+      "spec_section": "§6",
+      "href": "/methodology/#intraday",
+      "inputs": [
+        "context"
+      ],
+      "outputs": [
+        "models"
+      ],
+      "state": "fixture only"
+    },
+    {
+      "id": "models",
+      "name": "Models",
+      "text": "Synthetic models node for schematic tests.",
+      "spec_section": "§7",
+      "href": "/methodology/#models",
+      "inputs": [
+        "intraday"
+      ],
+      "outputs": [
+        "score"
+      ],
+      "state": "fixture only"
+    },
+    {
+      "id": "score",
+      "name": "Score",
+      "text": "Synthetic score node for schematic tests.",
+      "spec_section": "§8",
+      "href": "/methodology/#score",
+      "inputs": [
+        "models"
+      ],
+      "outputs": [
+        "gates"
+      ],
+      "state": "fixture only"
+    },
+    {
+      "id": "gates",
+      "name": "Gates",
+      "text": "Synthetic gates node for schematic tests.",
+      "spec_section": "§9",
+      "href": "/methodology/#gates",
+      "inputs": [
+        "score"
+      ],
+      "outputs": [
+        "tracker"
+      ],
+      "state": "fixture only"
+    },
+    {
+      "id": "tracker",
+      "name": "Tracker",
+      "text": "Synthetic tracker node for schematic tests.",
+      "spec_section": "§10",
+      "href": "/methodology/#tracker",
+      "inputs": [
+        "gates"
+      ],
+      "outputs": [
+        "alerts"
+      ],
+      "state": "fixture only"
+    },
+    {
+      "id": "alerts",
+      "name": "Alerts",
+      "text": "Synthetic alerts node for schematic tests.",
+      "spec_section": "§11",
+      "href": "/methodology/#alerts",
+      "inputs": [
+        "tracker"
+      ],
+      "outputs": [
+        "ledger"
+      ],
+      "state": "fixture only"
+    },
+    {
+      "id": "ledger",
+      "name": "Ledger",
+      "text": "Synthetic ledger node for schematic tests.",
+      "spec_section": "§12",
+      "href": "/methodology/#ledger",
+      "inputs": [
+        "alerts"
+      ],
+      "outputs": [
+        "lab"
+      ],
+      "state": "fixture only"
+    },
+    {
+      "id": "lab",
+      "name": "Lab",
+      "text": "Synthetic lab node for schematic tests.",
+      "spec_section": "§13",
+      "href": "/methodology/#lab",
+      "inputs": [
+        "ledger"
+      ],
+      "outputs": [
+        "site"
+      ],
+      "state": "fixture only"
+    },
+    {
+      "id": "site",
+      "name": "Site",
+      "text": "Synthetic site node for schematic tests.",
+      "spec_section": "§14",
+      "href": "/methodology/#site",
+      "inputs": [
+        "lab"
+      ],
+      "outputs": [
+        "public data"
+      ],
+      "state": "fixture only"
+    }
+  ],
+  "edges": [
+    {
+      "from": "feed",
+      "to": "structure"
+    },
+    {
+      "from": "structure",
+      "to": "context"
+    },
+    {
+      "from": "context",
+      "to": "intraday"
+    },
+    {
+      "from": "intraday",
+      "to": "models"
+    },
+    {
+      "from": "models",
+      "to": "score"
+    },
+    {
+      "from": "score",
+      "to": "gates"
+    },
+    {
+      "from": "gates",
+      "to": "tracker"
+    },
+    {
+      "from": "tracker",
+      "to": "alerts"
+    },
+    {
+      "from": "alerts",
+      "to": "ledger"
+    },
+    {
+      "from": "ledger",
+      "to": "lab"
+    },
+    {
+      "from": "lab",
+      "to": "site"
+    }
+  ]
+}

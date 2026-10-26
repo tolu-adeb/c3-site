@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://c3.site/schemas/v1/parity.schema.json",
+  "title": "c3.site parity",
+  "description": "Allowlisted parity detail. Raw engine parity files must be mapped to these public fields and redacted before export.",
+  "type": "object",
+  "properties": {
+    "day": {
+      "type": "string",
+      "format": "date"
+    },
+    "verdict": {
+      "enum": [
+        "match",
+        "differs"
+      ]
+    },
+    "live_r": {
+      "type": "number"
+    },
+    "backtest_r": {
+      "type": "number"
+    },
+    "causes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      }
+    },
+    "live_trades": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/trade"
+      }
+    },
+    "backtest_trades": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/trade"
+      }
+    },
+    "uptime_gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "$ref": "common.schema.json#/$defs/timestamp"
+          },
+          "to": {
+            "$ref": "common.schema.json#/$defs/timestamp"
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "note"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "day",
+    "verdict",
+    "live_r",
+    "backtest_r",
+    "causes",
+    "notes",
+    "live_trades",
+    "backtest_trades",
+    "uptime_gaps"
+  ],
+  "additionalProperties": false
+}

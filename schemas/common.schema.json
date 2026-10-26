@@ -1,0 +1,306 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://c3.site/schemas/v1/common.schema.json",
+  "title": "c3.site common",
+  "description": "Shared definitions. All bundle objects use explicit public fields; new fields require a schema change.",
+  "$defs": {
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "maxLength": 100
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{7,40}$"
+    },
+    "path": {
+      "type": "string",
+      "maxLength": 206,
+      "pattern": "^(?!.*\\.\\.)(?!.*//)[a-z0-9][a-z0-9/_.-]{0,200}\\.json$"
+    },
+    "sample": {
+      "enum": [
+        "in",
+        "out"
+      ]
+    },
+    "kind": {
+      "enum": [
+        "backtest",
+        "walk_forward",
+        "paper",
+        "live"
+      ]
+    },
+    "rate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "strings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      },
+      "uniqueItems": true
+    },
+    "trialStats": {
+      "type": "object",
+      "properties": {
+        "trades": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "win_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "net_usd": {
+          "type": "number"
+        },
+        "max_dd_usd": {
+          "type": "number",
+          "minimum": 0
+        },
+        "avg_r": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "trades",
+        "win_rate",
+        "net_usd",
+        "max_dd_usd",
+        "avg_r"
+      ],
+      "additionalProperties": false
+    },
+    "verdict": {
+      "enum": [
+        "rejected",
+        "failed_holdout",
+        "candidate",
+        "approved"
+      ]
+    },
+    "segment": {
+      "type": "object",
+      "properties": {
+        "n": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "win_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "avg_r": {
+          "type": "number"
+        },
+        "net_r": {
+          "type": "number"
+        },
+        "net_usd": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "n",
+        "win_rate",
+        "avg_r",
+        "net_r",
+        "net_usd"
+      ],
+      "additionalProperties": false
+    },
+    "parityRow": {
+      "type": "object",
+      "properties": {
+        "day": {
+          "type": "string",
+          "format": "date"
+        },
+        "verdict": {
+          "enum": [
+            "match",
+            "differs"
+          ]
+        },
+        "live_r": {
+          "type": "number"
+        },
+        "backtest_r": {
+          "type": "number"
+        },
+        "causes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        }
+      },
+      "required": [
+        "day",
+        "verdict",
+        "live_r",
+        "backtest_r",
+        "causes"
+      ],
+      "additionalProperties": false
+    },
+    "trade": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "setup": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "maxLength": 100
+        },
+        "side": {
+          "enum": [
+            "long",
+            "short"
+          ]
+        },
+        "grade": {
+          "enum": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "F"
+          ]
+        },
+        "regime": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "opened": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closed": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "entry": {
+          "type": "number"
+        },
+        "stop": {
+          "type": "number"
+        },
+        "t1": {
+          "type": "number"
+        },
+        "final": {
+          "type": "number"
+        },
+        "exit": {
+          "type": "number"
+        },
+        "r": {
+          "type": "number"
+        },
+        "pts": {
+          "type": "number"
+        },
+        "usd": {
+          "type": "number"
+        },
+        "risk_pts": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "exit_reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "t1_hit": {
+          "type": "boolean"
+        },
+        "mfe_pts": {
+          "type": "number",
+          "minimum": 0
+        },
+        "mae_pts": {
+          "type": "number",
+          "minimum": 0
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "sample": {
+          "enum": [
+            "in",
+            "out"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "date",
+        "setup",
+        "side",
+        "grade",
+        "regime",
+        "opened",
+        "closed",
+        "entry",
+        "stop",
+        "t1",
+        "final",
+        "exit",
+        "r",
+        "pts",
+        "usd",
+        "risk_pts",
+        "exit_reason",
+        "t1_hit",
+        "mfe_pts",
+        "mae_pts",
+        "score",
+        "reasons",
+        "sample"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

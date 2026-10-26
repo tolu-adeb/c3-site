@@ -6,12 +6,20 @@
   "scripts": {
     "dev": "wrangler dev --local",
     "smoke": "node test/smoke.mjs",
-    "fuzz": "node test/fuzz.mjs"
+    "fuzz": "node test/fuzz.mjs",
+    "fixtures": "node test/make-fixtures.mjs",
+    "validate": "node test/validate.mjs",
+    "test:fixtures": "node --test test/fixtures.test.mjs",
+    "test:local": "node test/run-local.mjs",
+    "test": "npm run validate && npm run test:fixtures && npm run test:local"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "jsonc-parser": "^3.3.1",
     "wrangler": "^4.152.0"
   },
   "type": "module"

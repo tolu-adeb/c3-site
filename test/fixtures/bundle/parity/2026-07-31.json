@@ -1,0 +1,191 @@
+{
+  "day": "2026-07-31",
+  "verdict": "differs",
+  "live_r": -1.1075,
+  "backtest_r": -0.9825,
+  "causes": [
+    "Synthetic uptime gap delayed a paper fill."
+  ],
+  "notes": [
+    "Synthetic parity, not a forward track record."
+  ],
+  "live_trades": [
+    {
+      "id": 4,
+      "date": "2026-07-31",
+      "setup": "orx",
+      "side": "short",
+      "grade": "A",
+      "regime": "range",
+      "opened": "2026-07-31T13:30:00.000Z",
+      "closed": "2026-07-31T13:55:00.000Z",
+      "entry": 20018,
+      "stop": 20026,
+      "t1": 20014,
+      "final": 20002,
+      "risk_pts": 8,
+      "exit": 20027,
+      "exit_reason": "stop",
+      "t1_hit": false,
+      "r": -1.2025,
+      "pts": -9,
+      "usd": -19.24,
+      "mfe_pts": 0.5,
+      "mae_pts": 8.5,
+      "score": 60,
+      "reasons": [
+        "Synthetic signal for fixture testing; no trading rule was evaluated."
+      ],
+      "sample": "in"
+    },
+    {
+      "id": 5,
+      "date": "2026-07-31",
+      "setup": "orx",
+      "side": "long",
+      "grade": "A",
+      "regime": "range",
+      "opened": "2026-07-31T14:30:00.000Z",
+      "closed": "2026-07-31T14:55:00.000Z",
+      "entry": 20024.25,
+      "stop": 20016.25,
+      "t1": 20028.25,
+      "final": 20040.25,
+      "risk_pts": 8,
+      "exit": 20022.25,
+      "exit_reason": "time",
+      "t1_hit": false,
+      "r": -0.3275,
+      "pts": -2,
+      "usd": -5.24,
+      "mfe_pts": 0.5,
+      "mae_pts": 2.5,
+      "score": 70,
+      "reasons": [
+        "Synthetic signal for fixture testing; no trading rule was evaluated."
+      ],
+      "sample": "in"
+    },
+    {
+      "id": 6,
+      "date": "2026-07-31",
+      "setup": "orx",
+      "side": "short",
+      "grade": "B",
+      "regime": "range",
+      "opened": "2026-07-31T15:30:00.000Z",
+      "closed": "2026-07-31T15:55:00.000Z",
+      "entry": 20014.75,
+      "stop": 20022.75,
+      "t1": 20010.75,
+      "final": 19998.75,
+      "risk_pts": 8,
+      "exit": 20010.75,
+      "exit_reason": "target",
+      "t1_hit": true,
+      "r": 0.4225,
+      "pts": 4,
+      "usd": 6.76,
+      "mfe_pts": 4.5,
+      "mae_pts": 0.5,
+      "score": 80,
+      "reasons": [
+        "Synthetic signal for fixture testing; no trading rule was evaluated."
+      ],
+      "sample": "in"
+    }
+  ],
+  "backtest_trades": [
+    {
+      "id": 4,
+      "date": "2026-07-31",
+      "setup": "orx",
+      "side": "short",
+      "grade": "A",
+      "regime": "range",
+      "opened": "2026-07-31T13:30:00.000Z",
+      "closed": "2026-07-31T13:55:00.000Z",
+      "entry": 20018,
+      "stop": 20026,
+      "t1": 20014,
+      "final": 20002,
+      "risk_pts": 8,
+      "exit": 20026,
+      "exit_reason": "stop",
+      "t1_hit": false,
+      "r": -1.0775,
+      "pts": -8,
+      "usd": -17.24,
+      "mfe_pts": 0.5,
+      "mae_pts": 8.5,
+      "score": 60,
+      "reasons": [
+        "Synthetic signal for fixture testing; no trading rule was evaluated."
+      ],
+      "sample": "in"
+    },
+    {
+      "id": 5,
+      "date": "2026-07-31",
+      "setup": "orx",
+      "side": "long",
+      "grade": "A",
+      "regime": "range",
+      "opened": "2026-07-31T14:30:00.000Z",
+      "closed": "2026-07-31T14:55:00.000Z",
+      "entry": 20024.25,
+      "stop": 20016.25,
+      "t1": 20028.25,
+      "final": 20040.25,
+      "risk_pts": 8,
+      "exit": 20022.25,
+      "exit_reason": "time",
+      "t1_hit": false,
+      "r": -0.3275,
+      "pts": -2,
+      "usd": -5.24,
+      "mfe_pts": 0.5,
+      "mae_pts": 2.5,
+      "score": 70,
+      "reasons": [
+        "Synthetic signal for fixture testing; no trading rule was evaluated."
+      ],
+      "sample": "in"
+    },
+    {
+      "id": 6,
+      "date": "2026-07-31",
+      "setup": "orx",
+      "side": "short",
+      "grade": "B",
+      "regime": "range",
+      "opened": "2026-07-31T15:30:00.000Z",
+      "closed": "2026-07-31T15:55:00.000Z",
+      "entry": 20014.75,
+      "stop": 20022.75,
+      "t1": 20010.75,
+      "final": 19998.75,
+      "risk_pts": 8,
+      "exit": 20010.75,
+      "exit_reason": "target",
+      "t1_hit": true,
+      "r": 0.4225,
+      "pts": 4,
+      "usd": 6.76,
+      "mfe_pts": 4.5,
+      "mae_pts": 0.5,
+      "score": 80,
+      "reasons": [
+        "Synthetic signal for fixture testing; no trading rule was evaluated."
+      ],
+      "sample": "in"
+    }
+  ],
+  "uptime_gaps": [
+    {
+      "from": "2026-07-31T13:30:00.000Z",
+      "to": "2026-07-31T13:55:00.000Z",
+      "note": "Synthetic gap"
+    }
+  ]
+}

@@ -1,0 +1,290 @@
+[
+  {
+    "id": 1,
+    "ts": "2026-08-20T12:00:00.000Z",
+    "source": "research agent",
+    "name": "Synthetic hypothesis 1",
+    "changes": {},
+    "verdict": "rejected",
+    "failed_check": "win_rate_delta",
+    "summary": {
+      "trades": 30,
+      "win_rate": 0.590717,
+      "net_usd": 33.295857,
+      "max_dd_usd": 100,
+      "avg_r": 0.207185
+    },
+    "baseline": {
+      "trades": 30,
+      "win_rate": 0.5,
+      "net_usd": 50,
+      "max_dd_usd": 100,
+      "avg_r": 0.1
+    },
+    "holdout_looks": 0
+  },
+  {
+    "id": 2,
+    "ts": "2026-08-19T12:00:00.000Z",
+    "source": "KH",
+    "name": "Synthetic hypothesis 2",
+    "changes": {},
+    "verdict": "rejected",
+    "failed_check": "win_rate_delta",
+    "summary": {
+      "trades": 30,
+      "win_rate": 0.46459,
+      "net_usd": -55.170203,
+      "max_dd_usd": 100,
+      "avg_r": -0.080089
+    },
+    "baseline": {
+      "trades": 30,
+      "win_rate": 0.5,
+      "net_usd": 50,
+      "max_dd_usd": 100,
+      "avg_r": 0.1
+    },
+    "holdout_looks": 0
+  },
+  {
+    "id": 3,
+    "ts": "2026-08-18T12:00:00.000Z",
+    "source": "CLI",
+    "name": "Synthetic hypothesis 3",
+    "changes": {},
+    "verdict": "rejected",
+    "failed_check": "win_rate_delta",
+    "summary": {
+      "trades": 30,
+      "win_rate": 0.477769,
+      "net_usd": 7.770653,
+      "max_dd_usd": 100,
+      "avg_r": 0.053257
+    },
+    "baseline": {
+      "trades": 30,
+      "win_rate": 0.5,
+      "net_usd": 50,
+      "max_dd_usd": 100,
+      "avg_r": 0.1
+    },
+    "holdout_looks": 0
+  },
+  {
+    "id": 4,
+    "ts": "2026-08-17T12:00:00.000Z",
+    "source": "research agent",
+    "name": "Synthetic hypothesis 4",
+    "changes": {},
+    "verdict": "rejected",
+    "failed_check": "win_rate_delta",
+    "summary": {
+      "trades": 30,
+      "win_rate": 0.424835,
+      "net_usd": 67.574973,
+      "max_dd_usd": 100,
+      "avg_r": -0.200521
+    },
+    "baseline": {
+      "trades": 30,
+      "win_rate": 0.5,
+      "net_usd": 50,
+      "max_dd_usd": 100,
+      "avg_r": 0.1
+    },
+    "holdout_looks": 0
+  },
+  {
+    "id": 5,
+    "ts": "2026-08-16T12:00:00.000Z",
+    "source": "KH",
+    "name": "Synthetic hypothesis 5",
+    "changes": {},
+    "verdict": "rejected",
+    "failed_check": "win_rate_delta",
+    "summary": {
+      "trades": 30,
+      "win_rate": 0.45734,
+      "net_usd": -93.658004,
+      "max_dd_usd": 100,
+      "avg_r": -0.130893
+    },
+    "baseline": {
+      "trades": 30,
+      "win_rate": 0.5,
+      "net_usd": 50,
+      "max_dd_usd": 100,
+      "avg_r": 0.1
+    },
+    "holdout_looks": 0
+  },
+  {
+    "id": 6,
+    "ts": "2026-08-15T12:00:00.000Z",
+    "source": "CLI",
+    "name": "Synthetic hypothesis 6",
+    "changes": {},
+    "verdict": "rejected",
+    "failed_check": "win_rate_delta",
+    "summary": {
+      "trades": 30,
+      "win_rate": 0.444358,
+      "net_usd": 118.869901,
+      "max_dd_usd": 100,
+      "avg_r": 0.192356
+    },
+    "baseline": {
+      "trades": 30,
+      "win_rate": 0.5,
+      "net_usd": 50,
+      "max_dd_usd": 100,
+      "avg_r": 0.1
+    },
+    "holdout_looks": 0
+  },
+  {
+    "id": 7,
+    "ts": "2026-08-14T12:00:00.000Z",
+    "source": "research agent",
+    "name": "Synthetic hypothesis 7",
+    "changes": {},
+    "verdict": "failed_holdout",
+    "failed_check": "holdout_net_dd",
+    "summary": {
+      "trades": 30,
+      "win_rate": 0.680803,
+      "net_usd": 13.116029,
+      "max_dd_usd": 100,
+      "avg_r": -0.246429
+    },
+    "baseline": {
+      "trades": 30,
+      "win_rate": 0.5,
+      "net_usd": 50,
+      "max_dd_usd": 100,
+      "avg_r": 0.1
+    },
+    "holdout_looks": 1
+  },
+  {
+    "id": 8,
+    "ts": "2026-08-13T12:00:00.000Z",
+    "source": "KH",
+    "name": "Synthetic hypothesis 8",
+    "changes": {},
+    "verdict": "failed_holdout",
+    "failed_check": "holdout_net_dd",
+    "summary": {
+      "trades": 30,
+      "win_rate": 0.594496,
+      "net_usd": -114.218334,
+      "max_dd_usd": 100,
+      "avg_r": 0.194229
+    },
+    "baseline": {
+      "trades": 30,
+      "win_rate": 0.5,
+      "net_usd": 50,
+      "max_dd_usd": 100,
+      "avg_r": 0.1
+    },
+    "holdout_looks": 1
+  },
+  {
+    "id": 9,
+    "ts": "2026-08-12T12:00:00.000Z",
+    "source": "CLI",
+    "name": "Synthetic hypothesis 9",
+    "changes": {},
+    "verdict": "failed_holdout",
+    "failed_check": "holdout_net_dd",
+    "summary": {
+      "trades": 30,
+      "win_rate": 0.639626,
+      "net_usd": 19.000125,
+      "max_dd_usd": 100,
+      "avg_r": -0.194407
+    },
+    "baseline": {
+      "trades": 30,
+      "win_rate": 0.5,
+      "net_usd": 50,
+      "max_dd_usd": 100,
+      "avg_r": 0.1
+    },
+    "holdout_looks": 1
+  },
+  {
+    "id": 10,
+    "ts": "2026-08-11T12:00:00.000Z",
+    "source": "research agent",
+    "name": "Synthetic hypothesis 10",
+    "changes": {},
+    "verdict": "candidate",
+    "failed_check": null,
+    "summary": {
+      "trades": 30,
+      "win_rate": 0.424188,
+      "net_usd": -38.105901,
+      "max_dd_usd": 100,
+      "avg_r": 0.207601
+    },
+    "baseline": {
+      "trades": 30,
+      "win_rate": 0.5,
+      "net_usd": 50,
+      "max_dd_usd": 100,
+      "avg_r": 0.1
+    },
+    "holdout_looks": 1
+  },
+  {
+    "id": 11,
+    "ts": "2026-08-10T12:00:00.000Z",
+    "source": "KH",
+    "name": "Synthetic hypothesis 11",
+    "changes": {},
+    "verdict": "candidate",
+    "failed_check": null,
+    "summary": {
+      "trades": 30,
+      "win_rate": 0.531916,
+      "net_usd": 74.500008,
+      "max_dd_usd": 100,
+      "avg_r": 0.149052
+    },
+    "baseline": {
+      "trades": 30,
+      "win_rate": 0.5,
+      "net_usd": 50,
+      "max_dd_usd": 100,
+      "avg_r": 0.1
+    },
+    "holdout_looks": 1
+  },
+  {
+    "id": 12,
+    "ts": "2026-08-09T12:00:00.000Z",
+    "source": "CLI",
+    "name": "Synthetic hypothesis 12",
+    "changes": {},
+    "verdict": "approved",
+    "failed_check": null,
+    "summary": {
+      "trades": 30,
+      "win_rate": 0.594771,
+      "net_usd": -38.496292,
+      "max_dd_usd": 100,
+      "avg_r": 0.123538
+    },
+    "baseline": {
+      "trades": 30,
+      "win_rate": 0.5,
+      "net_usd": 50,
+      "max_dd_usd": 100,
+      "avg_r": 0.1
+    },
+    "holdout_looks": 1
+  }
+]

@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://c3.site/schemas/v1/lab-summary.schema.json",
+  "title": "c3.site lab-summary",
+  "description": "Public trial counts and holdout look budget only; never holdout market data.",
+  "type": "object",
+  "properties": {
+    "tried": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "passed_search": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "passed_holdout": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "approved": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "by_verdict": {
+      "type": "object",
+      "properties": {
+        "rejected": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed_holdout": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "candidate": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "approved": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "rejected",
+        "failed_holdout",
+        "candidate",
+        "approved"
+      ],
+      "additionalProperties": false
+    },
+    "holdout_windows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "maxLength": 100
+          },
+          "start": {
+            "type": "string",
+            "format": "date"
+          },
+          "end": {
+            "type": "string",
+            "format": "date"
+          },
+          "looks_used": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 6
+          },
+          "looks_limit": {
+            "const": 6
+          }
+        },
+        "required": [
+          "id",
+          "start",
+          "end",
+          "looks_used",
+          "looks_limit"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "tried",
+    "passed_search",
+    "passed_holdout",
+    "approved",
+    "by_verdict",
+    "holdout_windows"
+  ],
+  "additionalProperties": false
+}
