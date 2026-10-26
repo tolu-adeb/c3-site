@@ -69,6 +69,11 @@ const ov = await r.json();
 ok(r.status === 200 && ov.online === true && ov.status.data.tag === "SHADOW", "overview with key: online, latest status");
 ok(Array.isArray(ov.coverage) && ov.coverage.length === 10, "coverage has 10 trading days");
 ok(ov.snapshot && ov.snapshot.data.alpha.trades.length === 1, "snapshot stored");
+r = await fetch(base + "/api/p/published");
+ok(r.status === 401, "published inventory without key -> 401");
+r = await fetch(base + "/api/p/published", { headers: view });
+const published = await r.json();
+ok(r.status === 200 && published.current === null && published.bundles.length === 0 && published.public === false, "private published inventory starts empty with public flag off");
 
 // public track record: only whitelisted fields, only when public
 r = await fetch(base + "/api/track");

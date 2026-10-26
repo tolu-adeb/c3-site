@@ -87,8 +87,11 @@ try {
   await startWorker();
   if (!process.argv.includes("--ui-only")) await run("test/publish.mjs", [base, keyFile, "public"]);
   if (process.argv.includes("--ui") || process.argv.includes("--ui-only")) {
-    await run("test/charts.mjs", [base]);
-    await run("test/ui.mjs", [base]);
+    await run("test/preview.mjs", [base, keyFile]);
+    if (!process.argv.includes("--preview-only")) {
+      await run("test/charts.mjs", [base]);
+      await run("test/ui.mjs", [base]);
+    }
   }
 } catch (error) {
   console.error(workerLog.slice(-4000));

@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   test:
-    name: Fixtures, contrast, smoke, fuzz and UI
+    name: Fixtures, publish, contrast, smoke, fuzz and UI
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:

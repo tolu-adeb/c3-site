@@ -1,0 +1,44 @@
+import assert from "node:assert/strict";
+import { chromium } from "playwright";
+import { publisher } from "./lib/publish.mjs";
+import { readBundle } from "./lib/bundle.mjs";
+import { FIXTURE_DIR } from "./make-fixtures.mjs";
+const [base, keyFile] = process.argv.slice(2), api = await publisher(base, keyFile);
+const files = await readBundle(FIXTURE_DIR), manifest = { ...JSON.parse(files.get("manifest.json")), bundle: "ui-preview-bundle" };
+for (const file of manifest.files) assert.equal((await api.put(manifest.bundle, file.path, files.get(file.path))).status, 200);
+assert.equal((await api.put(manifest.bundle, "manifest.json", JSON.stringify(manifest))).status, 200);
+const inventory = await (await fetch(base + "/api/p/published", { headers: api.view })).json();
+const staged = inventory.bundles.find((row) => row.id === manifest.bundle);
+assert.equal(staged.preview_ready, true);
+assert.equal(staged.files.length, 29);
+assert.equal(inventory.bundles.filter((row) => row.state === "committed").length <= 3, true);
+assert.equal(inventory.bundles.some((row) => row.id === "publish-first" || row.id === "publish-retention-1"), false);
+assert.equal((await fetch(base + "/data/manifest.json?staging=" + manifest.bundle)).status, 404);
+const browser = await chromium.launch();
+try {
+  const page = await browser.newPage({ viewport: { width: 390, height: 900 } });
+  const errors = [], requests = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("request", (request) => requests.push(request.url()));
+  await page.goto(base + "/app/#k=" + api.keys.view_key);
+  await page.getByRole("tab", { name: "Published data", exact: true }).click();
+  await page.locator(".bundle-card").first().waitFor();
+  const card = page.locator(".bundle-card").filter({ hasText: "ui-preview-bundle" });
+  assert.equal(await card.getByRole("link", { name: "Preview bundle" }).getAttribute("href"), "/backtests/?staging=ui-preview-bundle");
+  await card.locator("summary").click();
+  assert.equal(await card.locator("tbody tr").count(), 29);
+  assert.ok((await card.locator("table").boundingBox()).height < 2500, "The mobile hash column must not collapse into one-character rows");
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  await page.screenshot({ path: "test/artifacts/published-data-390.png", fullPage: true });
+  await page.goto(base + "/styleguide/?staging=ui-preview-bundle");
+  const preview = await page.evaluate(async () => {
+    const { readJSON, dataLink } = await import("/assets/data.js");
+    return { manifest: await readJSON("manifest.json"), next: dataLink("/replay/", { run: "orx-synthetic-v1", day: "2026-07-30" }) };
+  });
+  assert.equal(preview.manifest.bundle, manifest.bundle);
+  assert.match(preview.next, /staging=ui-preview-bundle/);
+  assert.ok(requests.some((url) => url.includes("/api/p/data/manifest.json?staging=ui-preview-bundle")));
+  assert.equal(requests.some((url) => url.includes(api.keys.view_key)), false, "View key never appears in an HTTP URL");
+  assert.deepEqual(errors, []);
+  console.log("Published data: authenticated inventory, staged preview, retention, file list, mobile layout and fragment-only key handling passed.");
+} finally { await browser.close(); }

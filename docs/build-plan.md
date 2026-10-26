@@ -468,7 +468,8 @@ byte copies; immutable committed IDs; atomic final pointer; private staging prev
 are covered by local D1/R2 tests. Retention keeps current plus two previous bundles, following this task's
 three-bundle acceptance limit. `scripts/seed-r2.mjs` validates and publishes fixtures to local hosts only.
 Production bucket provisioning could not be checked from this machine: Wrangler has no Cloudflare API token.
-The configured bucket is `c3-site-data`; publishing remains private. Site tasks continue against fixtures.
+The configured bucket is `c3-site-data`; publishing remains private. KH will provision the bucket later.
+Site tasks continue against fixtures.
 
 **D1. Exporter skeleton in c3.lab (M).** New `mnq site export --out <dir>` (in `mnq-bot/mnq/app/`) that writes
 the bundle layout in 5.2 for the 42-day real-bar run from `data/alpha_backtest.json` + `data/mnq_5m.csv`, plus
@@ -492,6 +493,12 @@ session that traded (bars from `mnq_proxy_5m.csv`, `source: "proxy"`).
 **S5. Dashboard "Published data" tab (S).** Shows current bundle, staged bundles, file list and sizes, and a
 preview link that opens public pages against a staged bundle (`?staging=` passed through `/api/p/data/`).
 - Accept: smoke check for the tab's API; no public route can read staging.
+
+Implementation: the authenticated inventory lists current, retained and staged bundles with sizes and
+SHA-256, and marks complete staged previews. The dashboard uses it in a keyboard-accessible tab. The shared
+data client preserves `?staging=` / `?preview=current` and sends the saved view key only to private endpoints.
+Local browser checks cover inventory, file lists, preview reads, mobile layout and absence of keys from HTTP
+URLs. The Backtests preview destination is implemented in the next task, S6.
 
 ### Phase C: pages
 

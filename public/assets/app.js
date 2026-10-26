@@ -130,12 +130,13 @@
     ["swing", "Swing desk"],
     ["controls", "Controls"],
     ["track", "Track record"],
+    ["published", "Published data"],
     ["waitlist", "Waitlist"],
     ["hooks", "Webhooks"]
   ];
   function drawTabs() {
     $("tabs").innerHTML = TABS.map(function (t) {
-      return '<button type="button" role="tab" id="tab-' + t[0] + '" aria-selected="' + (t[0] === state.tab) + '" data-tab="' + t[0] + '">' + esc(t[1]) + "</button>";
+      return '<button type="button" role="tab" id="tab-' + t[0] + '" aria-controls="panel" tabindex="' + (t[0] === state.tab ? '0' : '-1') + '" aria-selected="' + (t[0] === state.tab) + '" data-tab="' + t[0] + '">' + esc(t[1]) + "</button>";
     }).join("");
   }
   $("tabs").addEventListener("click", function (e) {
@@ -144,6 +145,13 @@
     state.tab = b.getAttribute("data-tab");
     try { sessionStorage.setItem("c3.tab", state.tab); } catch (err) {}
     drawTabs(); drawPanel();
+    $("tab-" + state.tab).focus();
+  });
+  $("tabs").addEventListener("keydown", function (e) {
+    var index = TABS.findIndex(function (t) { return t[0] === state.tab; });
+    var next = e.key === "Home" ? 0 : e.key === "End" ? TABS.length - 1 : e.key === "ArrowLeft" ? (index + TABS.length - 1) % TABS.length : e.key === "ArrowRight" ? (index + 1) % TABS.length : null;
+    if (next === null) return;
+    e.preventDefault(); $("tab-" + TABS[next][0]).click();
   });
 
   function snap() { return (state.data && state.data.snapshot && state.data.snapshot.data) || {}; }
@@ -654,7 +662,35 @@
     }
   });
 
-  var PANELS = { today: panelToday, research: panelResearch, papers: panelPapers, swing: panelSwing, controls: panelControls, track: panelTrack, waitlist: panelWaitlist, hooks: panelHooks };
+  function panelPublished() {
+    if (!state.published) {
+      if (!state.publishingLoad) {
+        state.publishingLoad = true;
+        api("/api/p/published").then(function (data) {
+          state.published = data;
+        }).catch(function (error) {
+          state.published = { error: error.message === "unauthorized" ? "Your private link is no longer valid." : "Published data could not be loaded. Press Refresh to retry." };
+        }).finally(function () {
+          state.publishingLoad = false;
+          if (state.tab === "published") drawPanel();
+        });
+      }
+      return '<h2>Published data</h2><p role="status">Loading bundle inventory…</p>';
+    }
+    var data = state.published;
+    if (data.error) return '<h2>Published data</h2><p class="msg err">' + esc(data.error) + '</p>';
+    var html = '<h2>Published data</h2><p>Public backtests: <b>' + (data.public ? 'on' : 'off') + '</b>. Current bundle: <code>' + esc(data.current ? data.current.bundle : 'none') + '</code>.</p><p class="note">Preview uses this browser’s private link. Staged data is never public. Publishing is done by the signed exporter; this tab only reads the inventory.</p>';
+    if (!data.bundles.length) return html + '<div class="empty">No bundles uploaded yet.</div>';
+    data.bundles.forEach(function (bundle) {
+      var current = data.current && data.current.bundle === bundle.id;
+      html += '<section class="bundle-card"><h3><code>' + esc(bundle.id) + '</code> ' + chip(bundle.state === 'staging' ? 'warn' : 'dim', current ? 'current' : bundle.state) + '</h3><p>' + bundle.files.length + ' files · ' + bundle.files.reduce(function (sum, f) { return sum + f.bytes; }, 0).toLocaleString() + ' bytes · updated ' + when(bundle.updated_ms) + '</p>';
+      if (bundle.preview_ready) html += '<p><a class="btn quiet" href="/backtests/?' + (current ? 'preview=current' : 'staging=' + encodeURIComponent(bundle.id)) + '">Preview bundle</a></p>';
+      else if (bundle.state === 'staging') html += '<p class="note">Preview needs a valid staged manifest and every listed file.</p>';
+      html += '<details><summary>Files and sizes</summary>' + table(bundle.files, [['Path', 'path'], ['Bytes', 'bytes', 'n'], ['SHA-256', function (f) { return '<code class="hash">' + esc(f.sha256) + '</code>'; }]]) + '</details></section>';
+    });
+    return html;
+  }
+  var PANELS = { today: panelToday, research: panelResearch, papers: panelPapers, swing: panelSwing, controls: panelControls, track: panelTrack, published: panelPublished, waitlist: panelWaitlist, hooks: panelHooks };
   function drawPanel(full) {
     if (state.tab === "papers" && $("paper-form") && !full) { loadPapers(); return; }   // keep what you're typing
     $("panel").setAttribute("aria-labelledby", "tab-" + state.tab);
@@ -675,6 +711,7 @@
     $("refresh").disabled = true;
     return api("/api/p/overview").then(function (d) {
       state.data = d;
+      if (state.tab === "published") state.published = null;
       dashEl.hidden = false;
       $("lock").hidden = true;
       header(d); drawTabs(); drawPanel();

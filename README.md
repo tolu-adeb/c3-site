@@ -20,6 +20,7 @@ keeps, with every box linked to its source lines. Source: `docs/architecture.arc
 | `POST /api/publish/abort?bundle=<id>` | Signed; removes an unpublished bundle's staged files and incomplete live copies |
 | `GET /data/<relative.json>` | Public only when `BACKTESTS_PUBLIC` is `"true"`; 5-minute cache and SHA-256 ETag |
 | `GET /api/p/data/<relative.json>` | View-key read of current data; `?staging=<bundle>` previews staging; always `no-store` |
+| `GET /api/p/published` | View-key inventory: current and staged bundles, readiness, paths, sizes and hashes |
 | `POST /hook/<path>` | TradingView front door, **off** (`WEBHOOK_ENABLED`) until the receiver design is agreed |
 | `GET /api/hook/pull` | Signed; the receiver collects stored webhooks (exact text, duplicates flagged) |
 | `/api/p/commands`, `/api/cmd/pull`, `/api/cmd/ack` | Controls: the dashboard queues a command signed with your control code (HMAC); the bot pulls it (signed), checks the HMAC, runs it and reports back |
@@ -116,6 +117,12 @@ pointer untouched. The Worker copies verified bytes to `live/<bundle>/` and atom
 last. Private reads never cache; public reads support GET, HEAD and conditional ETags. Public requests cannot
 select staging. Retention keeps **three total bundles**: current plus two previous (the S4 acceptance limit).
 Cleanup failures do not undo a successful publication; the next commit retries them.
+
+The private dashboard's **Published data** tab shows the inventory. A staged preview is ready only when its
+manifest is valid and every listed file has the expected size and hash. Preview links use `?staging=<bundle>`
+or `?preview=current`; `public/assets/data.js` routes those reads through `/api/p/data/` with the browser's
+saved view key. The key stays out of HTTP URLs. Preview links preserve their mode as you move between pages.
+Public requests never use the saved key unless a preview mode was explicitly selected.
 
 `npm run test:publish` exercises local D1/R2 with generated test keys, including unsigned, tampered, stale,
 replayed and concurrent requests, traversal, oversize, missing/wrong inventory, abort, immutability and the

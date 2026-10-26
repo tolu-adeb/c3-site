@@ -173,3 +173,35 @@ export async function dataFile(request, env, privateView = false) {
   if (request.headers.get("if-none-match")?.split(",").some((tag) => tag.trim().replace(/^W\//, "") === headers.etag || tag.trim() === "*")) return new Response(null, { status: 304, headers });
   return new Response(request.method === "HEAD" ? null : body, { headers });
 }
+
+export async function publishedData(env) {
+  if (!env.DATA) return json({ error: "Publishing storage is not configured." }, 503);
+  const pointer = await env.DATA.get("live/current.json");
+  const current = pointer ? await pointer.json() : null;
+  const { results } = await env.DB.prepare("SELECT id, state, updated_ms, committed_ms, manifest FROM publish_bundles ORDER BY updated_ms DESC").all();
+  const bundles = [];
+  for (const row of results) {
+    let files = [], preview_ready = false;
+    if (row.state === "committed") {
+      const manifest = JSON.parse(row.manifest);
+      files = [...manifest.files];
+      const stored = await env.DATA.head(`live/${row.id}/manifest.json`);
+      if (stored) files.push({ path: "manifest.json", bytes: stored.size, sha256: stored.customMetadata?.sha256 || "" });
+      preview_ready = current?.bundle === row.id;
+    } else {
+      let cursor;
+      do {
+        const page = await env.DATA.list({ prefix: `staging/${row.id}/`, cursor, limit: 1000, include: ["customMetadata"] });
+        files.push(...page.objects.map((object) => ({ path: object.key.slice(`staging/${row.id}/`.length), bytes: object.size, sha256: object.customMetadata?.sha256 || "" })));
+        cursor = page.truncated ? page.cursor : undefined;
+      } while (cursor);
+      const object = await env.DATA.get(`staging/${row.id}/manifest.json`);
+      if (object) {
+        const manifest = await object.json();
+        preview_ready = validManifest(manifest, row.id) && manifest.files.every((file) => files.some((stored) => stored.path === file.path && stored.bytes === file.bytes && stored.sha256 === file.sha256));
+      }
+    }
+    bundles.push({ id: row.id, state: row.state, updated_ms: row.updated_ms, committed_ms: row.committed_ms, files, preview_ready });
+  }
+  return json({ public: env.BACKTESTS_PUBLIC === "true", current, bundles });
+}

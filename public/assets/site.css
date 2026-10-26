@@ -361,3 +361,6 @@ details.paper>summary:focus-visible{outline:2px solid var(--focus);outline-offse
 .chart-point:focus-visible{outline:2px solid var(--focus);outline-offset:4px}
 .candle-canvas{position:absolute;inset:0;display:block}
 .chart .fig-plot .sparkline{width:80px;height:24px}
+.bundle-card{border-top:var(--hair) solid var(--wire);padding:1rem 0;margin-top:1rem;min-width:0}
+.bundle-card h3 code{overflow-wrap:anywhere}
+.hash{display:block;width:18rem;min-width:18rem;overflow-wrap:anywhere;white-space:normal}

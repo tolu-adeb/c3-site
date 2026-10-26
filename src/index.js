@@ -19,7 +19,7 @@
 
 import { SCHEMA } from "./schema.js";
 import { b64decode, sha256hex, timingSafeEqualHex, etParts } from "./util.js";
-import { publish, dataFile } from "./publish.js";
+import { publish, dataFile, publishedData } from "./publish.js";
 
 const enc = new TextEncoder();
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" };
@@ -563,6 +563,7 @@ async function route(request, env) {
   if (path.startsWith("/api/p/")) {
     if (!(await viewerOk(request, env))) return json({ error: "This link isn't valid." }, 401);
     if (path.startsWith("/api/p/data/")) return dataFile(request, env, true);
+    if (path === "/api/p/published" && m === "GET") { await ensureSchema(env.DB); return publishedData(env); }
     if (path === "/api/p/overview" && m === "GET") return overview(env);
     if (path === "/api/p/waitlist" && m === "GET") return waitlistList(env, false);
     if (path === "/api/p/waitlist.csv" && m === "GET") return waitlistList(env, true);
