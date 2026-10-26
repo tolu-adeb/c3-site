@@ -113,3 +113,26 @@ details.raw{margin-top:1.5rem;color:var(--soft);font-size:.85rem}
 details.raw pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:24rem;overflow:auto;background:var(--panel);padding:.75rem;border-radius:6px}
 .lock{max-width:32rem;padding:clamp(2rem,8vw,5rem) 0}
 .lock h1{font-size:clamp(2rem,6vw,3rem);margin:0 0 .75rem;font-variation-settings:"wdth" 118;line-height:1.05}
+/* research papers */
+.paper-form{max-width:44rem}
+fieldset.seg{border:0;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:.4rem}
+fieldset.seg legend{font-weight:600;font-size:.95rem;margin-bottom:.4rem;padding:0}
+fieldset.seg label{display:block;font-weight:600}
+fieldset.seg input{position:absolute;opacity:0;width:1px;height:1px}
+fieldset.seg span{display:inline-block;padding:.45rem .85rem;border:1px solid var(--rule);border-radius:6px;cursor:pointer;color:var(--soft)}
+fieldset.seg input:checked+span{border-color:var(--ink);color:var(--ink);background:var(--zone)}
+fieldset.seg input:focus-visible+span{outline:2px solid var(--focus);outline-offset:2px}
+label.drop{border:2px dashed var(--rule);border-radius:8px;padding:1.4rem 1.2rem;background:var(--panel);cursor:pointer}
+label.drop.over{border-color:var(--focus);background:var(--zone)}
+label.drop input[type=file]{border:0;padding:.4rem 0;background:transparent}
+details.paper{border:1px solid var(--rule);border-radius:8px;margin:.75rem 0;background:var(--panel)}
+details.paper>summary{cursor:pointer;padding:.8rem 1rem;display:flex;flex-wrap:wrap;gap:.4rem 1rem;align-items:center;justify-content:space-between;list-style-position:inside}
+details.paper>summary:focus-visible{outline:2px solid var(--focus);outline-offset:-2px;border-radius:8px}
+.paper-title{font-weight:700;overflow-wrap:anywhere;flex:1 1 18rem}
+.paper-meta{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center}
+.paper-meta small{color:var(--faint)}
+.paper-body{padding:0 1rem 1rem;border-top:1px solid var(--rule)}
+.paper-body h3{font-size:1rem;margin:1.25rem 0 .5rem}
+.idea{border-left:3px solid var(--rule);padding:.25rem 0 .25rem .9rem;margin:.9rem 0}
+.idea-head{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.85rem;overflow-wrap:anywhere;margin:.35rem 0}

@@ -10,6 +10,8 @@
 // Private:  /app/                      - dashboard shell; data needs the view key (secret link)
 //           GET  /api/p/overview, /api/p/waitlist(.csv), DELETE /api/p/waitlist/:id, GET /api/p/webhooks
 //           GET/POST /api/p/commands    - queue a command for the bot (it verifies the control code, not the site)
+//           GET/POST /api/p/papers, DELETE /api/p/papers/:id - research papers (PDF upload or a link)
+// Papers:   GET  /api/papers/pull?id=, /api/papers/blob/:id - signed; the bot collects a paper you asked it to analyse
 // Webhooks: POST /hook/<secret path>   - TradingView front door, off unless WEBHOOK_ENABLED is "true"
 //
 // No secrets live here: the bot's PUBLIC key and SHA-256 hashes of the view key / webhook path / token are
@@ -20,7 +22,7 @@ import { b64decode, sha256hex, timingSafeEqualHex, etParts } from "./util.js";
 
 const enc = new TextEncoder();
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" };
-const KINDS = new Set(["status", "snapshot", "track"]);
+const KINDS = new Set(["status", "snapshot", "track", "papers"]);
 const MAX_INGEST_BYTES = 768 * 1024;
 const MAX_HOOK_BYTES = 64 * 1024;
 const ONLINE_MS = 3 * 60 * 1000;
@@ -106,11 +108,17 @@ async function ingest(request, env) {
   const prev = await env.DB.prepare("SELECT ts FROM latest WHERE kind = ?").bind(msg.kind).first();
   if (prev && prev.ts >= ts) return json({ error: "older than what is stored" }, 409);
   const now = Date.now();
+  let paperStmts = [];
+  if (msg.kind === "papers") {
+    paperStmts = paperUpdates(env, msg.data, now);
+    if (!paperStmts) return json({ error: "expected {items: [{id, status, ...}]}" }, 400);
+  }
   const stmts = [
     env.DB.prepare(
       "INSERT INTO latest (kind, ts, received_ms, body) VALUES (?1, ?2, ?3, ?4) " +
         "ON CONFLICT(kind) DO UPDATE SET ts = ?2, received_ms = ?3, body = ?4"
-    ).bind(msg.kind, ts, now, JSON.stringify(msg.data)),
+    ).bind(msg.kind, ts, now, msg.kind === "papers" ? JSON.stringify({ n: msg.data.items.length }) : JSON.stringify(msg.data)),
+    ...paperStmts,
   ];
   if (msg.kind === "status") {
     const d = msg.data;
@@ -288,9 +296,169 @@ async function hookPull(request, env, url) {
   return json({ webhooks: results, next_after: results.length ? results[results.length - 1].id : after });
 }
 
+// ---------- research papers (stored here; read and analysed on the bot's computer) ----------
+
+const MAX_PDF = 20 * 1024 * 1024;
+const CHUNK = 1500 * 1024;
+const PAPERS_PER_DAY = 10;
+const PAPER_KINDS = new Set(["pdf", "arxiv", "doi", "url", "title"]);
+const PAPER_STATUSES = new Set(["waiting", "fetching", "reading", "analysing", "done", "failed"]);
+const ARXIV_ID = /^(?:arxiv:)?((?:\d{4}\.\d{4,5}|[a-z-]+(?:\.[A-Z]{2})?\/\d{7})(?:v\d+)?)$/i;
+const DOI = /^(?:doi:|https?:\/\/(?:dx\.)?doi\.org\/)?(10\.\d{4,9}\/\S+)$/i;
+const MAX_RESULT_CHARS = 200000;
+
+// What the bot is told to analyse is pinned by a hash it re-checks: the PDF's bytes, or "<kind>\n<ref>" for a link.
+async function linkSha(kind, ref) {
+  return sha256hex(enc.encode(`${kind}\n${ref}`));
+}
+
+function cleanRef(kind, raw) {
+  const s = String(raw || "").trim();
+  if (kind === "arxiv") { const m = s.replace(/^https?:\/\/arxiv\.org\/(?:abs|pdf)\//i, "").replace(/\.pdf$/i, "").match(ARXIV_ID); return m ? m[1] : null; }
+  if (kind === "doi") { const m = s.match(DOI); return m ? m[1] : null; }
+  if (kind === "url") return /^https?:\/\/[^\s]{4,}$/i.test(s) && s.length <= 1000 ? s : null;
+  if (kind === "title") return s.length >= 6 && s.length <= 300 ? s : null;
+  return null;
+}
+
+async function paperAdd(request, env) {
+  const len = Number(request.headers.get("content-length") || 0);
+  if (len > MAX_PDF + 64 * 1024) return json({ error: "The file is over 20 MB, the limit for papers." }, 413);
+  await ensureSchema(env.DB);
+  const now = Date.now();
+  const today = await env.DB.prepare("SELECT COUNT(*) AS n FROM papers WHERE created_ms > ?").bind(now - DAY_MS).first();
+  if (today && today.n >= PAPERS_PER_DAY) return json({ error: `That's ${PAPERS_PER_DAY} papers in the last 24 hours, the daily limit. Try again tomorrow.` }, 429);
+  const ctype = request.headers.get("content-type") || "";
+  let kind, ref = "", title = "", note = "", bytes = null;
+  if (ctype.startsWith("multipart/form-data")) {
+    let form;
+    try { form = await request.formData(); } catch { return json({ error: "Couldn't read the upload. Try again." }, 400); }
+    const file = form.get("file");
+    title = String(form.get("title") || "").trim();
+    note = String(form.get("note") || "").trim();
+    if (!file || typeof file === "string") return json({ error: "Choose a PDF to upload." }, 400);
+    if (file.size > MAX_PDF) return json({ error: "The file is over 20 MB, the limit for papers." }, 413);
+    bytes = new Uint8Array(await file.arrayBuffer());
+    const head = new TextDecoder().decode(bytes.slice(0, 1024)).trimStart();
+    if (!head.startsWith("%PDF-")) return json({ error: "That file isn't a PDF. Upload a PDF, or paste a link instead." }, 400);
+    kind = "pdf";
+    if (!title && file.name) title = String(file.name).replace(/\.pdf$/i, "").replace(/[_-]+/g, " ").trim();
+  } else {
+    const body = await readBody(request, 8192);
+    if (!body) return json({ error: "Too large." }, 413);
+    let f;
+    try { f = JSON.parse(new TextDecoder().decode(body)); } catch { return json({ error: "Send the form as JSON." }, 400); }
+    kind = String(f.kind || "");
+    if (!PAPER_KINDS.has(kind) || kind === "pdf") return json({ error: "Choose arXiv, DOI, link or title." }, 400);
+    ref = cleanRef(kind, f.ref);
+    if (!ref) {
+      const hint = { arxiv: "An arXiv ID looks like 2106.01234.", doi: "A DOI starts with 10. (for example 10.2139/ssrn.123456).",
+        url: "Paste a full link starting with https://.", title: "Type the paper's full title." }[kind];
+      return json({ error: "That doesn't look right. " + hint }, 400);
+    }
+    title = String(f.title || (kind === "title" ? ref : "")).trim();
+    note = String(f.note || "").trim();
+  }
+  title = title.slice(0, 300);
+  note = note.slice(0, 600);
+  const sha = bytes ? await sha256hex(bytes) : await linkSha(kind, ref);
+  const dupe = await env.DB.prepare("SELECT id FROM papers WHERE sha256 = ? LIMIT 1").bind(sha).first();
+  if (dupe) return json({ error: `You've already added this paper (#${dupe.id}).`, id: dupe.id }, 409);
+  const ins = await env.DB.prepare("INSERT INTO papers (created_ms, source_kind, source_ref, title, note, sha256, bytes, status, updated_ms) VALUES (?, ?, ?, ?, ?, ?, ?, 'uploaded', ?)")
+    .bind(now, kind, ref, title || null, note || null, sha, bytes ? bytes.byteLength : null, now).run();
+  const id = ins.meta.last_row_id;
+  if (bytes) {
+    try {
+      const parts = [];
+      for (let i = 0, seq = 0; i < bytes.byteLength; i += CHUNK, seq++) {
+        parts.push(env.DB.prepare("INSERT INTO paper_chunks (paper_id, seq, data) VALUES (?, ?, ?)").bind(id, seq, bytes.slice(i, i + CHUNK)));
+      }
+      for (let i = 0; i < parts.length; i += 4) await env.DB.batch(parts.slice(i, i + 4));
+    } catch (e) {
+      await env.DB.batch([env.DB.prepare("DELETE FROM paper_chunks WHERE paper_id = ?").bind(id), env.DB.prepare("DELETE FROM papers WHERE id = ?").bind(id)]);
+      return json({ error: "Couldn't store the file. Try again." }, 500);
+    }
+  }
+  return json({ ok: true, id, sha256: sha, kind });
+}
+
+function paperRow(r, withResult) {
+  const out = { id: r.id, created_ms: r.created_ms, kind: r.source_kind, ref: r.source_ref, title: r.title, note: r.note,
+    sha256: r.sha256, bytes: r.bytes, status: r.status, error: r.error, updated_ms: r.updated_ms };
+  if (withResult) {
+    try { out.result = r.result_json ? JSON.parse(r.result_json) : null; } catch { out.result = null; }
+  }
+  return out;
+}
+
+async function paperList(env) {
+  await ensureSchema(env.DB);
+  const { results } = await env.DB.prepare("SELECT * FROM papers ORDER BY id DESC LIMIT 100").all();
+  const day = await env.DB.prepare("SELECT COUNT(*) AS n FROM papers WHERE created_ms > ?").bind(Date.now() - DAY_MS).first();
+  return json({ papers: results.map((r) => paperRow(r, true)), added_today: day ? day.n : 0, per_day: PAPERS_PER_DAY, max_mb: MAX_PDF / 1048576 });
+}
+
+async function paperDelete(env, id) {
+  await ensureSchema(env.DB);
+  const [, r] = await env.DB.batch([
+    env.DB.prepare("DELETE FROM paper_chunks WHERE paper_id = ?").bind(id),
+    env.DB.prepare("DELETE FROM papers WHERE id = ?").bind(id),
+  ]);
+  return json({ ok: true, deleted: r.meta.changes || 0 });
+}
+
+async function papersPull(request, env, url) {
+  const why = await checkSignature(request, env, new Uint8Array());
+  if (why) return json({ error: why }, 401);
+  await ensureSchema(env.DB);
+  const id = Number(url.searchParams.get("id"));
+  if (Number.isInteger(id) && id > 0) {
+    const r = await env.DB.prepare("SELECT * FROM papers WHERE id = ?").bind(id).first();
+    return json({ paper: r ? { ...paperRow(r, false), source_kind: r.source_kind, source_ref: r.source_ref } : null });
+  }
+  const { results } = await env.DB.prepare("SELECT * FROM papers WHERE status IN ('queued', 'waiting') ORDER BY id LIMIT 20").all();
+  return json({ papers: results.map((r) => ({ ...paperRow(r, false), source_kind: r.source_kind, source_ref: r.source_ref })) });
+}
+
+async function paperBlob(request, env, id) {
+  const why = await checkSignature(request, env, new Uint8Array());
+  if (why) return json({ error: why }, 401);
+  await ensureSchema(env.DB);
+  const { results } = await env.DB.prepare("SELECT data FROM paper_chunks WHERE paper_id = ? ORDER BY seq").bind(id).all();
+  if (!results.length) return json({ error: "gone: the bot already has this file, or it was never uploaded" }, 410);
+  const parts = results.map((r) => (r.data instanceof ArrayBuffer ? new Uint8Array(r.data) : Uint8Array.from(r.data)));
+  const total = parts.reduce((n, p) => n + p.byteLength, 0);
+  const out = new Uint8Array(total);
+  let at = 0;
+  for (const p of parts) { out.set(p, at); at += p.byteLength; }
+  return new Response(out, { headers: { "content-type": "application/pdf", "cache-control": "no-store", "x-c3-sha256": await sha256hex(out) } });
+}
+
+// The bot's signed "papers" push: [{id, status, error, title, result, stored}] -> UPDATE statements (null when malformed)
+function paperUpdates(env, data, now) {
+  const items = data && Array.isArray(data.items) ? data.items : null;
+  if (!items || items.length > 20) return null;
+  const stmts = [];
+  for (const it of items) {
+    if (!it || !Number.isInteger(it.id)) return null;
+    const status = PAPER_STATUSES.has(it.status) ? it.status : null;
+    let result = null;
+    if (it.result && typeof it.result === "object") {
+      result = JSON.stringify(it.result);
+      if (result.length > MAX_RESULT_CHARS) result = null;
+    }
+    stmts.push(env.DB.prepare(
+      "UPDATE papers SET status = COALESCE(?1, status), error = ?2, title = COALESCE(title, ?3), result_json = COALESCE(?4, result_json), updated_ms = ?5 WHERE id = ?6"
+    ).bind(status, it.error ? String(it.error).slice(0, 400) : null, it.title ? String(it.title).slice(0, 300) : null, result, now, it.id));
+    if (it.stored) stmts.push(env.DB.prepare("DELETE FROM paper_chunks WHERE paper_id = ?").bind(it.id));
+  }
+  return stmts;
+}
+
 // ---------- commands (site queues; the bot verifies the control-code HMAC and runs them) ----------
 
-const ACTIONS = new Set(["pause_posting", "resume_posting", "approve_strategy", "retire_strategy", "run_forward_lab", "run_parity", "run_wide_backtest"]);
+const PAPER_ACTIONS = new Set(["analyze_paper", "reanalyze_paper", "test_paper_idea", "dismiss_paper_idea"]);
+const ACTIONS = new Set(["pause_posting", "resume_posting", "approve_strategy", "retire_strategy", "run_forward_lab", "run_parity", "run_wide_backtest", ...PAPER_ACTIONS]);
 const CMD_MAX_AGE_MS = 10 * 60 * 1000;
 
 async function commandAdd(request, env) {
@@ -312,6 +480,11 @@ async function commandAdd(request, env) {
   await ensureSchema(env.DB);
   const r = await env.DB.prepare("INSERT INTO commands (action, args, nonce, ts, mac, created_ms) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(nonce) DO NOTHING")
     .bind(c.action, args, c.nonce, c.ts, c.mac, now).run();
+  // display only: the bot decides whether it runs (it checks the control code); a refusal marks the paper failed
+  if ((c.action === "analyze_paper" || c.action === "reanalyze_paper") && c.args && Number.isInteger(c.args.paper_id)) {
+    await env.DB.prepare("UPDATE papers SET status = 'queued', error = NULL, updated_ms = ? WHERE id = ? AND status IN ('uploaded', 'done', 'failed')")
+      .bind(now, c.args.paper_id).run();
+  }
   return json({ ok: true, id: r.meta.last_row_id });
 }
 
@@ -349,7 +522,18 @@ async function commandAck(request, env) {
   if (!Number.isInteger(a.id)) return json({ error: "id" }, 400);
   await ensureSchema(env.DB);
   const status = a.refused ? "refused" : a.ok ? "done" : "failed";
-  await env.DB.prepare("UPDATE commands SET status = ?, result = ?, done_ms = ? WHERE id = ?").bind(status, String(a.message || "").slice(0, 500), Date.now(), a.id).run();
+  const now = Date.now();
+  await env.DB.prepare("UPDATE commands SET status = ?, result = ?, done_ms = ? WHERE id = ?").bind(status, String(a.message || "").slice(0, 500), now, a.id).run();
+  if (status !== "done") {
+    const c = await env.DB.prepare("SELECT action, args FROM commands WHERE id = ?").bind(a.id).first();
+    if (c && (c.action === "analyze_paper" || c.action === "reanalyze_paper")) {
+      const pid = JSON.parse(c.args || "{}").paper_id;
+      if (Number.isInteger(pid)) {
+        await env.DB.prepare("UPDATE papers SET status = 'failed', error = ?, updated_ms = ? WHERE id = ? AND status = 'queued'")
+          .bind(("The bot didn't start: " + String(a.message || "").replace(/^refused: /, "")).slice(0, 400), now, pid).run();
+      }
+    }
+  }
   return json({ ok: true });
 }
 
@@ -368,6 +552,9 @@ async function route(request, env) {
   if (path === "/api/hook/pull") return m === "GET" ? hookPull(request, env, url) : json({ error: "GET only" }, 405);
   if (path === "/api/cmd/pull") return m === "GET" ? commandPull(request, env) : json({ error: "GET only" }, 405);
   if (path === "/api/cmd/ack") return m === "POST" ? commandAck(request, env) : json({ error: "POST only" }, 405);
+  if (path === "/api/papers/pull") return m === "GET" ? papersPull(request, env, url) : json({ error: "GET only" }, 405);
+  const blob = path.match(/^\/api\/papers\/blob\/(\d+)$/);
+  if (blob) return m === "GET" ? paperBlob(request, env, Number(blob[1])) : json({ error: "GET only" }, 405);
 
   if (path.startsWith("/api/p/")) {
     if (!(await viewerOk(request, env))) return json({ error: "This link isn't valid." }, 401);
@@ -379,6 +566,10 @@ async function route(request, env) {
     if (path === "/api/p/webhooks" && m === "GET") return webhookList(env);
     if (path === "/api/p/commands" && m === "GET") return commandList(env);
     if (path === "/api/p/commands" && m === "POST") return commandAdd(request, env);
+    if (path === "/api/p/papers" && m === "GET") return paperList(env);
+    if (path === "/api/p/papers" && m === "POST") return paperAdd(request, env);
+    const pdel = path.match(/^\/api\/p\/papers\/(\d+)$/);
+    if (pdel && m === "DELETE") return paperDelete(env, Number(pdel[1]));
     return notFound();
   }
   if (path.startsWith("/api/")) return notFound();
@@ -401,8 +592,10 @@ export default {
       env.DB.prepare("DELETE FROM heartbeats WHERE received_ms < ?").bind(now - 45 * DAY_MS),
       env.DB.prepare("DELETE FROM join_attempts WHERE at_ms < ?").bind(now - 2 * DAY_MS),
       env.DB.prepare("DELETE FROM commands WHERE created_ms < ?").bind(now - 60 * DAY_MS),
+      // a PDF nobody asked the bot to analyse within 30 days
+      env.DB.prepare("DELETE FROM paper_chunks WHERE paper_id IN (SELECT id FROM papers WHERE created_ms < ?)").bind(now - 30 * DAY_MS),
     ]);
   },
 };
 
-export { coverageDays };
+export { coverageDays, cleanRef, paperUpdates };

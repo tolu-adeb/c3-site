@@ -4,12 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "wrangler dev --local",
+    "smoke": "node test/smoke.mjs",
+    "fuzz": "node test/fuzz.mjs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "wrangler": "^4.152.0"
-  }
+  },
+  "type": "module"
 }

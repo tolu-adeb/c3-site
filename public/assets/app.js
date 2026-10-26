@@ -126,6 +126,7 @@
   var TABS = [
     ["today", "MNQ bot today"],
     ["research", "Research"],
+    ["papers", "Research papers"],
     ["swing", "Swing desk"],
     ["controls", "Controls"],
     ["track", "Track record"],
@@ -347,7 +348,8 @@
   var LABELS = {
     pause_posting: "Pause signal posts", resume_posting: "Resume signal posts", approve_strategy: "Approve strategy",
     retire_strategy: "Retire strategy", run_forward_lab: "Run the forward lab", run_parity: "Run live vs backtest",
-    run_wide_backtest: "Run wide-scan backtest"
+    run_wide_backtest: "Run wide-scan backtest", analyze_paper: "Analyse paper", reanalyze_paper: "Analyse paper again",
+    test_paper_idea: "Test in forward lab", dismiss_paper_idea: "Dismiss idea"
   };
   function sortedJSON(o) {
     var keys = Object.keys(o || {}).sort(); var out = {};
@@ -462,8 +464,199 @@
     drawPanel(); say("Control code removed from this device.", "ok");
   });
 
-  var PANELS = { today: panelToday, research: panelResearch, swing: panelSwing, controls: panelControls, track: panelTrack, waitlist: panelWaitlist, hooks: panelHooks };
-  function drawPanel() {
+  // ---------- research papers: you add one, the bot reads it and suggests forward-lab tests ----------
+  var BUSY = { queued: 1, waiting: 1, fetching: 1, reading: 1, analysing: 1 };
+  var STATUS = {
+    uploaded: ["dim", "Added"], queued: ["dim", "Sent to the bot"], waiting: ["dim", "Waiting its turn"], fetching: ["warn", "Fetching"],
+    reading: ["warn", "Reading"], analysing: ["warn", "Analysing…"], done: ["good", "Analysed"], failed: ["bad", "Didn't work"]
+  };
+  var IDEA = { "new": ["dim", "Not tested"], queued: ["warn", "Queued for the forward lab"], tested: ["good", "Tested"],
+    already_tested: ["good", "Tested before"], dismissed: ["dim", "Dismissed"], invalid: ["bad", "No longer valid"] };
+  var KIND = { pdf: "PDF", arxiv: "arXiv", doi: "DOI", url: "Link", title: "Title" };
+  var REF_HELP = {
+    arxiv: ["arXiv ID", "For example 2106.01234"], doi: ["DOI", "For example 10.2139/ssrn.3247865"],
+    url: ["Link", "A PDF link, or the paper's page on SSRN or a journal"], title: ["Paper title", "The bot looks for an open copy on arXiv"]
+  };
+  state.pdraft = state.pdraft || { kind: "pdf", ref: "", title: "", note: "" };
+  state.popen = state.popen || {};
+
+  function panelPapers() {
+    var d = state.pdraft;
+    var m = state.msg || ["", ""];
+    var st = (state.data.status && state.data.status.data) || {};
+    var pv = (st.site && st.site.papers) || null;
+    var h = '<p class="msg ' + esc(m[1]) + '" id="ctl-msg" role="status">' + esc(m[0]) + "</p>";
+    if (!ctlCode()) h += '<div class="gate">' + chip("warn", "Control code needed") + " Analysing a paper uses Claude credits, so the bot only starts when the request is signed with your control code. Add it on the Controls tab first.</div>";
+    else if (pv && pv.analyses === false) h += '<div class="gate">' + chip("warn", "Bot can't analyse") + " The bot has no ABG_ANTHROPIC_API_KEY in its .env, so it will refuse.</div>";
+    h += '<form class="stack paper-form" id="paper-form" autocomplete="off">' +
+      '<fieldset class="seg"><legend>Add a paper from</legend>' + ["pdf", "arxiv", "doi", "url", "title"].map(function (k) {
+        return '<label><input type="radio" name="kind" value="' + k + '"' + (d.kind === k ? " checked" : "") + "><span>" + esc(k === "pdf" ? "PDF file" : KIND[k]) + "</span></label>";
+      }).join("") + "</fieldset>";
+    if (d.kind === "pdf") {
+      h += '<label class="drop" id="paper-drop">Choose a PDF or drop it here <small id="paper-file-name">Up to 20 MB. Stays private: only you and the bot can read it.</small>' +
+        '<input type="file" name="file" accept="application/pdf,.pdf" id="paper-file"></label>' +
+        '<label>Title <small>Optional. Taken from the file name if you leave it empty.</small><input name="title" maxlength="300" value="' + esc(d.title) + '"></label>';
+    } else {
+      var rh = REF_HELP[d.kind];
+      h += "<label>" + esc(rh[0]) + " <small>" + esc(rh[1]) + '</small><input name="ref" required maxlength="1000" spellcheck="false" value="' + esc(d.ref) + '"></label>';
+      if (d.kind !== "title") h += '<label>Title <small>Optional</small><input name="title" maxlength="300" value="' + esc(d.title) + '"></label>';
+    }
+    h += '<label>What should it check? <small>Optional, for example "Does this gap filter help the 9:30 opening trade?"</small><textarea name="note" maxlength="600">' + esc(d.note) + "</textarea></label>" +
+      '<div><button type="submit" id="paper-go">Analyse paper</button></div></form>';
+    h += '<p class="note">The bot on your computer downloads the paper, reads it with Claude and grades the evidence. Ideas it can express with the strategy\'s own settings get a Test in forward lab button; they go through the same walk-forward check and paper trading as every other idea. Nothing is posted to Discord and nothing goes live without your approval on the Research tab.' +
+      (pv ? " Claude tokens used today: " + esc(Number(pv.tokens_today || 0).toLocaleString()) + " of " + esc(Number(pv.tokens_per_day || 0).toLocaleString()) + "." : "") + "</p>";
+    h += '<div id="papers"><p class="note">Loading papers…</p></div>';
+    setTimeout(loadPapers, 0);
+    return h;
+  }
+
+  function ideaRow(p, t) {
+    var s = IDEA[t.state || "new"] || IDEA["new"];
+    var o = t.outcome || {};
+    var res = "";
+    if (o.verdict) res = esc(o.verdict === "candidate" ? "Passed the walk-forward" : "Didn't pass") + (o.failed && o.failed.length ? " (" + esc(o.failed.join(", ")) + ")" : "");
+    if (o.strategy_id != null) res += (res ? ". " : "") + "Forward-lab strategy #" + esc(o.strategy_id) + (o.strategy_status ? " (" + esc(o.strategy_status) + ")" : "") + ", see the Research tab";
+    if (o.why) res += (res ? ". " : "") + esc(o.why);
+    var btn = "";
+    if (!t.state || t.state === "new") {
+      btn = '<button type="button" data-pcmd="test_paper_idea" data-pid="' + esc(p.id) + '" data-idea="' + esc(t.id) + '">Test in forward lab</button> ' +
+        '<button type="button" class="quiet" data-pcmd="dismiss_paper_idea" data-pid="' + esc(p.id) + '" data-idea="' + esc(t.id) + '">Dismiss</button>';
+    }
+    return '<div class="idea"><div class="idea-head"><b>' + esc(t.name) + "</b> " + chip(s[0], s[1]) + "</div>" +
+      '<p class="mono">' + esc(t.label || JSON.stringify(t.changes)) + "</p>" +
+      '<p class="note">' + esc(String(t.rationale || "").replace(/ \(from paper: .*\)$/, "").replace(/([^.!?])$/, "$1.")) + (t.expected ? " Expected: " + esc(t.expected) + "." : "") + "</p>" +
+      (res ? '<p class="note">' + res + ".</p>" : "") + (btn ? '<div class="row-actions">' + btn + "</div>" : "") + "</div>";
+  }
+
+  function paperBody(p) {
+    var r = p.result;
+    var h = "";
+    if (p.status === "failed") h += '<p class="msg err">' + esc(p.error || "It didn't work.") + "</p>";
+    if (p.status === "uploaded" || p.status === "failed" || (p.status === "done" && r)) {
+      var again = p.status === "done" || (p.status === "failed" && r);
+      h += '<div class="row-actions"><button type="button" class="' + (again ? "quiet" : "") + '" data-pcmd="' + (again ? "reanalyze_paper" : "analyze_paper") + '" data-pid="' + esc(p.id) + '" data-sha="' + esc(p.sha256) + '">' +
+        (again ? "Analyse again" : p.status === "failed" ? "Try again" : "Analyse paper") + "</button>" +
+        '<button type="button" class="quiet" data-pdel="' + esc(p.id) + '" data-title="' + esc(p.title || "this paper") + '">Remove</button></div>';
+    } else if (BUSY[p.status]) {
+      h += '<p class="note">' + esc(STATUS[p.status][1]) + ". This updates by itself; a long paper takes a minute or two.</p>";
+    }
+    if (!r) return h;
+    h += "<h3>Summary</h3><p>" + esc(r.summary) + "</p>";
+    var g = r.grade || {};
+    h += kv([["Authors", esc(r.authors || "–") + (r.year ? ", " + esc(r.year) : "")], ["Evidence", chip(/A|B/.test(g.letter) ? "good" : g.letter === "C" ? "warn" : "bad", "Grade " + (g.letter || "–")) + " " + esc(g.why || "")],
+      ["MNQ strategy", esc((r.relevance || {}).mnq || "–") + " relevance. " + esc((r.relevance || {}).mnq_why || "")],
+      ["Swing desk", esc((r.relevance || {}).swing || "–") + " relevance. " + esc((r.relevance || {}).swing_why || "")],
+      ["Read", esc(r.pages || "–") + (r.pages === 1 ? " page" : " pages") + (r.cut ? ", cut to its key sections to fit" : "") + (r.source_url ? ' from <a href="' + esc(r.source_url) + '" rel="noopener noreferrer" target="_blank">the source</a>' : "")]]);
+    if (g.aspects && g.aspects.length) h += table(g.aspects, [["Check", function (a) { return esc(String(a.aspect).replace(/_/g, " ")); }],
+      ["Verdict", function (a) { return chip(a.verdict === "good" ? "good" : a.verdict === "poor" ? "bad" : a.verdict === "mixed" ? "warn" : "dim", a.verdict); }], ["Why", "note"]]);
+    h += "<h3>Claims</h3>" + table(r.claims, [["Claim", "text"], ["Evidence", "evidence"], ["Strength", function (c) { return chip(c.strength === "strong" ? "good" : c.strength === "moderate" ? "warn" : "dim", c.strength); }]], "No clear claims.");
+    h += "<h3>Testable now</h3>" + ((r.testable || []).length ? r.testable.map(function (t) { return ideaRow(p, t); }).join("") :
+      '<p class="note">Nothing in this paper maps onto the strategy\'s settings.</p>');
+    if ((r.needs_code || []).length) h += "<h3>Needs new code</h3>" + table(r.needs_code, [["Idea", "name"], ["Signal", "signal"], ["Rule", "rule"], ["Where", function (c) { return '<span class="mono">' + esc(c.module) + "</span>"; }]]) +
+      '<p class="note">Proposals only. Nothing here changes the bot.</p>';
+    if ((r.engine_proposals || []).length) h += "<h3>For the NQ engine</h3>" + table(r.engine_proposals, [["Idea", "name"], ["Touches", "relates_to"],
+      ["research/variants.csv row", function (e) { var v = e.variants_row || {}; return '<span class="mono">' + esc([v.run_id, '"' + (v["what changed"] || "") + '"', v.date].join(",")) + "</span>"; }], ["Note", "note"]]) +
+      '<p class="note">Proposal text for khuovi\'s engine. It isn\'t added anywhere automatically.</p>';
+    if (r.dropped) h += '<p class="note">' + esc(r.dropped) + " item" + (r.dropped === 1 ? "" : "s") + " from Claude's reply didn't pass the checks and " + (r.dropped === 1 ? "was" : "were") + " left out.</p>";
+    return h;
+  }
+
+  function loadPapers() {
+    api("/api/p/papers").then(function (d) {
+      state.papers = d;
+      var box = $("papers");
+      if (!box) return;
+      var ps = d.papers || [];
+      var head = '<p class="note">' + esc(d.added_today || 0) + " of " + esc(d.per_day || 10) + " added in the last 24 hours.</p>";
+      if (!ps.length) { box.innerHTML = head + '<p class="note">No papers yet. Add a PDF or a link above and press Analyse paper; the results show up here.</p>'; return; }
+      box.innerHTML = head + ps.map(function (p) {
+        var s = STATUS[p.status] || ["dim", p.status];
+        var g = p.result && p.result.grade && p.result.grade.letter;
+        var n = p.result && p.result.testable ? p.result.testable.length : null;
+        return '<details class="paper" data-pid="' + esc(p.id) + '"' + (state.popen[p.id] ? " open" : "") + "><summary>" +
+          '<span class="paper-title">' + esc(p.title || p.ref || "Paper #" + p.id) + "</span>" +
+          '<span class="paper-meta">' + chip(s[0], s[1]) + " " + chip("dim", KIND[p.kind] || p.kind) + (g ? " " + chip("dim", "Grade " + g) : "") +
+          (n != null ? " " + chip(n ? "good" : "dim", n + " testable") : "") + " <small>" + esc(ago(p.created_ms)) + "</small></span></summary>" +
+          '<div class="paper-body">' + paperBody(p) + "</div></details>";
+      }).join("");
+      clearTimeout(state.ptimer);
+      if (ps.some(function (p) { return BUSY[p.status]; }) && state.tab === "papers") state.ptimer = setTimeout(loadPapers, 8000);
+    }).catch(function () { var box = $("papers"); if (box) box.innerHTML = '<p class="msg err">Couldn\'t load papers. Press Refresh.</p>'; });
+  }
+
+  document.addEventListener("toggle", function (e) {
+    var el = e.target;
+    if (el && el.classList && el.classList.contains("paper")) state.popen[el.getAttribute("data-pid")] = el.open;
+  }, true);
+  document.addEventListener("input", function (e) {
+    var f = e.target.form;
+    if (!f || f.id !== "paper-form") return;
+    if (e.target.name === "kind") { state.pdraft.kind = e.target.value; drawPanel(true); return; }
+    if (e.target.name in state.pdraft) state.pdraft[e.target.name] = e.target.value;
+    if (e.target.id === "paper-file") $("paper-file-name").textContent = e.target.files[0] ? e.target.files[0].name + " (" + (e.target.files[0].size / 1048576).toFixed(1) + " MB)" : "";
+  });
+  ["dragover", "dragleave", "drop"].forEach(function (ev) {
+    document.addEventListener(ev, function (e) {
+      var z = e.target.closest && e.target.closest("#paper-drop");
+      if (!z) return;
+      e.preventDefault();
+      z.classList.toggle("over", ev === "dragover");
+      if (ev === "drop" && e.dataTransfer.files.length) {
+        var inp = $("paper-file");
+        inp.files = e.dataTransfer.files;
+        inp.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+    });
+  });
+  document.addEventListener("submit", function (e) {
+    if (e.target.id !== "paper-form") return;
+    e.preventDefault();
+    var d = state.pdraft, req;
+    if (d.kind === "pdf") {
+      var file = $("paper-file").files[0];
+      if (!file) { say("Choose a PDF first.", "err"); return; }
+      if (file.size > 20 * 1048576) { say("That file is over 20 MB, the limit for papers.", "err"); return; }
+      var fd = new FormData();
+      fd.append("file", file); fd.append("title", d.title || ""); fd.append("note", d.note || "");
+      req = { method: "POST", body: fd };
+    } else {
+      req = { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ kind: d.kind, ref: d.ref, title: d.title, note: d.note }) };
+    }
+    $("paper-go").disabled = true;
+    say("Adding the paper…");
+    fetch("/api/p/papers", Object.assign(req, { headers: Object.assign({ authorization: "Bearer " + state.key }, req.headers || {}) }))
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (x) {
+        if (!x.ok) { say(x.j.error || "Couldn't add the paper.", "err"); return; }
+        state.pdraft = { kind: d.kind, ref: "", title: "", note: "" };
+        state.popen[x.j.id] = true;
+        if (ctlCode()) sendCommand("analyze_paper", { paper_id: x.j.id, sha256: x.j.sha256 });
+        else say("Added. Save your control code on the Controls tab, then press Analyse paper on it.", "ok");
+        drawPanel(true);
+      })
+      .catch(function () { say("Couldn't reach the site. Try again.", "err"); })
+      .finally(function () { var b = $("paper-go"); if (b) b.disabled = false; });
+  });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-pcmd]");
+    if (b) {
+      var a = b.getAttribute("data-pcmd");
+      var args = { paper_id: Number(b.getAttribute("data-pid")) };
+      if (b.getAttribute("data-sha")) args.sha256 = b.getAttribute("data-sha");
+      if (b.getAttribute("data-idea")) args.idea_id = b.getAttribute("data-idea");
+      sendCommand(a, args);
+      return;
+    }
+    var del = e.target.closest("button[data-pdel]");
+    if (del) {
+      if (!window.confirm("Remove " + del.getAttribute("data-title") + "? The copy on the bot's computer stays.")) return;
+      api("/api/p/papers/" + del.getAttribute("data-pdel"), { method: "DELETE" }).then(loadPapers);
+    }
+  });
+
+  var PANELS = { today: panelToday, research: panelResearch, papers: panelPapers, swing: panelSwing, controls: panelControls, track: panelTrack, waitlist: panelWaitlist, hooks: panelHooks };
+  function drawPanel(full) {
+    if (state.tab === "papers" && $("paper-form") && !full) { loadPapers(); return; }   // keep what you're typing
     $("panel").setAttribute("aria-labelledby", "tab-" + state.tab);
     try { $("panel").innerHTML = PANELS[state.tab](); } catch (e) { $("panel").innerHTML = '<p class="msg err">This section couldn\'t be drawn from the latest data.</p>'; }
   }

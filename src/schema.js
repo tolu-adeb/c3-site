@@ -12,4 +12,8 @@ export const SCHEMA = [
   `CREATE INDEX IF NOT EXISTS webhooks_key ON webhooks (sym, t)`,
   // commands from the private dashboard; the bot checks each one's HMAC (control code) before running it
   `CREATE TABLE IF NOT EXISTS commands (id INTEGER PRIMARY KEY AUTOINCREMENT, action TEXT NOT NULL, args TEXT NOT NULL, nonce TEXT NOT NULL UNIQUE, ts INTEGER NOT NULL, mac TEXT NOT NULL, created_ms INTEGER NOT NULL, status TEXT NOT NULL DEFAULT 'pending', result TEXT, done_ms INTEGER)`,
+  // research papers you add on /app/: the bot reads and analyses them and reports back here (result_json)
+  `CREATE TABLE IF NOT EXISTS papers (id INTEGER PRIMARY KEY AUTOINCREMENT, created_ms INTEGER NOT NULL, source_kind TEXT NOT NULL, source_ref TEXT NOT NULL DEFAULT '', title TEXT, note TEXT, sha256 TEXT NOT NULL, bytes INTEGER, status TEXT NOT NULL DEFAULT 'uploaded', error TEXT, result_json TEXT, updated_ms INTEGER NOT NULL)`,
+  // an uploaded PDF in 1.5 MB pieces (D1 rows top out at 2 MB); deleted once the bot has its own copy
+  `CREATE TABLE IF NOT EXISTS paper_chunks (paper_id INTEGER NOT NULL, seq INTEGER NOT NULL, data BLOB NOT NULL, PRIMARY KEY (paper_id, seq))`,
 ];

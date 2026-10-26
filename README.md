@@ -10,11 +10,12 @@ keeps, with every box linked to its source lines. Source: `docs/architecture.arc
 | `/` | Home page |
 | `/track-record/` | Public results. Says "no public results yet" until `TRACK_RECORD_PUBLIC` is `"true"` |
 | `/join/` | Waitlist signup (email + optional note, honeypot and 5-an-hour limit per connection) |
-| `/app/` | Private dashboard: bot status, session coverage, MNQ bot today, research (approve/retire strategies), swing desk, controls, track record preview, waitlist, webhooks |
+| `/app/` | Private dashboard: bot status, session coverage, MNQ bot today, research (approve/retire strategies), research papers, swing desk, controls, track record preview, waitlist, webhooks |
 | `POST /api/ingest` | The MNQ bot's signed pushes (status every minute, snapshot every 5 minutes, paper stats) |
 | `POST /hook/<path>` | TradingView front door, **off** (`WEBHOOK_ENABLED`) until the receiver design is agreed |
 | `GET /api/hook/pull` | Signed; the receiver collects stored webhooks (exact text, duplicates flagged) |
 | `/api/p/commands`, `/api/cmd/pull`, `/api/cmd/ack` | Controls: the dashboard queues a command signed with your control code (HMAC); the bot pulls it (signed), checks the HMAC, runs it and reports back |
+| `/api/p/papers` (GET, POST, `DELETE /:id`), `/api/papers/pull`, `/api/papers/blob/:id` | Research papers: you add a PDF (up to 20 MB, stored in 1.5 MB D1 rows) or a link; pressing Analyse sends a control-code-signed `analyze_paper` command pinned to the file's SHA-256. The bot pulls the paper (signed), deletes the site's copy once it has its own, and pushes the analysis back as a signed `papers` ingest. At most 10 papers a day |
 
 ## No secrets in this repo
 
@@ -40,9 +41,10 @@ pinned by ID in `wrangler.jsonc`; the Worker creates its tables on first use.
 npm install
 npx wrangler dev --local          # needs a .dev.vars with test keys (git-ignored)
 node test/smoke.mjs http://127.0.0.1:8787 <test-keys.json>
+node test/fuzz.mjs  http://127.0.0.1:8787 <test-keys.json> ../c3.lab/mnq-bot   # 300 generated cases
 ```
 
-`test/smoke.mjs` covers pages and headers, signed/unsigned/tampered/stale/replayed pushes, the private views, the
+`test/smoke.mjs` covers pages and headers, research papers (upload limits, signed pull and download, chunk clean-up, result push, delete, the daily cap), signed/unsigned/tampered/stale/replayed pushes, the private views, the
 public track record filter, the waitlist (dupes, bad email, honeypot, rate limit, CSV, delete) and the front door
 (path, token, IP allowlist, duplicates, signed pull).
 

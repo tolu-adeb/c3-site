@@ -140,5 +140,96 @@ ok(r.status === 401, "unsigned pull rejected");
   ok(listed && listed.status === "refused" && listed.result.includes("wrong control code"), "command result visible on the dashboard");
 }
 
+// research papers: upload (view key), signed pull + blob for the bot, signed status/result push, delete, daily cap
+{
+  const pdf = Buffer.concat([Buffer.from("%PDF-1.4\n"), Buffer.alloc(3 * 1024 * 1024 + 123, 7), Buffer.from("\n%%EOF\n")]);  // 3 chunks
+  const sha = createHash("sha256").update(pdf).digest("hex");
+  const up = (bytes, name, headers) => {
+    const fd = new FormData();
+    fd.append("file", new Blob([bytes], { type: "application/pdf" }), name);
+    fd.append("note", "does the gap help?");
+    return fetch(base + "/api/p/papers", { method: "POST", headers: headers || view, body: fd });
+  };
+  const link = (o, headers) => fetch(base + "/api/p/papers", { method: "POST", headers: { ...(headers || view), "content-type": "application/json" }, body: JSON.stringify(o) });
+  r = await up(pdf, "x.pdf", {});
+  ok(r.status === 401, "paper upload without view key -> 401");
+  r = await up(Buffer.from("<html>not a pdf</html>"), "x.pdf");
+  ok(r.status === 400, "non-PDF upload rejected");
+  r = await up(Buffer.concat([Buffer.from("%PDF-1.4\n"), Buffer.alloc(21 * 1024 * 1024)]), "big.pdf");
+  ok(r.status === 413, `21 MB upload rejected -> ${r.status}`);
+  r = await up(pdf, "Gap_filters-2024.pdf");
+  const added = await r.json();
+  ok(r.status === 200 && added.sha256 === sha && added.kind === "pdf", "PDF upload accepted, hash returned");
+  r = await up(pdf, "again.pdf");
+  ok(r.status === 409, "the same PDF twice -> 409");
+  r = await link({ kind: "arxiv", ref: "https://arxiv.org/abs/2106.01234v2" });
+  const ax = await r.json();
+  ok(r.status === 200 && ax.sha256 === createHash("sha256").update("arxiv\n2106.01234v2").digest("hex"), "arXiv link normalised, hash of kind+ref");
+  r = await link({ kind: "doi", ref: "not a doi" });
+  ok(r.status === 400, "bad DOI rejected");
+  r = await link({ kind: "pdf", ref: "x" });
+  ok(r.status === 400, "JSON can't claim to be a PDF");
+
+  r = await fetch(base + "/api/p/papers", { headers: view });
+  let list = await r.json();
+  let mine = list.papers.find((p) => p.id === added.id);
+  ok(mine && mine.title === "Gap filters 2024" && mine.status === "uploaded" && mine.bytes === pdf.length && mine.note === "does the gap help?", "paper listed with title from file name");
+
+  // analyse command marks it queued; a refusal by the bot marks it failed with the reason
+  const ts = Math.floor(Date.now() / 1000);
+  r = await fetch(base + "/api/p/commands", { method: "POST", headers: { ...view, "content-type": "application/json" },
+    body: JSON.stringify({ action: "analyze_paper", args: { paper_id: ax.id, sha256: ax.sha256 }, nonce: "p".repeat(20) + ts, ts, mac: "b".repeat(64) }) });
+  const pc = await r.json();
+  r = await fetch(base + "/api/p/papers", { headers: view });
+  ok((await r.json()).papers.find((p) => p.id === ax.id).status === "queued", "analyze command marks the paper queued");
+  const ack = JSON.stringify({ id: pc.id, ok: false, refused: true, message: "refused: wrong control code" });
+  await fetch(base + "/api/cmd/ack", { method: "POST", headers: signed("POST", "/api/cmd/ack", ack), body: ack });
+  r = await fetch(base + "/api/p/papers", { headers: view });
+  const failed = (await r.json()).papers.find((p) => p.id === ax.id);
+  ok(failed.status === "failed" && failed.error.includes("wrong control code"), "bot refusal shows on the paper");
+
+  // the bot's side
+  r = await fetch(base + `/api/papers/pull?id=${added.id}`);
+  ok(r.status === 401, "unsigned paper pull rejected");
+  r = await fetch(base + `/api/papers/pull?id=${added.id}`, { headers: signed("GET", `/api/papers/pull?id=${added.id + 1}`, null) });
+  ok(r.status === 401, "paper pull signed for another URL rejected");
+  r = await fetch(base + `/api/papers/pull?id=${added.id}`, { headers: signed("GET", `/api/papers/pull?id=${added.id}`, null, ts - 1000) });
+  ok(r.status === 401, "stale paper pull rejected");
+  r = await fetch(base + `/api/papers/pull?id=${added.id}`, { headers: signed("GET", `/api/papers/pull?id=${added.id}`, null) });
+  const meta = (await r.json()).paper;
+  ok(meta && meta.sha256 === sha && meta.source_kind === "pdf" && meta.note === "does the gap help?", "signed pull returns the paper's metadata");
+  r = await fetch(base + `/api/papers/blob/${added.id}`);
+  ok(r.status === 401, "unsigned blob download rejected");
+  r = await fetch(base + `/api/papers/blob/${added.id}`, { headers: signed("GET", `/api/papers/blob/${added.id}`, null) });
+  const got = Buffer.from(await r.arrayBuffer());
+  ok(r.status === 200 && got.equals(pdf) && r.headers.get("x-c3-sha256") === sha, "signed blob download is byte-identical (3 chunks)");
+
+  const result = { summary: "They filter by the gap and report a higher win rate after costs.", grade: { letter: "B" },
+    testable: [{ id: "t1", name: "Trade with the gap", changes: { orx_gap_mode: "with" }, state: "new" }] };
+  r = await push("papers", { items: [{ id: added.id, status: "reading", stored: true }] }, ts - 3);
+  ok(r.status === 200, "signed papers push accepted");
+  r = await fetch(base + `/api/papers/blob/${added.id}`, { headers: signed("GET", `/api/papers/blob/${added.id}`, null) });
+  ok(r.status === 410, "file deleted from the site once the bot has it");
+  r = await push("papers", { items: [{ id: added.id, status: "done", title: "Ignored: the site keeps your title", result }] }, ts - 2);
+  ok(r.status === 200, "result push accepted");
+  r = await push("papers", { items: [{ id: "x", status: "done" }] }, ts - 1);
+  ok(r.status === 400, "malformed papers push rejected");
+  r = await push("papers", { items: [{ id: added.id, status: "failed" }] }, ts - 2);
+  ok(r.status === 409, "replayed papers push rejected");
+  r = await fetch(base + "/api/p/papers", { headers: view });
+  mine = (await r.json()).papers.find((p) => p.id === added.id);
+  ok(mine.status === "done" && mine.title === "Gap filters 2024" && mine.result.testable[0].changes.orx_gap_mode === "with", "analysis visible on the dashboard");
+
+  r = await fetch(base + `/api/p/papers/${ax.id}`, { method: "DELETE", headers: view });
+  ok((await r.json()).deleted === 1, "delete a paper");
+  r = await fetch(base + `/api/p/papers/${added.id}`, { method: "DELETE" });
+  ok(r.status === 401, "delete without view key rejected");
+
+  // daily cap: 10 in 24 hours (2 added above, 1 deleted still counts as removed)
+  let last;
+  for (let i = 0; i < 12; i++) last = await link({ kind: "url", ref: `https://example.com/p${i}-${ts}.pdf` });
+  ok(last.status === 429, `daily paper limit -> ${last.status}`);
+}
+
 console.log(failures ? `\n${failures} FAILED` : "\nall passed");
 process.exit(failures ? 1 : 0);
