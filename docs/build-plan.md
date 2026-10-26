@@ -545,6 +545,13 @@ their state/number separation. Next: S9.
 - Accept: every node links to its spec section in Methodology or the strategy page; keyboard can walk every node
   in pipeline order; works without JS as an ordered list of the same nodes.
 
+Implementation: JSON drives twelve isometric wireframe boxes and their pipes. Focus, hover and keyboard
+selection highlight the upstream path and open the node’s description, spec link, inputs, outputs and exported
+state. Unpublished data falls back to the shipped static process description, with no invented last-run
+counts. The MNQ paper desk and NQ in-build model descriptions remain separate. The ordered list is authored
+in HTML and updated from public exports for no-JS readers. Browser checks walk every node in pipeline order,
+check panel/spec links and verify both the no-JS list and unpublished fallback. Next: S10.
+
 **S10. Lab page (M).** Page 7.6 with V10 and the ledger.
 - Accept: counts equal the fixture's verdict counts; failed checks render human names ("win rate not 1 point
   better"); rationale hidden unless the bundle includes it.

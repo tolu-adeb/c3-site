@@ -17,6 +17,7 @@ keeps, with every box linked to its source lines. Source: `docs/architecture.arc
 | `/backtests/` | Exported hypothetical runs, filters, equity/drawdown, monthly values, distributions, sample comparisons and a replay-linked trade table |
 | `/replay/?run=<id>&day=<date>` | Exported five-minute session, trade overlays, decision log, score/gates and keyboard scrubber |
 | `/strategies/`, `/strategies/<id>/` | Exported states and theory, separate hypothetical headline runs, recorded session examples and lab history |
+| `/engine/` | JSON-driven wireframe pipeline, keyboard node panels and a no-JS ordered list |
 | `POST /api/ingest` | The MNQ bot's signed pushes (status every minute, snapshot every 5 minutes, paper stats) |
 | `PUT /api/publish/put?bundle=<id>&path=<relative.json>` | Signed bot upload to private R2 staging; JSON only, at most 5 MiB |
 | `POST /api/publish/commit?bundle=<id>` | Signed manifest; verifies every staged file's SHA-256 and bytes before switching the current bundle |
@@ -167,6 +168,10 @@ Best/worst/median replay examples are ranked from exported daily net R; the medi
 The current contract has no per-strategy forward series, so detail pages state that limit and link to the
 aggregate paper record separately. Public strategy descriptions and the index table work without JS.
 `scripts/page-shell.mjs` is an optional authoring helper for shared chrome; its plain HTML output is committed.
+
+The Engine page reads optional exported `engine.json`, falling back to `public/assets/engine.json` when no
+description is published. Its graph traversal only highlights diagram ancestors; it does not run engine
+logic. Nodes show last-run state only when exported. The default explicitly says it is unavailable.
 
 ## Turning things on later
 

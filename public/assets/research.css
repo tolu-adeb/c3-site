@@ -57,3 +57,22 @@
 .session-card{min-width:0}
 .session-card h3{font-size:1rem;font-weight:500}
 @media(max-width:900px){.strategy-cards,.strategy-sessions{grid-template-columns:1fr}}
+.engine-layout{display:grid;grid-template-columns:minmax(0,3fr) minmax(16rem,1fr);gap:1.5rem;align-items:start}
+.engine-layout>div,.engine-panel{min-width:0}
+.engine-panel{position:sticky;top:5rem;border-top:var(--hair) solid var(--wire);padding:1rem 0}
+.engine-panel h2{margin:0 0 1rem}
+.engine-panel .kv{grid-template-columns:1fr;gap:.25rem}
+.engine-panel .kv dd{margin:0 0 .75rem}
+.chart .schematic-plot svg{min-width:900px}
+.schematic-edge,.schematic-box{stroke:var(--wire);fill:none;stroke-width:var(--hair);vector-effect:non-scaling-stroke}
+.schematic-box{fill:var(--bg)}
+.schematic-edge.active,.schematic-node.active .schematic-box{stroke:var(--signal)}
+.schematic-node{cursor:pointer}
+.schematic-node:focus-visible{outline:2px solid var(--focus);outline-offset:6px}
+.schematic-label{font:500 14px var(--mono);fill:var(--ink)}
+.engine-outline{border-top:var(--hair) solid var(--wire);padding:1rem 0;margin-top:1.5rem}
+.engine-outline summary{cursor:pointer;font-weight:600}
+.engine-outline ol{padding-left:1.5rem}
+.engine-outline li{padding:.5rem 0 1rem;border-bottom:var(--hair) solid var(--wire-faint)}
+.engine-outline h3{font-size:1.1rem;margin:.5rem 0}
+@media(max-width:900px){.engine-layout{grid-template-columns:1fr}.engine-panel{position:static}}

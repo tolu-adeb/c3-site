@@ -1,0 +1,220 @@
+{
+  "nodes": [
+    {
+      "id": "feed",
+      "name": "Feed",
+      "spec_section": "§3",
+      "text": "Bars arrive from the engine’s configured data feed. This site receives exported observations; it does not fetch prices or run a live feed.",
+      "inputs": [
+        "Closed market bars"
+      ],
+      "outputs": [
+        "Validated bars"
+      ],
+      "href": "/methodology/#feed",
+      "state": "No last-run state exported"
+    },
+    {
+      "id": "structure",
+      "name": "Structure",
+      "spec_section": "§4",
+      "text": "The engine records swings, breaks and liquidity levels from closed bars. The site only displays the structure included in an export.",
+      "inputs": [
+        "Validated bars"
+      ],
+      "outputs": [
+        "Recorded structure"
+      ],
+      "href": "/methodology/#structure",
+      "state": "No last-run state exported"
+    },
+    {
+      "id": "context",
+      "name": "Context",
+      "spec_section": "§5",
+      "text": "A session has a recorded bias, trend and reference levels. Context is exported with the session so a replay can show what was known.",
+      "inputs": [
+        "Structure",
+        "Session context"
+      ],
+      "outputs": [
+        "Session brief"
+      ],
+      "href": "/methodology/#context",
+      "state": "No last-run state exported"
+    },
+    {
+      "id": "intraday",
+      "name": "Intraday",
+      "spec_section": "§6",
+      "text": "The engine limits when candidates can arm. Exported windows describe those times; the browser does not decide whether a trade is allowed.",
+      "inputs": [
+        "Session brief"
+      ],
+      "outputs": [
+        "Recorded windows"
+      ],
+      "href": "/methodology/#intraday",
+      "state": "No last-run state exported"
+    },
+    {
+      "id": "models",
+      "name": "Models",
+      "spec_section": "§8–9",
+      "text": "A candidate belongs to a model. The NQ engine studies reversal and continuation; MNQ strategy descriptions and evidence are separate.",
+      "inputs": [
+        "Structure",
+        "Context"
+      ],
+      "outputs": [
+        "Recorded candidate"
+      ],
+      "href": "/methodology/#models",
+      "state": "No last-run state exported"
+    },
+    {
+      "id": "score",
+      "name": "Score",
+      "spec_section": "§10",
+      "text": "The engine exports a candidate’s score. The dial is a display of that value, with a threshold only when one is exported.",
+      "inputs": [
+        "Recorded candidate"
+      ],
+      "outputs": [
+        "Exported score"
+      ],
+      "href": "/methodology/#score",
+      "state": "No last-run state exported"
+    },
+    {
+      "id": "gates",
+      "name": "Gates",
+      "spec_section": "§11",
+      "text": "Named checks record pass or fail. A replay shows their saved verdicts; none of those checks are evaluated on this site.",
+      "inputs": [
+        "Candidate and score"
+      ],
+      "outputs": [
+        "Recorded gate verdicts"
+      ],
+      "href": "/methodology/#gates",
+      "state": "No last-run state exported"
+    },
+    {
+      "id": "tracker",
+      "name": "Tracker",
+      "spec_section": "§12",
+      "text": "A recorded alert can be followed as a virtual trade from entry to exit. Stops, targets, costs and losses remain part of the exported record.",
+      "inputs": [
+        "Recorded alert"
+      ],
+      "outputs": [
+        "Virtual trade history"
+      ],
+      "href": "/methodology/#tracker",
+      "state": "No last-run state exported"
+    },
+    {
+      "id": "alerts",
+      "name": "Alerts",
+      "spec_section": "§13",
+      "text": "Alerts inform a person. This site does not submit orders or connect to an execution account.",
+      "inputs": [
+        "Recorded alert"
+      ],
+      "outputs": [
+        "Notification record"
+      ],
+      "href": "/methodology/#alerts",
+      "state": "No last-run state exported"
+    },
+    {
+      "id": "ledger",
+      "name": "Ledger and storage",
+      "spec_section": "§14",
+      "text": "Closed trades and session decisions are saved by c3.lab. Signed bundles give the site a versioned, one-way view of that record.",
+      "inputs": [
+        "Trades and decisions"
+      ],
+      "outputs": [
+        "Versioned ledger"
+      ],
+      "href": "/methodology/#ledger",
+      "state": "No last-run state exported"
+    },
+    {
+      "id": "lab",
+      "name": "Lab",
+      "spec_section": "Research",
+      "text": "Ideas are judged in a search window and then a locked holdout. Rejections and failed holdouts remain visible alongside candidates.",
+      "inputs": [
+        "Recorded experiments"
+      ],
+      "outputs": [
+        "Trial verdicts"
+      ],
+      "href": "/methodology/#lab",
+      "state": "No last-run state exported"
+    },
+    {
+      "id": "site",
+      "name": "Site",
+      "spec_section": "Publish contract",
+      "text": "The Worker verifies the bundle and publishes a final pointer. Public pages read exported JSON and label its source, costs and sample.",
+      "inputs": [
+        "Signed bundle"
+      ],
+      "outputs": [
+        "Read-only figures"
+      ],
+      "href": "/methodology/#site",
+      "state": "No last-run state exported"
+    }
+  ],
+  "edges": [
+    {
+      "from": "feed",
+      "to": "structure"
+    },
+    {
+      "from": "structure",
+      "to": "context"
+    },
+    {
+      "from": "context",
+      "to": "intraday"
+    },
+    {
+      "from": "intraday",
+      "to": "models"
+    },
+    {
+      "from": "models",
+      "to": "score"
+    },
+    {
+      "from": "score",
+      "to": "gates"
+    },
+    {
+      "from": "gates",
+      "to": "tracker"
+    },
+    {
+      "from": "tracker",
+      "to": "alerts"
+    },
+    {
+      "from": "alerts",
+      "to": "ledger"
+    },
+    {
+      "from": "ledger",
+      "to": "lab"
+    },
+    {
+      "from": "lab",
+      "to": "site"
+    }
+  ]
+}

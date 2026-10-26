@@ -60,7 +60,7 @@
       "id": "models",
       "name": "Models",
       "text": "Synthetic models node for schematic tests.",
-      "spec_section": "§7",
+      "spec_section": "§8–9",
       "href": "/methodology/#models",
       "inputs": [
         "intraday"
@@ -74,7 +74,7 @@
       "id": "score",
       "name": "Score",
       "text": "Synthetic score node for schematic tests.",
-      "spec_section": "§8",
+      "spec_section": "§10",
       "href": "/methodology/#score",
       "inputs": [
         "models"
@@ -88,7 +88,7 @@
       "id": "gates",
       "name": "Gates",
       "text": "Synthetic gates node for schematic tests.",
-      "spec_section": "§9",
+      "spec_section": "§11",
       "href": "/methodology/#gates",
       "inputs": [
         "score"
@@ -102,7 +102,7 @@
       "id": "tracker",
       "name": "Tracker",
       "text": "Synthetic tracker node for schematic tests.",
-      "spec_section": "§10",
+      "spec_section": "§12",
       "href": "/methodology/#tracker",
       "inputs": [
         "gates"
@@ -116,7 +116,7 @@
       "id": "alerts",
       "name": "Alerts",
       "text": "Synthetic alerts node for schematic tests.",
-      "spec_section": "§11",
+      "spec_section": "§13",
       "href": "/methodology/#alerts",
       "inputs": [
         "tracker"
@@ -130,7 +130,7 @@
       "id": "ledger",
       "name": "Ledger",
       "text": "Synthetic ledger node for schematic tests.",
-      "spec_section": "§12",
+      "spec_section": "§14",
       "href": "/methodology/#ledger",
       "inputs": [
         "alerts"
@@ -144,7 +144,7 @@
       "id": "lab",
       "name": "Lab",
       "text": "Synthetic lab node for schematic tests.",
-      "spec_section": "§13",
+      "spec_section": "Research",
       "href": "/methodology/#lab",
       "inputs": [
         "ledger"
@@ -158,7 +158,7 @@
       "id": "site",
       "name": "Site",
       "text": "Synthetic site node for schematic tests.",
-      "spec_section": "§14",
+      "spec_section": "Publish contract",
       "href": "/methodology/#site",
       "inputs": [
         "lab"

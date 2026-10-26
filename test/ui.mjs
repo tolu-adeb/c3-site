@@ -13,6 +13,7 @@ const session = JSON.parse(await readFile(new URL("./fixtures/bundle/runs/orx-sy
 const widths = [320, 390, 768, 1440];
 const routes = [["home", "/"], ["track", "/track-record/"], ["join", "/join/"], ["app", "/app/"], ["404", "/no-such-page/"], ["styleguide", "/styleguide/"], ["backtests", "/backtests/"], ["replay", "/replay/"]];
 routes.push(["strategies", "/strategies/"], ...["orx", "orb", "sweep", "vwap", "nq-rev", "nq-cont"].map((id) => [id, `/strategies/${id}/`]));
+routes.push(["engine", "/engine/"]);
 const errors = [], results = [];
 await mkdir(artifacts, { recursive: true });
 const browser = await chromium.launch();
@@ -22,6 +23,7 @@ async function ready(page) {
   if (new URL(page.url()).pathname === "/backtests/") await page.locator("#explorer:not([hidden])").waitFor();
   if (new URL(page.url()).pathname === "/replay/") await page.locator("#replay-workspace:not([hidden])").waitFor();
   if (new URL(page.url()).pathname.startsWith("/strategies/")) await page.locator('#main[aria-busy="false"]').waitFor();
+  if (new URL(page.url()).pathname === "/engine/") await page.locator('#main[aria-busy="false"]').waitFor();
 }
 async function layout(page) {
   return page.evaluate(() => [...document.querySelectorAll("header,main,footer,h1,h2,.story,.step,.figure,form,.tbl,.lock")].map((el) => {

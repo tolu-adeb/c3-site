@@ -56,3 +56,15 @@ export async function strategyPage(request, env) {
   rewriter = rewriter.on("#data-status", { element(element) { element.setInnerContent("Published strategy descriptions. The data source and limits are labeled below."); } });
   const result = rewriter.transform(response); result.headers.set("cache-control", "no-store"); result.headers.delete("etag"); result.headers.delete("last-modified"); return result;
 }
+
+export async function enginePage(request, env) {
+  const headers = new Headers(request.headers); headers.delete("if-none-match"); headers.delete("if-modified-since");
+  const response = await env.ASSETS.fetch(new Request(request, { headers })), url = new URL(request.url);
+  if (response.status !== 200 || !env.DATA || env.BACKTESTS_PUBLIC !== "true" || url.searchParams.has("staging") || url.searchParams.has("preview")) return response;
+  const pointer = await env.DATA.get("live/current.json"); if (!pointer) return response;
+  const { bundle } = await pointer.json(), object = await env.DATA.get(`live/${bundle}/engine.json`); if (!object) return response;
+  const data = await object.json();
+  const html = data.nodes.map((n) => `<li data-node-list="${esc(n.id)}"><h3>${esc(n.name)}</h3><p>${esc(n.text)}</p><a href="${esc(n.href)}">${esc(n.spec_section)}</a><p class="note">Recorded state: ${esc(n.state || "Not exported")}</p></li>`).join("");
+  const result = new HTMLRewriter().on("#engine-list", { element(element) { element.setInnerContent(html, { html: true }); } }).on("#data-status", { element(element) { element.setInnerContent("Exported process description. No operational or performance state is inferred."); } }).on("#engine-list-source", { element(element) { element.setInnerContent(`<a class="source" href="/methodology/#engine">Bundle ${esc(bundle)} · exported engine description · process only, no performance · Methodology</a>`, { html: true }); } }).transform(response);
+  result.headers.set("cache-control", "no-store"); result.headers.delete("etag"); result.headers.delete("last-modified"); return result;
+}
