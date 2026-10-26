@@ -15,6 +15,7 @@ keeps, with every box linked to its source lines. Source: `docs/architecture.arc
 | `/app/` | Private dashboard: bot status, session coverage, MNQ bot today, research (approve/retire strategies), research papers, swing desk, controls, track record preview, waitlist, webhooks |
 | `/styleguide/` | Noindex instrument sheet: both themes, tokens, state chips, figures and controls. Synthetic fixtures only |
 | `/backtests/` | Exported hypothetical runs, filters, equity/drawdown, monthly values, distributions, sample comparisons and a replay-linked trade table |
+| `/replay/?run=<id>&day=<date>` | Exported five-minute session, trade overlays, decision log, score/gates and keyboard scrubber |
 | `POST /api/ingest` | The MNQ bot's signed pushes (status every minute, snapshot every 5 minutes, paper stats) |
 | `PUT /api/publish/put?bundle=<id>&path=<relative.json>` | Signed bot upload to private R2 staging; JSON only, at most 5 MiB |
 | `POST /api/publish/commit?bundle=<id>` | Signed manifest; verifies every staged file's SHA-256 and bytes before switching the current bundle |
@@ -152,6 +153,13 @@ inserted by the Worker into the static HTML, so their values work without JavaSc
 charts and interactive filters need JavaScript. File hashes are checked against the manifest before drawing
 to avoid mixing data from different publications. `npm run test:budgets` walks first-party resource imports
 and enforces the gzip page budgets; current Backtests resources are about 114 KiB, home about 103 KiB.
+
+Replay supports ←/→, Space, S, Home and End, plus run/day selectors and a signed-R calendar. Only exported
+scores, thresholds and gates are displayed; no trading rule is evaluated. Reduced-motion playback jumps
+to the final frame. `test/replay.mjs` checks keyboard controls, hidden future decisions, one-pixel trade
+alignment and animation-frame scrubbing, saving `replay-trace.zip` and timing samples to `test/artifacts/`.
+The no-JS message links to the exported Backtests table, which the Worker inserts alongside the public
+summary with 100-row pages. Private previews require JavaScript and retain their mode in navigation links.
 
 ## Turning things on later
 

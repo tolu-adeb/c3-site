@@ -46,3 +46,6 @@ export async function loadBundle() {
     return readJSON(path, { entry, bundle: manifest.bundle });
   } };
 }
+if (preview) {
+  document.querySelectorAll(".research-nav a,.research-foot a").forEach((link) => { link.href = dataLink(link.getAttribute("href")); });
+}

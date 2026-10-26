@@ -24,3 +24,28 @@
 .research .tbl td,.research .tbl th{font-family:var(--mono);font-size:.8125rem}
 .research .stat-strip{margin:1.5rem 0;grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:760px){.filters,.research .stat-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.two-charts,.range-brush{grid-template-columns:1fr}}
+.session-picker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.session-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:.5rem}
+.session-actions button{font-size:.875rem}
+.replay-layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(17rem,1fr);gap:1.5rem}
+.replay-layout>div,.replay-layout aside{min-width:0}
+.replay-layout aside h2{margin-top:1rem}
+.replay-layout .scrubber{border:var(--hair) solid var(--wire)}
+.decision-log{padding-left:1.5rem;font-size:.95rem}
+.decision-log li{margin:.75rem 0;padding-left:.25rem}
+.decision-log time{font:400 .8125rem var(--mono);color:var(--soft)}
+.decision-log p{margin:.25rem 0}
+.score-card .fig-plot svg{max-width:240px;margin:auto}
+.session-calendar{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:1rem}
+.day-calendar{min-width:0;margin:0;border:var(--hair) solid var(--wire);padding:.75rem}
+.day-calendar legend{font:500 .875rem var(--mono);padding:0 .5rem}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.25rem;text-align:center;font:400 .8125rem var(--mono)}
+.calendar-grid>span{padding:.5rem 0}
+.calendar-day{font:500 .8125rem var(--mono);border-radius:0;background:transparent;color:var(--ink);padding:.35rem .1rem;min-width:0;border-color:var(--wire)}
+.calendar-day span,.calendar-day small{display:block;overflow-wrap:anywhere}
+.calendar-day small{font-size:.8125rem}
+.calendar-day.positive{border-color:var(--bull);background:var(--bull-wash)}
+.calendar-day.negative{border-color:var(--bear);background:var(--bear-wash)}
+.calendar-day[aria-pressed="true"]{outline:2px solid var(--focus);outline-offset:1px}
+.calendar-missing{color:var(--faint)}
+@media(max-width:900px){.replay-layout{grid-template-columns:1fr}.session-calendar{grid-template-columns:1fr}}

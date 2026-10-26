@@ -521,6 +521,14 @@ gzip. Next: S7.
   motion reduced the replay jumps instead of animating; the trade path and exits line up with the fixture
   trade's times and prices (pixel test within 1 px); 60 fps while scrubbing in a Playwright trace.
 
+Implementation: run/day links, next/previous/random sessions, a signed-R calendar, native scrubber,
+play/pause, signal jumps and all requested keyboard controls display only recorded bars and decisions.
+Exported windows, trade plans, entry/exit paths and crosshairs use the chart kit. The score/gate card displays
+an optional exported threshold; it never evaluates a gate. Fixtures include a rejected candidate to cover
+failed gates. Reduced motion shows the final frame and Play jumps without animation. The polite readout names
+time and OHLC. Tests check trade coordinates within one pixel, day navigation, every key, and the no-JS
+Backtests trade-table destination. Local trace: 59.9 fps median cadence, 2.6 ms p95 scrub update. Next: S8.
+
 **S8. Strategies index and detail (M).** Pages 7.3, content from `strategies.json`.
 - Accept: each strategy's state chip matches the data; retired strategies say why; "in build" strategies show
   theory only with no numbers; best/worst/typical day links open the replay on those days.

@@ -84,11 +84,11 @@ export function buildFixtureBundle(seed = DEFAULT_SEED) {
           { name: "Entry window", from: start + 9 * 300, to: start + 18 * 300 }],
         context: { bias: "Synthetic", trend_50d: dayNumber % 2 ? "down" : "up", fomc: dayNumber === 2, mode: "fixture" },
         trades: dayTrades,
-        decisions: dayTrades.flatMap((trade) => [
-          { t: Date.parse(trade.opened) / 1000, kind: "signal", text: "Synthetic signal; test data only.", score: trade.score,
+        decisions: [{ t: start + 3 * 300, kind: "gate", text: "Synthetic rejected candidate; test data only.", score: 35, threshold: 60, gates: Array.from({ length: 12 }, (_, g) => ({ name: `Gate ${g + 1}`, pass: g !== 2 })) }, ...dayTrades.flatMap((trade) => [
+          { t: Date.parse(trade.opened) / 1000, kind: "signal", text: "Synthetic signal; test data only.", score: trade.score, threshold: 60,
             gates: Array.from({ length: 12 }, (_, g) => ({ name: `Gate ${g + 1}`, pass: true })) },
           { t: Date.parse(trade.closed) / 1000, kind: "exit", text: `Synthetic ${trade.exit_reason} exit.` }
-        ]).sort((a, b) => a.t - b.t), done: "Synthetic session complete" };
+        ])].sort((a, b) => a.t - b.t), done: "Synthetic session complete" };
       sessions.push(session);
       put(`runs/${run}/sessions/${date}.json`, session);
       const net_usd = sum(dayTrades, "usd"), net_r = sum(dayTrades, "r");

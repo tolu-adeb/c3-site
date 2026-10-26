@@ -10,10 +10,11 @@ export function render(el, data, opts) {
   const { plot, figure } = frame(el, { ...opts, title: opts.title || "Session · five-minute bars" }, ["Time (ET)", "Open", "High", "Low", "Close", "Volume"], shown.map((bar) => [time(bar[0]), ...bar.slice(1).map((v) => number(v))]));
   const labels = node("ul", { class: "legend-inline chart-direct-labels" });
   labels.append(node("li", {}, "Up: hollow"), node("li", {}, "Down: filled"));
+  (data.windows || []).forEach((window) => labels.append(node("li", {}, `${window.name}: ${time(window.from)}–${time(window.to)} ET`)));
   figure.insertBefore(labels, figure.querySelector(".data-table"));
   const levelRows = (data.levels || []).filter((level) => !level.from || level.from <= now).map((level) => ({ ...level, className: "chart-level" }));
   const trades = (data.trades || []).filter((trade) => Date.parse(trade.opened) / 1000 <= now);
-  const plans = trades.flatMap((trade) => [{ name: "Entry", price: trade.entry, className: "chart-entry" }, { name: "Stop", price: trade.stop, className: "chart-stop" }, { name: "Target", price: trade.t1, className: "chart-target" }]);
+  const plans = trades.flatMap((trade) => [{ name: `Entry #${trade.id}`, price: trade.entry, className: "chart-entry" }, { name: `Stop #${trade.id}`, price: trade.stop, className: "chart-stop" }, { name: `Target #${trade.id}`, price: trade.t1, className: "chart-target" }].map((level) => ({ ...level, from: Date.parse(trade.opened) / 1000, to: Date.parse(trade.closed) / 1000 })));
   [...levelRows, ...plans].forEach((level) => labels.append(node("li", {}, `${level.name}: ${number(level.price)}`)));
   const cleanup = observe(plot, () => {
     const [low, high] = extent([...bars.flatMap((b) => [b[2], b[3]]), ...(data.levels || []).map((l) => l.price), ...(data.trades || []).flatMap((t) => [t.stop, t.t1, t.entry, t.exit])]);
@@ -27,22 +28,38 @@ export function render(el, data, opts) {
       return index < 0 ? a.x(stamp) : x(index);
     };
     const overlays = svg("g", { class: "trade-overlays" });
+    for (const window of data.windows || []) {
+      const start = Math.max(bars[0]?.[0] || 0, window.from), end = Math.min(bars.at(-1)?.[0] || 0, window.to);
+      if (end <= start) continue;
+      overlays.append(svg("rect", { x: at(start), y: a.margin.top, width: Math.max(0, at(end) - at(start)), height: a.height - a.margin.top - a.margin.bottom, fill: "var(--signal-wash)", stroke: "var(--wire)", "stroke-dasharray": "3 4" }));
+      if (at(end) - at(start) > window.name.length * 8) overlays.append(svg("text", { x: at(start) + 4, y: a.margin.top + 13, class: "chart-axis" }, window.name));
+    }
     for (const trade of trades) {
       const start = at(Date.parse(trade.opened) / 1000), end = at(Math.min(now, Date.parse(trade.closed) / 1000));
       for (const [className, price] of [["risk-zone", trade.stop], ["reward-zone", trade.t1]]) overlays.append(svg("rect", { class: className, x: start, y: Math.min(a.y(price), a.y(trade.entry)), width: Math.max(0, end - start), height: Math.abs(a.y(price) - a.y(trade.entry)) }));
       if (Date.parse(trade.closed) / 1000 <= now) overlays.append(svg("path", { class: "wire-path trade-path", d: `M${start},${a.y(trade.entry)}L${end},${a.y(trade.exit)}`, "data-entry-x": start, "data-entry-y": a.y(trade.entry), "data-exit-x": end, "data-exit-y": a.y(trade.exit) }));
     }
-    for (const level of [...levelRows, ...plans]) overlays.append(svg("line", { class: level.className, x1: level.from ? at(level.from) : a.margin.left, x2: a.width - a.margin.right, y1: a.y(level.price), y2: a.y(level.price) }));
+    for (const level of [...levelRows, ...plans]) overlays.append(svg("line", { class: level.className, x1: level.from ? at(level.from) : a.margin.left, x2: level.to ? at(Math.min(now, level.to)) : a.width - a.margin.right, y1: a.y(level.price), y2: a.y(level.price) }));
     a.root.append(overlays);
     if (bars.length < 300) {
-      const points = [];
+      const points = [], events = new AbortController();
+      const cross = svg("g", { class: "chart-crosshair", "pointer-events": "none" });
+      const vertical = svg("line", { y1: a.margin.top, y2: a.height - a.margin.bottom, stroke: "var(--wire)", "stroke-dasharray": "3 3" });
+      const horizontal = svg("line", { x1: a.margin.left, x2: a.width - a.margin.right, stroke: "var(--wire)", "stroke-dasharray": "3 3" });
+      cross.append(vertical, horizontal); cross.style.visibility = "hidden";
       shown.forEach((bar, i) => {
         const [t, o, h, l, c] = bar;
         const group = svg("g", { class: `candle${c < o ? " down" : ""}`, tabindex: "0", role: "img", "aria-label": readouts[i], "data-tooltip": readouts[i], "data-time": t, "data-x": x(i), "data-close-y": a.y(c) });
         group.append(svg("line", { x1: x(i), x2: x(i), y1: a.y(h), y2: a.y(l) }), svg("rect", { x: x(i) - slot * .3, y: Math.min(a.y(o), a.y(c)), width: Math.max(.4, slot * .6), height: Math.max(1, Math.abs(a.y(o) - a.y(c))) }));
+        const reveal = () => { vertical.setAttribute("x1", x(i)); vertical.setAttribute("x2", x(i)); horizontal.setAttribute("y1", a.y(c)); horizontal.setAttribute("y2", a.y(c)); cross.style.visibility = "visible"; };
+        const hide = () => { if (document.activeElement !== group) cross.style.visibility = "hidden"; };
+        for (const event of ["focus", "pointerenter"]) group.addEventListener(event, reveal, { signal: events.signal });
+        for (const event of ["blur", "pointerleave"]) group.addEventListener(event, hide, { signal: events.signal });
         a.root.append(group); points.push(group);
       });
-      return connectTooltip(points);
+      a.root.append(cross);
+      const disconnect = connectTooltip(points);
+      return () => { disconnect(); events.abort(); };
     }
     const canvas = node("canvas", { class: "candle-canvas", tabindex: "0", role: "img", "aria-label": "Dense candles. Use left and right arrows to inspect exported bars." });
     const dpr = devicePixelRatio || 1;
@@ -65,6 +82,7 @@ export function render(el, data, opts) {
       if (shown[active]) {
         ctx.strokeStyle = style.getPropertyValue("--ink").trim();
         ctx.beginPath(); ctx.moveTo(x(active), a.margin.top); ctx.lineTo(x(active), a.height - a.margin.bottom); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(a.margin.left, a.y(shown[active][4])); ctx.lineTo(a.width - a.margin.right, a.y(shown[active][4])); ctx.stroke();
         canvas.dataset.tooltip = readouts[active];
         canvas.setAttribute("aria-label", readouts[active]);
       }

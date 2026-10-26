@@ -44,7 +44,9 @@ The plan sketches some fields without specifying their JSON shape. S1 makes thes
   All P&L aggregates must reconcile within `1e-6`.
 - OHLCV bars are exactly six numbers: `[unix_s, open, high, low, close, volume]`.
   Session `source` and run dataset `kind` can be `synthetic` for fixtures, or `real`/`proxy` for exports.
-  Optional decisions include `score` and exactly twelve named pass/fail `gates` for chart testing.
+  Optional decisions include `score`, an exported `threshold` and exactly twelve named pass/fail `gates`.
+  The site displays a threshold only when exported; it does not choose or evaluate one. Fixtures include
+  a rejected candidate before accepted signals so both gate states can be tested.
 - Trial timestamps are ISO datetimes, newest first. Sources are display labels (`research agent`,
   `KH`, `CLI`); verdicts are `rejected`, `failed_holdout`, `candidate`, `approved`.
   Lab funnel counts include approved trials in passed holdout, and passed holdout in passed search.

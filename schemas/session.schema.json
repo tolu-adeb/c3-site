@@ -196,6 +196,11 @@
             },
             "minItems": 12,
             "maxItems": 12
+          },
+          "threshold": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
           }
         },
         "required": [

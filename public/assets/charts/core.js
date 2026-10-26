@@ -36,7 +36,14 @@ export function sourceText(meta) {
   return [meta.run_id, meta.source, meta.sample, meta.range, meta.costs].filter(Boolean).join(" · ");
 }
 export function sourceLink(meta) {
-  return node("a", { class: "source", href: meta.methodology || "/methodology/#data" }, sourceText(meta) + " · Methodology");
+  let href = meta.methodology || "/methodology/#data";
+  const params = new URLSearchParams(location.search);
+  if (params.has("staging") || params.get("preview") === "current") {
+    const url = new URL(href, location.href);
+    if (params.has("staging")) url.searchParams.set("staging", params.get("staging")); else url.searchParams.set("preview", "current");
+    href = url.pathname + url.search + url.hash;
+  }
+  return node("a", { class: "source", href }, sourceText(meta) + " · Methodology");
 }
 export function table(columns, rows, title) {
   const details = node("details", { class: "data-table", "data-table": "" });

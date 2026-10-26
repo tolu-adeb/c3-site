@@ -24,7 +24,7 @@ async function push(kind, data, ts) {
 const view = { authorization: "Bearer " + keys.view_key };
 
 // public pages
-for (const p of ["/", "/track-record/", "/join/", "/app/", "/styleguide/", "/backtests/", "/assets/site.css", "/robots.txt"]) {
+for (const p of ["/", "/track-record/", "/join/", "/app/", "/styleguide/", "/backtests/", "/replay/", "/assets/site.css", "/robots.txt"]) {
   const r = await fetch(base + p);
   ok(r.status === 200, `GET ${p} -> ${r.status}`);
 }

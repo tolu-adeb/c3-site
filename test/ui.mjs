@@ -11,7 +11,7 @@ const baselineCSS = process.env.C3_BASELINE_CSS ? await readFile(process.env.C3_
 const axe = await readFile(new URL("../node_modules/axe-core/axe.min.js", import.meta.url), "utf8");
 const session = JSON.parse(await readFile(new URL("./fixtures/bundle/runs/orx-synthetic-v1/sessions/2026-07-30.json", import.meta.url)));
 const widths = [320, 390, 768, 1440];
-const routes = [["home", "/"], ["track", "/track-record/"], ["join", "/join/"], ["app", "/app/"], ["404", "/no-such-page/"], ["styleguide", "/styleguide/"], ["backtests", "/backtests/"]];
+const routes = [["home", "/"], ["track", "/track-record/"], ["join", "/join/"], ["app", "/app/"], ["404", "/no-such-page/"], ["styleguide", "/styleguide/"], ["backtests", "/backtests/"], ["replay", "/replay/"]];
 const errors = [], results = [];
 await mkdir(artifacts, { recursive: true });
 const browser = await chromium.launch();
@@ -19,6 +19,7 @@ async function ready(page) {
   await page.evaluate(async () => { await document.fonts.ready; });
   await page.waitForFunction(() => !location.pathname.startsWith("/app/") || !document.querySelector("#lock").hidden);
   if (new URL(page.url()).pathname === "/backtests/") await page.locator("#explorer:not([hidden])").waitFor();
+  if (new URL(page.url()).pathname === "/replay/") await page.locator("#replay-workspace:not([hidden])").waitFor();
 }
 async function layout(page) {
   return page.evaluate(() => [...document.querySelectorAll("header,main,footer,h1,h2,.story,.step,.figure,form,.tbl,.lock")].map((el) => {

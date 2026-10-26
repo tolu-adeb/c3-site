@@ -747,10 +747,68 @@
   ],
   "decisions": [
     {
+      "t": 1786540500,
+      "kind": "gate",
+      "text": "Synthetic rejected candidate; test data only.",
+      "score": 35,
+      "threshold": 60,
+      "gates": [
+        {
+          "name": "Gate 1",
+          "pass": true
+        },
+        {
+          "name": "Gate 2",
+          "pass": true
+        },
+        {
+          "name": "Gate 3",
+          "pass": false
+        },
+        {
+          "name": "Gate 4",
+          "pass": true
+        },
+        {
+          "name": "Gate 5",
+          "pass": true
+        },
+        {
+          "name": "Gate 6",
+          "pass": true
+        },
+        {
+          "name": "Gate 7",
+          "pass": true
+        },
+        {
+          "name": "Gate 8",
+          "pass": true
+        },
+        {
+          "name": "Gate 9",
+          "pass": true
+        },
+        {
+          "name": "Gate 10",
+          "pass": true
+        },
+        {
+          "name": "Gate 11",
+          "pass": true
+        },
+        {
+          "name": "Gate 12",
+          "pass": true
+        }
+      ]
+    },
+    {
       "t": 1786541400,
       "kind": "signal",
       "text": "Synthetic signal; test data only.",
       "score": 70,
+      "threshold": 60,
       "gates": [
         {
           "name": "Gate 1",
@@ -812,6 +870,7 @@
       "kind": "signal",
       "text": "Synthetic signal; test data only.",
       "score": 80,
+      "threshold": 60,
       "gates": [
         {
           "name": "Gate 1",
@@ -873,6 +932,7 @@
       "kind": "signal",
       "text": "Synthetic signal; test data only.",
       "score": 90,
+      "threshold": 60,
       "gates": [
         {
           "name": "Gate 1",
