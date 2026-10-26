@@ -1,6 +1,9 @@
 # Public bundle schema v1
 
 These JSON Schemas cover every file in [build-plan.md §5.2](../docs/build-plan.md).
+The public Strategy Lab feature was cancelled. `lab/trials.json` and `lab/summary.json` are an optional legacy
+pair, and strategy `lab_trials` references are optional. When present, they still validate and reconcile;
+new exporters may omit them. The public site does not render Lab data.
 They use JSON Schema draft 2020-12 and local relative `$ref`s. `$id` URLs identify schemas;
 validation resolves them from disk and does not fetch them. Copy **all** `.schema.json` files
 to an exporter, including `common.schema.json`. Ajv and its format support are development dependencies

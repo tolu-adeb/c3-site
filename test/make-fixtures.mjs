@@ -139,9 +139,9 @@ export function buildFixtureBundle(seed = DEFAULT_SEED) {
       params_public: {}, runs: [], lab_trials: [], ...(state === "retired" ? { retired_reason: "Synthetic failure example: insufficient evidence of an edge." } : {}) });
   }
   put("strategies.json", strategies);
-  const nodes = ["feed", "structure", "context", "intraday", "models", "score", "gates", "tracker", "alerts", "ledger", "lab", "site"];
+  const nodes = ["feed", "structure", "context", "intraday", "models", "score", "gates", "tracker", "alerts", "ledger", "site"];
   put("engine.json", { nodes: nodes.map((id, i) => ({ id, name: id[0].toUpperCase() + id.slice(1),
-    text: `Synthetic ${id} node for schematic tests.`, spec_section: ["§3", "§4", "§5", "§6", "§8–9", "§10", "§11", "§12", "§13", "§14", "Research", "Publish contract"][i], href: `/methodology/#${id}`,
+    text: `Synthetic ${id} node for schematic tests.`, spec_section: ["§3", "§4", "§5", "§6", "§8–9", "§10", "§11", "§12", "§13", "§14", "Publish contract"][i], href: `/methodology/#${id}`,
     inputs: [i ? nodes[i - 1] : "bars"], outputs: [nodes[i + 1] || "public data"], state: "fixture only" })),
     edges: nodes.slice(1).map((id, i) => ({ from: nodes[i], to: id })) });
   const verdicts = [...Array(6).fill("rejected"), ...Array(3).fill("failed_holdout"), ...Array(2).fill("candidate"), "approved"];

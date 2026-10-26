@@ -1,6 +1,10 @@
 # c3.site build plan: an eye into the engine of c3.lab
 
 Status: **draft 1, 2026-10-26**, written for handoff to Codex. Owner: KH (`khuovi`).
+Scope update, 2026-10-26: **KH discarded the public Strategy Lab feature.** S10 and V10 are cancelled.
+Do not add a Lab page, navigation, strategy history, home honesty strip or Lab node to the public site.
+Legacy Lab schemas/fixture files remain optional for bundle compatibility; they do not authorize a public UI.
+The older Lab references below are historical. Current work proceeds from S9 to S11 and S12.
 Repos: this site is `tolu-adeb/c3.site` (Cloudflare Worker `c3-lab`, live at `https://c3-lab.twaza18.workers.dev/`).
 The engine is `khuovi/c3.lab` (private), which holds the NQ engine (`engine/`, `backtest/`) and `mnq-bot/`.
 
@@ -168,13 +172,12 @@ pointer, keyboard-reachable through focusable points), `legend-inline` (direct l
 | `/strategies/<id>/` | Theory (mechanism, rules, exits, filters), how it is scored, its backtests, its forward record, its lab history | `strategies.json`, `runs/<id>/*` | New |
 | `/backtests/` | Explorer: pick a run; equity and drawdown, monthly heatmap, R histogram, segment breakdowns, in vs out of sample, trade table | `runs/<run>/*` | New |
 | `/replay/?run=<run>&day=<YYYY-MM-DD>` | Session replay: colored 5-min bars, levels, opening range, trade plan, entry, exits, decisions log, step or play | `runs/<run>/sessions/<day>.json` | New |
-| `/lab/` | Strategy Lab ledger: every trial, verdict, the gate it failed, holdout looks used | `lab/trials.json` | New |
 | `/track-record/` | Forward (paper) results: equity, monthly bars, table; plus live-vs-backtest parity days | `/api/track`, `parity/index.json` | Deepen |
 | `/methodology/` | Data sources, fills and costs, walk-forward and holdout rules, random-walk check, proxy caveat, glossary, disclaimers | static | New |
 | `/join/`, `/404` | As now | | Restyle only |
 | `/app/` | Private dashboard | as now | Tokens only |
 
-Navigation: top bar becomes `Engine · Strategies · Backtests · Track record · Lab` with Join as the button; the
+Navigation: top bar becomes `Engine · Strategies · Backtests · Track record` with Join as the button; the
 tile menu lists all routes with index codes `01` to `08`. Footer adds Methodology and the disclaimer line.
 
 ---
@@ -545,16 +548,19 @@ their state/number separation. Next: S9.
 - Accept: every node links to its spec section in Methodology or the strategy page; keyboard can walk every node
   in pipeline order; works without JS as an ordered list of the same nodes.
 
-Implementation: JSON drives twelve isometric wireframe boxes and their pipes. Focus, hover and keyboard
+Implementation: JSON drives the isometric wireframe boxes and their pipes. Focus, hover and keyboard
 selection highlight the upstream path and open the node’s description, spec link, inputs, outputs and exported
 state. Unpublished data falls back to the shipped static process description, with no invented last-run
 counts. The MNQ paper desk and NQ in-build model descriptions remain separate. The ordered list is authored
 in HTML and updated from public exports for no-JS readers. Browser checks walk every node in pipeline order,
 check panel/spec links and verify both the no-JS list and unpublished fallback. Next: S10.
 
-**S10. Lab page (M).** Page 7.6 with V10 and the ledger.
-- Accept: counts equal the fixture's verdict counts; failed checks render human names ("win rate not 1 point
-  better"); rationale hidden unless the bundle includes it.
+Scope update: the Lab node has been removed at KH's request. The current public pipeline has eleven nodes.
+
+**S10. Strategy Lab — cancelled by KH, 2026-10-26.** No page, charts, public navigation or strategy-history
+sections are built. The Lab node is removed from the engine diagram. Legacy Lab bundle files and references
+are optional, so future exporters do not need to provide them. Scope tests prevent reintroducing the public UI.
+Continue with S11.
 
 **S11. Track record v2 (M).** Page 7.7 with paper equity, monthly heatmap, parity.
 - Accept: the page never shows backtest numbers; parity days list causes in plain text; works when the bot has

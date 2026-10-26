@@ -143,20 +143,6 @@
       "state": "No last-run state exported"
     },
     {
-      "id": "lab",
-      "name": "Lab",
-      "spec_section": "Research",
-      "text": "Ideas are judged in a search window and then a locked holdout. Rejections and failed holdouts remain visible alongside candidates.",
-      "inputs": [
-        "Recorded experiments"
-      ],
-      "outputs": [
-        "Trial verdicts"
-      ],
-      "href": "/methodology/#lab",
-      "state": "No last-run state exported"
-    },
-    {
       "id": "site",
       "name": "Site",
       "spec_section": "Publish contract",
@@ -210,10 +196,6 @@
     },
     {
       "from": "ledger",
-      "to": "lab"
-    },
-    {
-      "from": "lab",
       "to": "site"
     }
   ]

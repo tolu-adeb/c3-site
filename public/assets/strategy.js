@@ -51,10 +51,6 @@ try {
   if (["live", "paper"].includes(strategy.state)) {
     $("strategy-forward").append(node("h2", {}, "Forward record"), node("p", {}, "A strategy-specific forward series has not been exported. The aggregate paper record is labeled separately."), node("a", { href: dataLink("/track-record/") }, "Read the paper track record"));
   }
-  if (strategy.lab_trials.length) {
-    const trials = await bundle.read("lab/trials.json"), ul = node("ul");
-    trials.filter((trial) => strategy.lab_trials.includes(trial.id)).forEach((trial) => ul.append(node("li", {}, `${trial.name} · ${trial.verdict.replaceAll("_", " ")}`)));
-    $("strategy-lab").append(node("h2", {}, "Lab history"), ul, node("a", { href: dataLink("/lab/") }, "Read the trial ledger"));
-  }
+
 } catch (error) { $("data-status").textContent = error.message; }
 finally { $("main").setAttribute("aria-busy", "false"); }

@@ -16,7 +16,7 @@ keeps, with every box linked to its source lines. Source: `docs/architecture.arc
 | `/styleguide/` | Noindex instrument sheet: both themes, tokens, state chips, figures and controls. Synthetic fixtures only |
 | `/backtests/` | Exported hypothetical runs, filters, equity/drawdown, monthly values, distributions, sample comparisons and a replay-linked trade table |
 | `/replay/?run=<id>&day=<date>` | Exported five-minute session, trade overlays, decision log, score/gates and keyboard scrubber |
-| `/strategies/`, `/strategies/<id>/` | Exported states and theory, separate hypothetical headline runs, recorded session examples and lab history |
+| `/strategies/`, `/strategies/<id>/` | Exported states and theory, separate hypothetical headline runs and recorded session examples |
 | `/engine/` | JSON-driven wireframe pipeline, keyboard node panels and a no-JS ordered list |
 | `POST /api/ingest` | The MNQ bot's signed pushes (status every minute, snapshot every 5 minutes, paper stats) |
 | `PUT /api/publish/put?bundle=<id>&path=<relative.json>` | Signed bot upload to private R2 staging; JSON only, at most 5 MiB |
@@ -101,6 +101,8 @@ npm run test:fixtures            # determinism and invalid-bundle checks
 
 The fixture bundle contains two runs, ten 78-bar sessions, thirty trades, twelve lab trials and three
 parity days. All prices and results are synthetic. It lives outside `public/` and is not served or uploaded.
+The public Strategy Lab feature was cancelled. Legacy Lab fixture files remain for compatibility; exporters
+may omit both Lab files and the deprecated strategy `lab_trials` field. No Lab UI or public history is rendered.
 Regeneration is byte-identical for the same seed. Tests compare the committed files with a fresh generation.
 For local R2 seeding, use `node scripts/seed-r2.mjs <local-base-url> <test-keys.json> [bundle-directory]`.
 Add `--preview` to leave the bundle staged. The script refuses non-local hosts and validates the bundle before

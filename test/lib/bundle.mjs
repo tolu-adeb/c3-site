@@ -84,13 +84,13 @@ export async function validateBundle(files, schemas) {
   for (const path of files.keys()) {
     if (path.startsWith("runs/")) check(manifest.runs.includes(path.split("/")[1]), `${path}: run absent from manifest`);
   }
-  const strategies = get("strategies.json"), trials = get("lab/trials.json");
+  const strategies = get("strategies.json"), trials = data.has("lab/trials.json") ? get("lab/trials.json") : [];
   unique(strategies, "id", "strategies");
   unique(trials, "id", "lab trials");
   check(trials.every((t, i) => !i || trials[i - 1].ts >= t.ts), "Trials must be newest first");
   for (const strategy of strategies) {
     for (const run of strategy.runs) check(manifest.runs.includes(run), `${strategy.id}: unknown run ${run}`);
-    for (const id of strategy.lab_trials) check(trials.some((t) => t.id === id), `${strategy.id}: unknown lab trial ${id}`);
+    for (const id of strategy.lab_trials || []) check(trials.some((t) => t.id === id), `${strategy.id}: unknown lab trial ${id}`);
   }
   for (const run of manifest.runs) {
     const prefix = `runs/${run}/`;
@@ -175,13 +175,16 @@ export async function validateBundle(files, schemas) {
   }
   check(manifest.runs.includes(manifest.featured.run), "Featured run is absent from manifest");
   get(`runs/${manifest.featured.run}/sessions/${manifest.featured.day}.json`);
-  const lab = get("lab/summary.json");
-  for (const [verdict, count] of Object.entries(lab.by_verdict)) equal(count, trials.filter((t) => t.verdict === verdict).length, `Lab ${verdict}`);
-  equal(lab.tried, trials.length, "Lab tried");
-  equal(lab.passed_search, trials.filter((t) => t.verdict !== "rejected").length, "Lab passed search");
-  equal(lab.passed_holdout, lab.by_verdict.candidate + lab.by_verdict.approved, "Lab passed holdout");
-  equal(lab.approved, lab.by_verdict.approved, "Lab approved");
-  check(lab.holdout_windows.every((w) => w.start <= w.end && w.looks_used <= w.looks_limit), "Lab holdout window or look budget invalid");
+  if (data.has("lab/trials.json") || data.has("lab/summary.json")) {
+    const lab = get("lab/summary.json");
+    get("lab/trials.json");
+    for (const [verdict, count] of Object.entries(lab.by_verdict)) equal(count, trials.filter((t) => t.verdict === verdict).length, `Lab ${verdict}`);
+    equal(lab.tried, trials.length, "Lab tried");
+    equal(lab.passed_search, trials.filter((t) => t.verdict !== "rejected").length, "Lab passed search");
+    equal(lab.passed_holdout, lab.by_verdict.candidate + lab.by_verdict.approved, "Lab passed holdout");
+    equal(lab.approved, lab.by_verdict.approved, "Lab approved");
+    check(lab.holdout_windows.every((w) => w.start <= w.end && w.looks_used <= w.looks_limit), "Lab holdout window or look budget invalid");
+  }
   const parity = get("parity/index.json");
   ascending(parity, "day", "parity index");
   for (const row of parity) {

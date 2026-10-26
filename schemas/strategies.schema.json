@@ -105,8 +105,7 @@
       "filters",
       "scoring",
       "params_public",
-      "runs",
-      "lab_trials"
+      "runs"
     ],
     "additionalProperties": false,
     "allOf": [

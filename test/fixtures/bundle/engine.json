@@ -136,20 +136,6 @@
         "alerts"
       ],
       "outputs": [
-        "lab"
-      ],
-      "state": "fixture only"
-    },
-    {
-      "id": "lab",
-      "name": "Lab",
-      "text": "Synthetic lab node for schematic tests.",
-      "spec_section": "Research",
-      "href": "/methodology/#lab",
-      "inputs": [
-        "ledger"
-      ],
-      "outputs": [
         "site"
       ],
       "state": "fixture only"
@@ -161,7 +147,7 @@
       "spec_section": "Publish contract",
       "href": "/methodology/#site",
       "inputs": [
-        "lab"
+        "ledger"
       ],
       "outputs": [
         "public data"
@@ -208,10 +194,6 @@
     },
     {
       "from": "ledger",
-      "to": "lab"
-    },
-    {
-      "from": "lab",
       "to": "site"
     }
   ]

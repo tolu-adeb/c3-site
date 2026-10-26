@@ -43,7 +43,8 @@ export function validManifest(manifest, bundle) {
     if (/^runs\/[^/]+\/sessions\/\d{4}-\d\d-\d\d\.json$/.test(file.path) && file.bytes > 60000) return false;
     names.add(file.path);
   }
-  return names.has("strategies.json") && names.has("lab/trials.json") && names.has("lab/summary.json") && names.has("parity/index.json") && names.has(`runs/${manifest.featured.run}/sessions/${manifest.featured.day}.json`) && manifest.runs.every((run) => ["summary", "trades", "equity", "monthly", "sessions/index"].every((file) => names.has(`runs/${run}/${file}.json`)));
+  if (names.has("lab/trials.json") !== names.has("lab/summary.json")) return false;
+  return names.has("strategies.json") && names.has("parity/index.json") && names.has(`runs/${manifest.featured.run}/sessions/${manifest.featured.day}.json`) && manifest.runs.every((run) => ["summary", "trades", "equity", "monthly", "sessions/index"].every((file) => names.has(`runs/${run}/${file}.json`)));
 }
 export async function deletePrefix(bucket, prefix) {
   let cursor;

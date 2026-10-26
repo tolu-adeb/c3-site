@@ -23,6 +23,6 @@ try {
   await page.route("**/data/manifest.json", (route) => route.fulfill({ status: 404, contentType: "application/json", body: "{}" }));
   await page.goto(base + "/engine/"); await page.locator('#main[aria-busy="false"]').waitFor();
   assert.match(await page.locator("#data-status").textContent(), /Results not published yet/);
-  assert.equal(await page.locator(".schematic-node").count(), 12);
+  assert.equal(await page.locator(".schematic-node").count(), 11);
   console.log("Engine: JSON-driven pipeline order, every node panel/link, keyboard traversal, no-JS list and unpublished default passed.");
 } finally { await browser.close(); }
